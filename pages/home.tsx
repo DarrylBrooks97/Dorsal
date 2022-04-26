@@ -9,7 +9,7 @@ export default function Home() {
 	const aquariums = getUser<Tank[]>('/api/user/aquariums');
 
 	return (
-		<Box w="full" h="100vh" p="6" bg="black">
+		<Box w="full" h="full" p="6" bg="black">
 			<AddButton />
 			<HStack
 				w="full"

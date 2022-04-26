@@ -17,9 +17,11 @@ export const theme = extendTheme({
 	fonts: {
 		body: 'Inter, sans-serif',
 	},
-	style: {
-		body: {
-			innerWidth: '100%',
+	styles: {
+		global: {
+			'html, body': {
+				'background-color': 'black',
+			},
 		},
 	},
 	breakpoints,
