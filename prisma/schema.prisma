@@ -9,10 +9,21 @@ datasource db {
   referentialIntegrity = "prisma"
 }
 
+model User {
+  id     String  @id @default(cuid())
+  name   String
+  email  String
+  tanks  Tank[]
+  fish   Fish[]
+  plants Plant[]
+}
+
 model Fish {
   id           String @id @default(cuid())
-  tankId       String @default(cuid())
-  tank         Tank   @relation(fields: [tankId], references: [id], onDelete: Cascade)
+  user_id      String? @default(cuid())
+  user         User?   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  tankId       String? @default(cuid())
+  tank         Tank?   @relation(fields: [tankId], references: [id], onDelete: Cascade)
   name         String @db.VarChar(255)
   image_url    String @db.VarChar(255)
   habitat      String @db.VarChar(255)
@@ -28,8 +39,10 @@ model Fish {
 
 model Plant {
   id           String @id @default(cuid())
-  tankId       String @default(cuid())
-  tank         Tank   @relation(fields: [tankId], references: [id], onDelete: Cascade)
+  user_id      String? @default(cuid())
+  user         User?   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  tankId       String? @default(cuid())
+  tank         Tank?   @relation(fields: [tankId], references: [id], onDelete: Cascade)
   name         String @db.VarChar(255)
   image_url    String @db.VarChar(255)
   species      String @db.VarChar(255)
@@ -43,6 +56,8 @@ model Plant {
 
 model Tank {
   id         String   @id @default(cuid())
+  user_id    String?   @default(cuid())
+  user       User?     @relation(fields: [user_id], references: [id], onDelete: Cascade)
   type       String   @db.VarChar(255)
   name       String   @db.VarChar(255)
   pH         Decimal  @db.Decimal(10, 0)
