@@ -1,22 +1,21 @@
 import Card from '@components/Card';
 import AddButton from '@components/AddButton';
+import { PrismaClient, Tank } from '@prisma/client';
 import { Box, Heading, HStack } from '@chakra-ui/react';
 
-export interface UserAquarium {
-	id: number;
-	name: string;
-	imageUrl: string;
-	description?: string;
-}
-export default function Home() {
-	const aquariums: UserAquarium[] = [
-		{
-			id: 1,
-			name: 'Aquarium 1',
-			imageUrl:
-				'https://images.unsplash.com/photo-1518791841217-8f162f1e1131?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60',
+export const getServerSideProps = async () => {
+	const prisma = new PrismaClient();
+	const tanks = await prisma.tank.findMany();
+	// const aquariums = tanks.map((tank) =>)
+	const aquariums = JSON.stringify(tanks);
+	return {
+		props: {
+			aquariums,
 		},
-	];
+	};
+};
+
+export default function Home({ aquariums }: { aquariums: string }) {
 	return (
 		<Box w="full" h="100vh" p="6" bg="black">
 			<AddButton />
@@ -59,7 +58,7 @@ export default function Home() {
 					>
 						My Aquariums
 					</Heading>
-					{aquariums?.map(({ name, id }: UserAquarium) => (
+					{JSON.parse(aquariums)?.map(({ name, id }: Tank) => (
 						<Card
 							key={id}
 							imageUrl="https://images.unsplash.com/photo-1599492816933-2101fe60bc72?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80"

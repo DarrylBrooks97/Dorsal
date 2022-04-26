@@ -1,0 +1,56 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity"]
+}
+
+datasource db {
+  provider             = "mysql"
+  url                  = env("DATABASE_URL")
+  referentialIntegrity = "prisma"
+}
+
+model Fish {
+  id           String @id @default(cuid())
+  tankId       String @default(cuid())
+  tank         Tank   @relation(fields: [tankId], references: [id], onDelete: Cascade)
+  name         String @db.VarChar(255)
+  image_url    String @db.VarChar(255)
+  habitat      String @db.VarChar(255)
+  species      String @db.VarChar(255)
+  tank_sizes   String @db.VarChar(255)
+  diet         String @db.VarChar(255)
+  water_params Json
+  tank_friends Json
+  illnesses    String @db.VarChar(255)
+
+  @@index([tankId])
+}
+
+model Plant {
+  id           String @id @default(cuid())
+  tankId       String @default(cuid())
+  tank         Tank   @relation(fields: [tankId], references: [id], onDelete: Cascade)
+  name         String @db.VarChar(255)
+  image_url    String @db.VarChar(255)
+  species      String @db.VarChar(255)
+  lighting     String @db.VarChar(255)
+  soil         String @db.VarChar(255)
+  water_params Json
+  illnesses    String @db.VarChar(255)
+
+  @@index([tankId])
+}
+
+model Tank {
+  id         String   @id @default(cuid())
+  type       String   @db.VarChar(255)
+  name       String   @db.VarChar(255)
+  pH         Decimal  @db.Decimal(10, 0)
+  nirate     Decimal  @db.Decimal(10, 0)
+  alkalinity Decimal  @db.Decimal(10, 0)
+  hardness   Decimal  @db.Decimal(10, 0)
+  created_at DateTime @db.Timestamp(0)
+  updated_at DateTime @db.Timestamp(0)
+  Fish       Fish[]
+  Plant      Plant[]
+}
