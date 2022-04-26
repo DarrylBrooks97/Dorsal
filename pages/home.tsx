@@ -50,14 +50,22 @@ export default function Home() {
 					>
 						My Aquariums
 					</Heading>
-					{aquariums?.map(({ name, id }: Tank) => (
-						<Card
-							key={id}
-							imageUrl="https://images.unsplash.com/photo-1599492816933-2101fe60bc72?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80"
-							text={name}
-							link={`/aquarium/${id}`}
-						/>
-					))}
+					{aquariums ? (
+						aquariums.map(({ name, id }: Tank) => (
+							<Card
+								key={id}
+								imageUrl="https://images.unsplash.com/photo-1599492816933-2101fe60bc72?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80"
+								text={name}
+								link={`/aquarium/${id}`}
+							/>
+						))
+					) : (
+						<Box
+							w="calc(100vw - 3rem)"
+							h="250px"
+							bg="transparent"
+						></Box>
+					)}
 				</Box>
 				<Box id="liveStockContent">
 					<Heading
