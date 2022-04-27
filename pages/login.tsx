@@ -1,6 +1,5 @@
 import { getSession, signIn } from 'next-auth/react';
 import { FcGoogle } from 'react-icons/fc';
-import { useSession } from 'next-auth/react';
 import { Button, Center, Heading, Stack } from '@chakra-ui/react';
 import { GetServerSidePropsContext } from 'next';
 

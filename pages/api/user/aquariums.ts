@@ -15,5 +15,5 @@ export default async function handler(
 
 	const aquariums = await prisma.tank.findMany();
 
-	return res.status(200).send(aquariums ? aquariums : []);
+	return res.status(200).send(aquariums);
 }
