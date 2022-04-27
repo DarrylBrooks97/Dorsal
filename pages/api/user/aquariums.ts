@@ -12,7 +12,8 @@ export default async function handler(
 			message: 'Method not allowed',
 		});
 	}
+
 	const aquariums = await prisma.tank.findMany();
 
-	return res.status(200).send(aquariums);
+	return res.status(200).send(aquariums ? aquariums : []);
 }
