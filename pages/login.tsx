@@ -15,7 +15,7 @@ export const getServerSideProps = async ({
 		});
 	}
 
-	return { props: {} };
+	return { props: { status: 'not logged in' } };
 };
 
 export default function Login() {
