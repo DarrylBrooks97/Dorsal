@@ -23,6 +23,13 @@ export default withTRPC<AppRouter>({
 
 		return {
 			url,
+			queryClientConfig: {
+				defaultOptions: {
+					queries: {
+						staleTime: 30,
+					},
+				},
+			},
 		};
 	},
 	ssr: false,
