@@ -70,6 +70,7 @@ export default function Home() {
 							fontSize="xl"
 							color={pos === idx ? 'white' : 'gray.500'}
 							transition=".3s ease-in-out"
+							key={idx}
 							onClick={() => {
 								setNavClicked(true);
 								setPos(idx);
@@ -91,6 +92,7 @@ export default function Home() {
 							boxSize={2}
 							transition=".2s ease-in-out"
 							bg={pos === idx ? 'white' : 'gray.500'}
+							key={idx}
 						/>
 					))}
 				</HStack>
@@ -113,6 +115,7 @@ export default function Home() {
 								if (pos === idx) setNavClicked(false);
 								setPos(navClicked ? pos : idx);
 							}}
+							key={idx}
 						/>
 					))}
 					{/* <Stack
