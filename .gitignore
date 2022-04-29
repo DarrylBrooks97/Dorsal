@@ -18,7 +18,7 @@
 # misc
 .DS_Store
 *.pem
-.yarn.lock
+yarn.lock
 .pscale.yml
 
 # debug
