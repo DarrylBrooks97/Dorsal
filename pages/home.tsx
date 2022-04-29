@@ -1,46 +1,30 @@
-// import Card from '@components/Card';
+import AquariumCard from '@components/AqauriumCard';
 import AddButton from '@components/AddButton';
-import { Tank } from '@prisma/client';
-import { userHooks } from 'hooks/userHooks';
-import { Box, Text, HStack, Stack, Center, Heading } from '@chakra-ui/react';
-import { useEffect, useRef, useState } from 'react';
-import { headerOptions } from '@/constants';
-import Image from 'next/image';
 import handleViewport from 'react-in-viewport';
+import { Tank } from '@prisma/client';
+import { Card } from '@components/Card';
+import { headerOptions } from '@/constants';
+import { userHooks } from 'hooks/userHooks';
+import { Box, Text, HStack, Stack, Center } from '@chakra-ui/react';
+import { useEffect, useRef, useState } from 'react';
 
-const TempComponent = (props: { inViewport: boolean; forwardedRef: any }) => {
-	const { inViewport, forwardedRef } = props;
-	return (
-		<Center
-			w="calc(100vw - 3rem)"
-			h="50vh"
-			bg={inViewport ? 'red' : 'white'}
-			transition="all 4s"
-			scrollSnapAlign="start"
-			ref={forwardedRef}
-		>
-			Hello
-		</Center>
-	);
-};
-
-const ViewportBlock = handleViewport(TempComponent, {
+const CardViewportBlock = handleViewport(Card, {
 	threshold: 1,
 });
 
 const componentCards: JSX.Element[] = [
-	ViewportBlock,
-	ViewportBlock,
-	ViewportBlock,
-	ViewportBlock,
+	CardViewportBlock,
+	AquariumCard,
+	CardViewportBlock,
+	CardViewportBlock,
 ];
 
 export default function Home() {
-	// const { getUser } = userHooks();
+	const { getUser } = userHooks();
+	const aquariums = getUser<Tank[]>('/api/user/aquariums');
 	const cardRef = useRef<HTMLDivElement>(null);
 	const [pos, setPos] = useState(0);
 	const [navClicked, setNavClicked] = useState(false);
-	// const aquariums = getUser<Tank[]>('/api/user/aquariums');
 
 	useEffect(() => {
 		cardRef?.current?.scrollTo({
@@ -97,118 +81,35 @@ export default function Home() {
 					))}
 				</HStack>
 			</Stack>
-			<Center bg="white" w="full" h="full">
+			<Center h="full">
 				<HStack
 					ref={cardRef}
 					overflow="scroll"
-					spacing={2}
+					spacing={50}
 					alignItems="start"
 					overflowX="scroll"
 					scrollSnapType="x mandatory"
 					shouldWrapChildren
+					css={{
+						'::-webkit-scrollbar': {
+							display: 'none',
+						},
+					}}
 				>
 					{componentCards.map((Card, idx) => (
 						// @ts-ignore
 						<Card
 							onEnterViewport={() => {
-								console.log({ navClicked });
 								if (pos === idx) setNavClicked(false);
 								setPos(navClicked ? pos : idx);
 							}}
 							key={idx}
+							heading={headerOptions[idx].name}
+							subHeading={headerOptions[idx].subHeading}
 						/>
 					))}
-					{/* <Stack
-					justify="center"
-					align="center"
-					borderRadius="15"
-					bg="rgba(255,255,255,0.1)"
-					backdropFilter={`blur(10px)`}
-					width="calc(100vw - 3rem)"
-					height="full"
-				>
-					<Image
-						alt="overview"
-						width="100%"
-						height="100%"
-						placeholder="blur"
-						src="https://images.unsplash.com/photo-1512391806023-e43a4e65899f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80"
-						blurDataURL="https://images.unsplash.com/photo-1512391806023-e43a4e65899f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80"
-					/>
-					<Heading color="gray.300">Overview</Heading>
-				</Stack> */}
 				</HStack>
 			</Center>
-			{/* <HStack
-				w="full"
-				spacing={2}
-				alignItems="start"
-				overflowX="scroll"
-				scrollSnapType="x mandatory"
-				shouldWrapChildren
-			>
-				<Box id="homeContent">
-					<Text
-						alignSelf="left"
-						color="white"
-						fontWeight="extrabold"
-						fontSize="40"
-						scrollSnapAlign="start"
-					>
-						Home
-					</Text>
-					<Card
-						imageUrl="https://images.unsplash.com/photo-1599492816933-2101fe60bc72?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80"
-						text="Overview"
-						link="/overview"
-					/>
-					<Card
-						imageUrl="https://images.unsplash.com/photo-1599492816933-2101fe60bc72?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80"
-						text="Tank Ideas"
-						link="/ideas"
-					/>
-				</Box>
-				<Box id="aquariumContent">
-					<Text
-						alignSelf="left"
-						color="white"
-						fontWeight="extrabold"
-						fontSize="40"
-						scrollSnapAlign="start"
-					>
-						My Aquariums
-					</Text>
-					{aquariums?.map(({ name, id }: Tank) => (
-						<Card
-							key={id}
-							imageUrl="https://images.unsplash.com/photo-1599492816933-2101fe60bc72?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80"
-							text={name}
-							link={`/aquarium/${id}`}
-						/>
-					))}
-				</Box>
-				<Box id="liveStockContent">
-					<Text
-						alignSelf="left"
-						color="white"
-						fontWeight="extrabold"
-						fontSize="40"
-						scrollSnapAlign="start"
-					>
-						Live Stock
-					</Text>
-					<Card
-						imageUrl="https://images.unsplash.com/photo-1599492816933-2101fe60bc72?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80"
-						text="Fish"
-						link="/myfish"
-					/>
-					<Card
-						imageUrl="https://images.unsplash.com/photo-1599492816933-2101fe60bc72?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80"
-						text="Plants"
-						link="/myplants"
-					/>
-				</Box>
-			</HStack> */}
 		</Box>
 	);
 }

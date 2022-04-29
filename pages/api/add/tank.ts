@@ -17,5 +17,5 @@ export default async function handler(
 		data: body,
 	});
 
-	return res.status(201).json(newTank);
+	return res.status(201).json({ newTank });
 }
