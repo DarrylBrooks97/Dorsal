@@ -10,9 +10,10 @@ export const getServerSideProps = async ({
 	const session = await getSession({ req });
 
 	if (session) {
-		return res.writeHead(302, {
+		res.writeHead(302, {
 			Location: '/home',
 		});
+		res.end();
 	}
 
 	return { props: { status: 'not logged in' } };

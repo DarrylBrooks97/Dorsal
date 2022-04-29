@@ -1,5 +1,23 @@
 import Link from 'next/link';
 import { Box, Center, Heading, Stack, Text } from '@chakra-ui/react';
+import { GetServerSidePropsContext } from 'next';
+import { getSession } from 'next-auth/react';
+
+export const getServerSideProps = async ({
+	req,
+	res,
+}: GetServerSidePropsContext) => {
+	const session = await getSession({ req });
+
+	if (session) {
+		res.writeHead(302, {
+			Location: '/home',
+		});
+		res.end();
+	}
+
+	return { props: { status: 'not logged in' } };
+};
 
 export default function Home() {
 	return (

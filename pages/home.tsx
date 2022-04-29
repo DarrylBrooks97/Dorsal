@@ -1,12 +1,12 @@
 import AquariumCard from '@components/AqauriumCard';
 import AddButton from '@components/AddButton';
 import handleViewport from 'react-in-viewport';
-import { Tank } from '@prisma/client';
 import { Card } from '@components/Card';
 import { headerOptions } from '@/constants';
-import { userHooks } from 'hooks/userHooks';
 import { Box, Text, HStack, Stack, Center } from '@chakra-ui/react';
 import { useEffect, useRef, useState } from 'react';
+import { GetServerSidePropsContext } from 'next';
+import { getSession } from 'next-auth/react';
 
 const CardViewportBlock = handleViewport(Card, {
 	threshold: 1,
@@ -19,9 +19,22 @@ const componentCards: JSX.Element[] = [
 	CardViewportBlock,
 ];
 
+export const getServerSideProps = async ({
+	req,
+	res,
+}: GetServerSidePropsContext) => {
+	const session = await getSession({ req });
+
+	if (!session) {
+		res.writeHead(302, {
+			Location: '/login',
+		});
+		res.end();
+	}
+
+	return { props: { status: null } };
+};
 export default function Home() {
-	const { getUser } = userHooks();
-	const aquariums = getUser<Tank[]>('/api/user/aquariums');
 	const cardRef = useRef<HTMLDivElement>(null);
 	const [pos, setPos] = useState(0);
 	const [navClicked, setNavClicked] = useState(false);
