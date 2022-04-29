@@ -6,14 +6,18 @@ export const envURL =
 export const headerOptions = [
 	{
 		name: 'Overview',
+		subHeading: 'A brief overview of your tanks',
 	},
 	{
 		name: 'Aquariums',
+		subHeading: 'Your aquariums',
 	},
 	{
 		name: 'Live Stock',
+		subHeading: 'All of your live stock',
 	},
 	{
-		name: 'Settings',
+		name: 'Community',
+		subHeading: 'Find out what other users are doing',
 	},
 ];
