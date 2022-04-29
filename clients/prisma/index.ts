@@ -1,4 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 export const prisma = new PrismaClient({
-	log: ['error', 'warn'],
+	log:
+		process.env.NODE_ENV === 'development'
+			? ['error', 'warn', 'info']
+			: ['error'],
 });
