@@ -5,6 +5,7 @@ import { Tank } from '@prisma/client';
 import { userHooks } from 'hooks/userHooks';
 import { Card } from '@components/Card';
 import handleViewport from 'react-in-viewport';
+import { trpc } from '@utils/trpc';
 
 export interface CardProps {
 	text?: string;
@@ -24,8 +25,11 @@ function AquariumCard(props: {
 	subHeading: string;
 	children: React.ReactNode;
 }) {
-	const { getUser } = userHooks();
-	const aquariums = getUser<Tank[]>('/api/user/aquariums');
+	const { data } = trpc.useQuery(['aquariums']);
+	console.log({ data });
+
+	// const { getUser } = userHooks();
+	// const aquariums = getUser<Tank[]>('/api/user/aquariums');
 
 	return (
 		<Card
@@ -34,9 +38,9 @@ function AquariumCard(props: {
 			heading={props.heading}
 			subHeading={props.subHeading}
 		>
-			{aquariums ? (
+			{data ? (
 				<Grid templateColumns="repeat(2,1fr)" gap={3}>
-					{aquariums?.map(({ id, name }: Tank) => (
+					{data.aquariums.map(({ id, name }: Tank) => (
 						<GridItem key={id} width="full" height="150px">
 							<Link href={`/aquariums/${id}`}>
 								<Box

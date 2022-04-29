@@ -1,7 +1,9 @@
 import { theme } from '../theme';
+import { withTRPC } from '@trpc/next';
+import { AppRouter } from './api/trpc/[trpc]';
 import { ChakraProvider } from '@chakra-ui/react';
-import type { AppProps } from 'next/app';
 import { SessionProvider } from 'next-auth/react';
+import type { AppProps } from 'next/app';
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
 	return (
@@ -13,4 +15,15 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
 	);
 }
 
-export default MyApp;
+export default withTRPC<AppRouter>({
+	config({ ctx }) {
+		const url = process.env.NEXTAUTH_URL
+			? `${process.env.NEXTAUTH_URL}/api/trpc`
+			: 'http://localhost:3000/api/trpc';
+
+		return {
+			url,
+		};
+	},
+	ssr: false,
+})(MyApp);
