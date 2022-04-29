@@ -34,6 +34,7 @@ export const getServerSideProps = async ({
 
 	return { props: { status: null } };
 };
+
 export default function Home() {
 	const cardRef = useRef<HTMLDivElement>(null);
 	const [pos, setPos] = useState(0);

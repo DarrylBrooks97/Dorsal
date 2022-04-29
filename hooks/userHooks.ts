@@ -5,7 +5,12 @@ export const useFetcher = async (url: string) => {
 };
 
 const getUser = <T>(url: string): T => {
-	const { data, error } = useSWR(url, useFetcher);
+	const fetchURL =
+		process.env.NODE_ENV === 'development'
+			? `http://localhost:3000${url}`
+			: `https://next-dorsal.vercel.app${url}`;
+
+	const { data, error } = useSWR(fetchURL, useFetcher);
 	if (error) {
 		throw new Error(error);
 	}
