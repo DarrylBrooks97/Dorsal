@@ -8,9 +8,9 @@
 		"start": "next start",
 		"lint": "next lint",
 		"studio": "npx prisma studio",
-		"db push": "npx prisma db push",
-		"db migrate": "npx prisma db migrate",
-		"p connect": "pscale connect"
+		"db-push": "npx prisma db push",
+		"db-migrate": "npx prisma db migrate",
+		"p-connect": "pscale connect"
 	},
 	"dependencies": {
 		"@chakra-ui/react": "^1.8.8",
