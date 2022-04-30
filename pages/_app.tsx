@@ -1,6 +1,6 @@
 import { theme } from '../theme';
 import { withTRPC } from '@trpc/next';
-import { AppRouter } from './api/trpc/[trpc]';
+import { AppRouter } from 'server/routers';
 import { ChakraProvider } from '@chakra-ui/react';
 import { SessionProvider } from 'next-auth/react';
 import type { AppProps } from 'next/app';

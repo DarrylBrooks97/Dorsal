@@ -25,11 +25,7 @@ function AquariumCard(props: {
 	subHeading: string;
 	children: React.ReactNode;
 }) {
-	const { data } = trpc.useQuery(['aquariums']);
-	console.log({ data });
-
-	// const { getUser } = userHooks();
-	// const aquariums = getUser<Tank[]>('/api/user/aquariums');
+	const { data } = trpc.useQuery(['user.tanks']);
 
 	return (
 		<Card
@@ -40,7 +36,7 @@ function AquariumCard(props: {
 		>
 			{data ? (
 				<Grid templateColumns="repeat(2,1fr)" gap={3}>
-					{data.aquariums.map(({ id, name }: Tank) => (
+					{data.tanks.map(({ id, name }: Tank) => (
 						<GridItem key={id} width="full" height="150px">
 							<Link href={`/aquariums/${id}`}>
 								<Box
