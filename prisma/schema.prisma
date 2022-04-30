@@ -72,6 +72,7 @@ model Fish {
   water_params Json
   tank_friends Json
   illnesses    String  @db.VarChar(255)
+  maintained_at DateTime? @db.Timestamp(0)
 
   @@index([tankId])
 }
@@ -89,6 +90,7 @@ model Plant {
   soil         String  @db.VarChar(255)
   water_params Json
   illnesses    String  @db.VarChar(255)
+  maintained_at DateTime? @db.Timestamp(0)
 
   @@index([tankId])
 }
@@ -102,6 +104,7 @@ model Tank {
   pH         Decimal  @db.Decimal(10, 0)
   nirate     Decimal  @db.Decimal(10, 0)
   hardness   Decimal  @db.Decimal(10, 0)
+  maintained_at DateTime? @db.Timestamp(0)
   created_at DateTime @db.Timestamp(0)
   updated_at DateTime @db.Timestamp(0)
   Fish       Fish[]

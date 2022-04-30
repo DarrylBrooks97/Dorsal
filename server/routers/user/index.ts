@@ -80,6 +80,7 @@ export const userRouter = createRouter()
 				},
 				data: {
 					name: input.name,
+					maintained_at: new Date(),
 				},
 			});
 
@@ -192,6 +193,7 @@ export const userRouter = createRouter()
 				data: {
 					...input,
 					updated_at: new Date(),
+					maintained_at: new Date(),
 					Fish: {
 						set: input.Fish,
 					},
@@ -293,6 +295,7 @@ export const userRouter = createRouter()
 				},
 				data: {
 					...input,
+					maintained_at: new Date(),
 				},
 			});
 
