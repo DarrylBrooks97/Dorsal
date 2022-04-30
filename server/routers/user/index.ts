@@ -98,24 +98,62 @@ export const userRouter = createRouter()
 	})
 	.mutation('addTank', {
 		input: z.object({
-			id: z.string().uuid(),
+			id: z.string().cuid(),
 			user_id: z.string().cuid().optional(),
 			name: z.string().min(1).max(255),
 			type: z.string().min(1).max(255),
 			pH: z.number(),
 			nirate: z.number(),
 			hardness: z.number(),
+			Fish: z
+				.array(
+					z.object({
+						id: z.string().uuid(),
+						user_id: z.string().cuid().optional(),
+						tankId: z.string().cuid().optional(),
+						name: z.string().min(1).max(255),
+						image_url: z.string().min(1).max(255),
+						habitat: z.string().min(1).max(255),
+						species: z.string().min(1).max(255),
+						tank_sizes: z.string().min(1).max(255),
+						illnesses: z.string().min(1).max(255),
+						diet: z.string().min(1).max(255),
+						tank_friends: z.string().min(1).max(255),
+						water_params: z.object({
+							pH: z.number(),
+							nirate: z.number(),
+							hardness: z.number(),
+							type: z.string().min(1).max(255),
+						}),
+					})
+				)
+				.optional(),
+			Plant: z
+				.array(
+					z.object({
+						id: z.string().uuid(),
+						user_id: z.string().cuid().optional(),
+						name: z.string().min(1).max(255),
+						tank_id: z.string().cuid().optional(),
+						image_url: z.string().min(1).max(255),
+						species: z.string().min(1).max(255),
+						lighting: z.string().min(1).max(255),
+						soil: z.string().min(1).max(255),
+						water_params: z.object({
+							pH: z.number(),
+							nirate: z.number(),
+							hardness: z.number(),
+						}),
+						illnesses: z.string().min(1).max(255),
+					})
+				)
+				.optional(),
 		}),
 		async resolve({ input }) {
 			return {
 				tank: await prisma.tank.create({
 					data: {
-						id: input.id,
-						name: input.name,
-						type: input.type,
-						pH: input.pH,
-						nirate: input.nirate,
-						hardness: input.hardness,
+						...input,
 						created_at: new Date(),
 						updated_at: new Date(),
 					},
@@ -152,11 +190,7 @@ export const userRouter = createRouter()
 					id: input.id,
 				},
 				data: {
-					name: input.name,
-					type: input.type,
-					pH: input.pH,
-					nirate: input.nirate,
-					hardness: input.hardness,
+					...input,
 					updated_at: new Date(),
 					Fish: {
 						set: input.Fish,
@@ -258,10 +292,7 @@ export const userRouter = createRouter()
 					id: input.id,
 				},
 				data: {
-					name: input.name,
-					tankId: input.tankId,
-					image_url: input.image_url,
-					illnesses: input.illnesses,
+					...input,
 				},
 			});
 
