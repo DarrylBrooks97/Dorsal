@@ -17,9 +17,10 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
 
 export default withTRPC<AppRouter>({
 	config({ ctx }) {
-		const url = process.env.NEXTAUTH_URL
-			? `${process.env.NEXTAUTH_URL}/api/trpc`
-			: 'http://localhost:3000/api/trpc';
+		const url =
+			process.env.NODE_ENV === 'development'
+				? 'http://localhost:3000'
+				: 'https://next-dorsal.vercel.app';
 
 		return {
 			url,
@@ -32,5 +33,4 @@ export default withTRPC<AppRouter>({
 			},
 		};
 	},
-	ssr: false,
 })(MyApp);

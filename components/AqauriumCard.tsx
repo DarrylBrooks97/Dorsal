@@ -38,7 +38,7 @@ function AquariumCard(props: {
 				<Grid templateColumns="repeat(2,1fr)" gap={3}>
 					{data.tanks.map(({ id, name }: Tank) => (
 						<GridItem key={id} width="full" height="150px">
-							<Link href={`/aquariums/${id}`}>
+							<Link href={`/aquarium/${id}`}>
 								<Box
 									boxSize="full"
 									border="1px solid white"
