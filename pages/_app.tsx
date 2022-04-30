@@ -19,8 +19,8 @@ export default withTRPC<AppRouter>({
 	config({ ctx }) {
 		const url =
 			process.env.NODE_ENV === 'development'
-				? 'http://localhost:3000'
-				: 'https://next-dorsal.vercel.app';
+				? 'http://localhost:3000/api/trpc'
+				: 'https://next-dorsal.vercel.app/api/trpc';
 
 		return {
 			url,
