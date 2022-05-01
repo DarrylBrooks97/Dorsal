@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { prisma } from '@clients/prisma';
 import { createRouter } from '../../createRouter';
+import { resolve } from 'path';
 
 export const userRouter = createRouter()
 	.query('fish', {
@@ -94,6 +95,21 @@ export const userRouter = createRouter()
 			const tanks = await prisma.tank.findMany();
 			return {
 				tanks,
+			};
+		},
+	})
+	.query('tanks.byId', {
+		input: z.object({
+			id: z.string().cuid(),
+		}),
+		async resolve({ input }) {
+			const tank = await prisma.tank.findUnique({
+				where: {
+					id: input.id,
+				},
+			});
+			return {
+				tank,
 			};
 		},
 	})
