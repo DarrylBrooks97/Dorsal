@@ -2,7 +2,6 @@ import Spinner from './Spinner';
 import { Box, Center, Grid, GridItem, Text } from '@chakra-ui/react';
 import { Link } from '@chakra-ui/react';
 import { Tank } from '@prisma/client';
-import { userHooks } from 'hooks/userHooks';
 import { Card } from '@components/Card';
 import handleViewport from 'react-in-viewport';
 import { trpc } from '@utils/trpc';
