@@ -1,24 +1,51 @@
-import Spinner from '@components/Spinner';
-import { Pencil1Icon } from '@radix-ui/react-icons';
-import { trpc } from '@utils/trpc';
-import { Box, Center, Heading, HStack, Stack, Text } from '@chakra-ui/react';
-import { useRouter } from 'next/router';
 import Image from 'next/image';
+import Spinner from '@components/Spinner';
+import { trpc } from '@utils/trpc';
+import { motion } from 'framer-motion';
+import { useRouter } from 'next/router';
+import { Pencil1Icon } from '@radix-ui/react-icons';
+import {
+	Box,
+	BoxProps,
+	Center,
+	Heading,
+	HStack,
+	Stack,
+	Text,
+} from '@chakra-ui/react';
+import { useState } from 'react';
+
+const MotionBox = motion<BoxProps>(Box);
+const TankOptions: { label: string }[] = [
+	{
+		label: 'Tank Health',
+	},
+	{
+		label: 'Reminders',
+	},
+	{
+		label: 'Fish',
+	},
+	{
+		label: 'Plants',
+	},
+];
 
 export default function Aquarium() {
+	const [activeTab, setActiveTab] = useState(0);
 	const { id } = useRouter().query;
-	const { data } = trpc.useQuery(['user.tanks.byId', { id: id! as string }]);
+	const { data } = trpc.useQuery(['user.tanks.byId', { id: id as string }]);
 
 	return (
-		<Box w="100vw" h="full" p="">
+		<Box w="100vw" h="full">
 			{data ? (
 				<Stack align="center" spacing={6} shouldWrapChildren>
 					<Box
 						w="378px"
 						h="274"
 						pos="relative"
-						borderRadius="15px"
 						overflow="hidden"
+						borderRadius="15px"
 					>
 						<Image
 							src="https://images.unsplash.com/photo-1619611384968-e45fbd60bc5c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1074&q=80"
@@ -43,26 +70,36 @@ export default function Aquarium() {
 						/>
 					</HStack>
 					<HStack
-						pos="relative"
-						w="full"
-						h="31px"
-						bg="#414141"
-						borderRadius="15px"
 						p="3"
+						h="31px"
+						w="full"
+						pos="relative"
+						spacing={3}
 						shouldWrapChildren
 					>
-						<Text color="white" fontSize="20px">
-							Tank Health
-						</Text>
-						<Text color="white" fontSize="20px">
-							Reminders
-						</Text>
-						<Text color="white" fontSize="20px">
-							Fish
-						</Text>
-						<Text color="white" fontSize="20px">
-							Plants
-						</Text>
+						{TankOptions.map((option, index) => (
+							<Text
+								key={index}
+								fontSize="20px"
+								color="white"
+								pos="relative"
+								onClick={() => setActiveTab(index)}
+							>
+								{option.label}
+								{index === activeTab ? (
+									<MotionBox
+										pos="absolute"
+										bottom="-1px"
+										left="0"
+										right="0"
+										h="1px"
+										w=""
+										bg="white"
+										layoutId="active-tab"
+									/>
+								) : null}
+							</Text>
+						))}
 					</HStack>
 				</Stack>
 			) : (
