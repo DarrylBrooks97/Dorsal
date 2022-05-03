@@ -37,7 +37,7 @@ function AquariumCard(props: {
 			{data ? (
 				<Stack w="full">
 					{data.tanks.map(({ id, name }: Tank) => (
-						<Link href={`/aquarium/${id}`} passHref>
+						<Link key={id} href={`/aquarium/${id}`} passHref>
 							<HStack
 								w="full"
 								justify="center"
