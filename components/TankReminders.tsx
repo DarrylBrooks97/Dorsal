@@ -21,6 +21,7 @@ export default function Remainders() {
 			// todo: Replace with actual remainder stuff
 			{[1, 2, 3, 4, 5].map((i, idx) => (
 				<MotionBox
+					key={idx}
 					bg="rgba(255,255,255,0.4)"
 					rounded="15px"
 					w="calc(100vw - 3rem)"
