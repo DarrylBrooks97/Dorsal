@@ -1,30 +1,24 @@
 import Image from 'next/image';
 import Spinner from '@components/Spinner';
+import TankRemindersCard from '@components/TankReminders';
+import TankOverviewCard from '@components/TankOverviewCard';
 import { trpc } from '@utils/trpc';
-import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { Pencil1Icon } from '@radix-ui/react-icons';
 import {
 	Box,
 	BoxProps,
 	Center,
-	Grid,
-	GridItem,
 	Heading,
 	HStack,
 	Stack,
-	Stat,
-	StatArrow,
-	StatGroup,
-	StatHelpText,
-	StatLabel,
-	StatNumber,
 	Text,
 } from '@chakra-ui/react';
-import { FaWater } from 'react-icons/fa';
 
 const MotionBox = motion<BoxProps>(Box);
+
 const TankOptions: { label: string }[] = [
 	{
 		label: 'Overview',
@@ -40,6 +34,13 @@ const TankOptions: { label: string }[] = [
 	},
 ];
 
+const tankCards = [
+	TankOverviewCard,
+	TankRemindersCard,
+	TankRemindersCard,
+	TankRemindersCard,
+];
+
 export default function Aquarium() {
 	const [activeTab, setActiveTab] = useState(0);
 	const { id } = useRouter().query;
@@ -51,7 +52,7 @@ export default function Aquarium() {
 				<Stack
 					align="center"
 					h="full"
-					w="full"
+					w="100vw"
 					mt="6"
 					spacing={6}
 					shouldWrapChildren
@@ -117,120 +118,17 @@ export default function Aquarium() {
 							</Text>
 						))}
 					</HStack>
-					<HStack w="full" shouldWrapChildren>
-						<Stack textAlign="left" spacing={3} shouldWrapChildren>
-							<Grid templateColumns="repeat(3, 1fr)">
-								<GridItem>
-									<Stack
-										textAlign="center"
-										align="center"
-										boxSize="full"
-										rounded="12px"
-									>
-										<FaWater color="white" />
-										<Text color="white">Type</Text>
-										<Text color="gray.400">Freshwater</Text>
-									</Stack>
-								</GridItem>
-								<GridItem>
-									<Stack
-										boxSize="full"
-										rounded="12px "
-										textAlign="center"
-										align="center"
-									>
-										<FaWater color="white" />
-										<Text color="white">Type</Text>
-										<Text color="gray.400">Freshwater</Text>
-									</Stack>
-								</GridItem>
-								<GridItem>
-									<Stack
-										boxSize="full"
-										rounded="12px"
-										textAlign="center"
-										align="center"
-									>
-										<FaWater color="white" />
-										<Text color="white">Type</Text>
-										<Text color="gray.400">Freshwater</Text>
-									</Stack>
-								</GridItem>
-							</Grid>
-							<Text color="white" fontSize="18px">
-								Stats
-							</Text>
-							<Box
-								bg="rgba(255,255,255,0.4)"
-								rounded="15px"
-								w="calc(100vw - 3rem)"
-								mb="3"
-							>
-								<StatGroup flexDir="row" textAlign="center">
-									<Stat>
-										<StatLabel flexDir="row">pH</StatLabel>
-										<StatNumber>7.0</StatNumber>
-										<StatHelpText>
-											<StatArrow type="increase" />
-											0.0%
-										</StatHelpText>
-									</Stat>
-									<Stat>
-										<StatLabel>Nirate</StatLabel>
-										<StatNumber>50</StatNumber>
-										<StatHelpText>
-											<StatArrow type="decrease" />
-											20.4%
-										</StatHelpText>
-									</Stat>
-									<Stat>
-										<StatLabel>Hardness</StatLabel>
-										<StatNumber>150</StatNumber>
-										<StatHelpText>
-											<StatArrow type="increase" />
-											5.3%
-										</StatHelpText>
-									</Stat>
-								</StatGroup>
-							</Box>
-							<Text fontSize="18px" color="white">
-								Suggestions
-							</Text>
-							<Box
-								bg="rgba(255,255,255,0.4)"
-								rounded="15px"
-								w="calc(100vw - 3rem)"
-								mb="3"
-							>
-								<StatGroup flexDir="row" textAlign="center">
-									<Stat>
-										<StatLabel flexDir="row">pH</StatLabel>
-										<StatNumber>7.0</StatNumber>
-										<StatHelpText>
-											<StatArrow type="increase" />
-											0.0%
-										</StatHelpText>
-									</Stat>
-									<Stat>
-										<StatLabel>Nirate</StatLabel>
-										<StatNumber>50</StatNumber>
-										<StatHelpText>
-											<StatArrow type="decrease" />
-											20.4%
-										</StatHelpText>
-									</Stat>
-									<Stat>
-										<StatLabel>Hardness</StatLabel>
-										<StatNumber>150</StatNumber>
-										<StatHelpText>
-											<StatArrow type="increase" />
-											5.3%
-										</StatHelpText>
-									</Stat>
-								</StatGroup>
-							</Box>
-						</Stack>
-					</HStack>
+					<Center h="full" w="calc(100vw - 3rem)">
+						<HStack overflowX="scroll" spacing={6}>
+							{tankCards.map((Card, index) => (
+								<>
+									{index === activeTab ? (
+										<Card key={index} />
+									) : null}
+								</>
+							))}
+						</HStack>
+					</Center>
 				</Stack>
 			) : (
 				<Center w="100vw" h="100vh">
