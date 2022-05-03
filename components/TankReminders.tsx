@@ -16,9 +16,9 @@ const MotionBox = motion<BoxProps>(Box);
 const MotionStack = motion<StackProps>(Stack);
 
 export default function Remainders() {
+	// todo: Replace with actual remainder stuff
 	return (
 		<MotionStack textAlign="left" spacing={3} shouldWrapChildren>
-			// todo: Replace with actual remainder stuff
 			{[1, 2, 3, 4, 5].map((i, idx) => (
 				<MotionBox
 					key={idx}

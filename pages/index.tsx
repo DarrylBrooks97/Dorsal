@@ -38,7 +38,7 @@ export default function Home() {
 				</Text>
 			</Stack>
 			<Center mt="10">
-				<Link href="/login">
+				<Link href="/login" passHref>
 					<Center
 						bgColor="green"
 						color="white"

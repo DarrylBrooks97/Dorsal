@@ -32,7 +32,7 @@ export default function AddButton() {
 			>
 				<PlusIcon height={30} />
 			</Center>
-			<Link href="/new/fish">
+			<Link href="/new/fish" passHref>
 				<Center
 					position="absolute"
 					boxSize={50}
@@ -45,7 +45,7 @@ export default function AddButton() {
 					<FaFish />
 				</Center>
 			</Link>
-			<Link href="/new/plant">
+			<Link href="/new/plant" passHref>
 				<Center
 					position="absolute"
 					zIndex={-99}
@@ -59,7 +59,7 @@ export default function AddButton() {
 					<RiPlantFill />
 				</Center>
 			</Link>
-			<Link href="/new/tank">
+			<Link href="/new/tank" passHref>
 				<Center
 					position="absolute"
 					boxSize={50}

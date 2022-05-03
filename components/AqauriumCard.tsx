@@ -1,10 +1,10 @@
+import Link from 'next/link';
 import Spinner from './Spinner';
-import { Box, Center, Grid, GridItem, Text } from '@chakra-ui/react';
-import { Link } from '@chakra-ui/react';
+import handleViewport from 'react-in-viewport';
 import { Tank } from '@prisma/client';
 import { Card } from '@components/Card';
-import handleViewport from 'react-in-viewport';
 import { trpc } from '@utils/trpc';
+import { Box, Center, Grid, GridItem, Text } from '@chakra-ui/react';
 
 export interface CardProps {
 	text?: string;
@@ -37,7 +37,7 @@ function AquariumCard(props: {
 				<Grid templateColumns="repeat(2,1fr)" gap={3}>
 					{data.tanks.map(({ id, name }: Tank) => (
 						<GridItem key={id} width="full" height="150px">
-							<Link href={`/aquarium/${id}`}>
+							<Link href={`/aquarium/${id}`} passHref>
 								<Box
 									boxSize="full"
 									border="1px solid white"
@@ -46,16 +46,16 @@ function AquariumCard(props: {
 									scrollSnapAlign="start"
 									bgGradient={`linear-gradient(135deg, rgba(250,250,250,1) 0%, rgba(250,250,250,0) 50%), url('https://images.unsplash.com/photo-1599492816933-2101fe60bc72?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80')`}
 								/>
-								<Text
-									color="white"
-									fontSize="24px"
-									fontWeight="semibold"
-									textAlign="center"
-									isTruncated
-								>
-									{name}
-								</Text>
 							</Link>
+							<Text
+								color="white"
+								fontSize="24px"
+								fontWeight="semibold"
+								textAlign="center"
+								isTruncated
+							>
+								{name}
+							</Text>
 						</GridItem>
 					))}
 				</Grid>
