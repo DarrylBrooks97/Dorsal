@@ -2,6 +2,7 @@ import { FaWater } from 'react-icons/fa';
 import { GiDoubleFish } from 'react-icons/gi';
 import { RiPlantFill } from 'react-icons/ri';
 import { motion } from 'framer-motion';
+import { trpc } from '@utils/trpc';
 import {
 	Box,
 	Stack,
@@ -19,7 +20,9 @@ import {
 
 const MotionStack = motion<StackProps>(Stack);
 
-export default function TankOverviewCard() {
+export default function TankOverviewCard({ id }: { id: string }) {
+	const { data } = trpc.useQuery(['user.tanks.byId', { id: id as string }]);
+
 	return (
 		<MotionStack textAlign="left" spacing={3} shouldWrapChildren>
 			<Grid templateColumns="repeat(3, 1fr)">
@@ -32,7 +35,7 @@ export default function TankOverviewCard() {
 					>
 						<FaWater color="white" />
 						<Text color="white">Type</Text>
-						<Text color="gray.400">Freshwater</Text>
+						<Text color="gray.400">{data?.tank?.type}</Text>
 					</Stack>
 				</GridItem>
 				<GridItem>
@@ -44,7 +47,7 @@ export default function TankOverviewCard() {
 					>
 						<GiDoubleFish color="white" />
 						<Text color="white"># of fish</Text>
-						<Text color="gray.400">Freshwater</Text>
+						<Text color="gray.400">{data?.fish.length}</Text>
 					</Stack>
 				</GridItem>
 				<GridItem>
@@ -56,7 +59,7 @@ export default function TankOverviewCard() {
 					>
 						<RiPlantFill color="white" />
 						<Text color="white"># of plants</Text>
-						<Text color="gray.400">Freshwater</Text>
+						<Text color="gray.400">{data?.plants.length}</Text>
 					</Stack>
 				</GridItem>
 			</Grid>
@@ -72,7 +75,9 @@ export default function TankOverviewCard() {
 				<StatGroup flexDir="row" textAlign="center">
 					<Stat>
 						<StatLabel flexDir="row">pH</StatLabel>
-						<StatNumber>7.0</StatNumber>
+						<StatNumber>
+							{data?.tank?.pH as unknown as number}
+						</StatNumber>
 						<StatHelpText>
 							<StatArrow type="increase" />
 							0.0%
@@ -80,7 +85,9 @@ export default function TankOverviewCard() {
 					</Stat>
 					<Stat>
 						<StatLabel>Nirate</StatLabel>
-						<StatNumber>50</StatNumber>
+						<StatNumber>
+							{data?.tank?.nirate as unknown as number}
+						</StatNumber>
 						<StatHelpText>
 							<StatArrow type="decrease" />
 							20.4%
@@ -88,7 +95,9 @@ export default function TankOverviewCard() {
 					</Stat>
 					<Stat>
 						<StatLabel>Hardness</StatLabel>
-						<StatNumber>150</StatNumber>
+						<StatNumber>
+							{data?.tank?.hardness as unknown as number}
+						</StatNumber>
 						<StatHelpText>
 							<StatArrow type="increase" />
 							5.3%

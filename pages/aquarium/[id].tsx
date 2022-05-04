@@ -46,6 +46,8 @@ export default function Aquarium() {
 	const { id } = useRouter().query;
 	const { data } = trpc.useQuery(['user.tanks.byId', { id: id as string }]);
 
+	if (typeof id !== 'string') return;
+
 	return (
 		<Box w="100vw" h="full">
 			{data ? (
@@ -123,7 +125,7 @@ export default function Aquarium() {
 							{tankCards.map((Card, index) => (
 								<>
 									{index === activeTab ? (
-										<Card key={index} />
+										<Card key={index} id={id} />
 									) : null}
 								</>
 							))}
