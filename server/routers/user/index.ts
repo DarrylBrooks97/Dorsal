@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { prisma } from '@clients/prisma';
 import { createRouter } from '../../createRouter';
-import { resolve } from 'path';
 
 export const userRouter = createRouter()
 	.query('fish', {
@@ -108,8 +107,22 @@ export const userRouter = createRouter()
 					id: input.id,
 				},
 			});
+			const fish = await prisma.fish.findMany({
+				where: {
+					tankId: input.id,
+				},
+			});
+
+			const plants = await prisma.plant.findMany({
+				where: {
+					tankId: input.id,
+				},
+			});
+
 			return {
 				tank,
+				fish,
+				plants,
 			};
 		},
 	})
