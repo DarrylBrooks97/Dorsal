@@ -20,7 +20,7 @@ import {
 
 const MotionStack = motion<StackProps>(Stack);
 
-export default function TankOverviewCard({ id }: { id: string }) {
+export default function TankOverviewCard({ id }: { id: string }): JSX.Element {
 	const { data } = trpc.useQuery(['user.tanks.byId', { id: id as string }]);
 
 	return (

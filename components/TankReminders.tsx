@@ -15,10 +15,10 @@ import {
 const MotionBox = motion<BoxProps>(Box);
 const MotionStack = motion<StackProps>(Stack);
 
-export default function Remainders({ id }: { id: string }) {
+export default function Remainders({ id }: { id: string }): JSX.Element {
 	const { data } = trpc.useQuery(['user.tanks.byId', { id: id as string }]);
 
-	if (typeof id !== 'string') return;
+	if (typeof id !== 'string') return <></>;
 
 	// todo: Replace with actual remainder stuff
 	return (
