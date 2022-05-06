@@ -23,7 +23,7 @@ export default function Remainders({ id }: { id: string }): JSX.Element {
 	// todo: Replace with actual remainder stuff
 	return (
 		<MotionStack textAlign="left" spacing={3} shouldWrapChildren>
-			{data ? (
+			{data?.fish.length !== 0 ? (
 				[1, 2, 3].map((i, idx) => (
 					<MotionBox
 						key={idx}

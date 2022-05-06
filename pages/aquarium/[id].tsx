@@ -49,18 +49,17 @@ export default function Aquarium() {
 	if (typeof id !== 'string') return;
 
 	return (
-		<Box w="100vw" h="full">
+		<Box w="100vw" p="3" h="full">
 			{data ? (
 				<Stack
 					align="center"
 					h="full"
-					w="100vw"
 					mt="6"
 					spacing={6}
 					shouldWrapChildren
 				>
 					<Box
-						w="378px"
+						w="calc(100vw - 3rem)"
 						h="274px"
 						pos="relative"
 						overflow="hidden"

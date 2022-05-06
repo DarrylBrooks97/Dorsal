@@ -49,9 +49,9 @@ export default function Home() {
 	}, [pos]);
 
 	return (
-		<Box w="full" h="full" p="6" bg="black">
+		<Stack w="full" h="100vh" p="6" spacing={5} shouldWrapChildren>
 			<AddButton />
-			<Stack w="full" h="full" mb="3">
+			<Stack w="full" mb="3">
 				<HStack
 					spacing="4"
 					w="full"
@@ -95,7 +95,7 @@ export default function Home() {
 					))}
 				</HStack>
 			</Stack>
-			<Center h="full">
+			<Center>
 				<HStack
 					ref={cardRef}
 					overflow="scroll"
@@ -124,6 +124,6 @@ export default function Home() {
 					))}
 				</HStack>
 			</Center>
-		</Box>
+		</Stack>
 	);
 }
