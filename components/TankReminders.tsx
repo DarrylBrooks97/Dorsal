@@ -93,7 +93,7 @@ export default function Remainders({ id }: { id: string }): JSX.Element {
 					</MotionBox>
 				))
 			) : (
-				<></>
+				<Text color="white">No Reminders 🤷🏾</Text>
 			)}
 		</MotionStack>
 	);
