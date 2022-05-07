@@ -62,6 +62,11 @@ export default function Aquarium() {
 
 	const updateTank = async () => {
 		if (tankName.length === 0) return;
+		if (data?.tank?.name === tankName) {
+			setEditing(false);
+			return;
+		}
+
 		adder.mutate(
 			{ id, name: tankName },
 			{
@@ -128,6 +133,7 @@ export default function Aquarium() {
 									textAlign="center"
 									variant="flushed"
 									placeholder={data.tank?.name}
+									value={tankName}
 									onChange={(e) =>
 										setTankName(e.target.value)
 									}
