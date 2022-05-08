@@ -1,8 +1,10 @@
 import Image from 'next/image';
+import Error from 'next/error';
 import Spinner from '@components/Spinner';
 import TankRemindersCard from '@components/TankReminders';
 import TankOverviewCard from '@components/TankOverviewCard';
 import { trpc } from '@utils/trpc';
+import { AiOutlineCamera } from 'react-icons/ai';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
@@ -19,7 +21,6 @@ import {
 	Stack,
 	Text,
 } from '@chakra-ui/react';
-import Error from 'next/error';
 
 const MotionBox = motion<BoxProps>(Box);
 
@@ -51,6 +52,9 @@ export default function Aquarium() {
 		onSuccess: () => {
 			invalidate.invalidateQueries(['user.tanks.byId']);
 		},
+		onError: (error: any) => {
+			console.error({ error });
+		},
 	});
 	const [activeTab, setActiveTab] = useState(0);
 	const [editing, setEditing] = useState(false);
@@ -61,8 +65,7 @@ export default function Aquarium() {
 	if (typeof id !== 'string') return;
 
 	const updateTank = async () => {
-		if (tankName.length === 0) return;
-		if (data?.tank?.name === tankName) {
+		if (tankName.length === 0 || data?.tank?.name === tankName) {
 			setEditing(false);
 			return;
 		}
@@ -103,6 +106,74 @@ export default function Aquarium() {
 							layout="fill"
 							alt="tank image"
 						/>
+						{editing ? (
+							<Box
+								as="label"
+								pos="absolute"
+								top="50%"
+								left="50%"
+								transform="translate(-50%, -50%)"
+								display="relative"
+							>
+								<Input
+									type="file"
+									accept="image/png,image/jpeg"
+									display="none"
+									onChange={(e: any) => {
+										try {
+											const file = e.target.files[0];
+											console.log('before');
+											if (file) {
+												const reader = new FileReader();
+												reader.readAsDataURL(file);
+												reader.onload = (e) => {
+													console.log('hellop');
+													const data = e.target
+														?.result as string;
+
+													adder.mutate(
+														{ id, image: data },
+														{
+															onSuccess: () => {
+																setEditing(
+																	false
+																);
+																console.log(
+																	'success'
+																);
+															},
+															onError: (
+																error: any
+															) => {
+																throw new Error(
+																	error
+																);
+															},
+														}
+													);
+												};
+											} else {
+												console.log('no file');
+											}
+										} catch (e) {
+											console.log(e);
+										}
+									}}
+								/>
+								<AiOutlineCamera
+									color="white"
+									cursor="pointer"
+									style={{
+										position: 'absolute',
+										top: '50%',
+										left: '50%',
+										transform: 'translate(-50%, -50%)',
+										width: '40px',
+										height: '40px',
+									}}
+								/>
+							</Box>
+						) : null}
 					</Box>
 					<HStack>
 						{!editing ? (
@@ -138,18 +209,15 @@ export default function Aquarium() {
 										setTankName(e.target.value)
 									}
 								/>
-								<InputRightElement
-									onClick={updateTank}
-									children={
-										<CheckIcon
-											color="white"
-											style={{
-												width: 20,
-												height: 20,
-											}}
-										/>
-									}
-								/>
+								<InputRightElement onClick={updateTank}>
+									<CheckIcon
+										color="white"
+										style={{
+											width: 20,
+											height: 20,
+										}}
+									/>
+								</InputRightElement>
 							</InputGroup>
 						)}
 					</HStack>

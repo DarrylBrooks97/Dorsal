@@ -130,6 +130,7 @@ export const userRouter = createRouter()
 		input: z.object({
 			id: z.string().cuid(),
 			user_id: z.string().cuid().optional(),
+			image: z.string(),
 			name: z.string().min(1).max(255),
 			type: z.string().min(1).max(255),
 			pH: z.number(),
@@ -197,6 +198,7 @@ export const userRouter = createRouter()
 			name: z.string().min(1).max(255).optional(),
 			type: z.string().min(1).max(255).optional(),
 			pH: z.number().optional(),
+			image: z.string().optional(),
 			nirate: z.number().optional(),
 			hardness: z.number().optional(),
 			Fish: z

@@ -101,6 +101,7 @@ model Tank {
   user       User?    @relation(fields: [user_id], references: [id], onDelete: Cascade)
   type       String   @db.VarChar(255)
   name       String   @db.VarChar(255)
+  image      String   @db.Text
   pH         Decimal  @db.Decimal(10, 0)
   nirate     Decimal  @db.Decimal(10, 0)
   hardness   Decimal  @db.Decimal(10, 0)

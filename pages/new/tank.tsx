@@ -43,6 +43,7 @@ export default function NewTank() {
 			user_id: data?.userInfo.id as string,
 			type: formData.get('type') as string,
 			name: formData.get('name') as string,
+			image: 'https://images.unsplash.com/photo-1617994679330-2883951d0073?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80',
 			hardness: Number(formData.get('hardness')),
 			nirate: Number(formData.get('nirate')),
 			pH: Number(formData.get('pH')),
