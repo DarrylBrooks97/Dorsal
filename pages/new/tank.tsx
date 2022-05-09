@@ -1,8 +1,9 @@
+import cuid from 'cuid';
 import Image from 'next/image';
+import { trpc } from '@utils/trpc';
 import { useRouter } from 'next/router';
 import { FormEvent } from 'react';
 import { useSession } from 'next-auth/react';
-import cuid from 'cuid';
 import {
 	Box,
 	Button,
@@ -16,7 +17,6 @@ import {
 	Select,
 	Stack,
 } from '@chakra-ui/react';
-import { trpc } from '@utils/trpc';
 
 export default function NewTank() {
 	const route = useRouter();

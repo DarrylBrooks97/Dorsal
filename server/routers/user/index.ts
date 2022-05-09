@@ -130,7 +130,7 @@ export const userRouter = createRouter()
 		input: z.object({
 			id: z.string().cuid(),
 			user_id: z.string().cuid().optional(),
-			image: z.string(),
+			image: z.string().optional(),
 			name: z.string().min(1).max(255),
 			type: z.string().min(1).max(255),
 			pH: z.number(),
@@ -185,6 +185,7 @@ export const userRouter = createRouter()
 				tank: await prisma.tank.create({
 					data: {
 						...input,
+						image: input.image || '',
 						created_at: new Date(),
 						updated_at: new Date(),
 					},
@@ -223,6 +224,7 @@ export const userRouter = createRouter()
 				},
 				data: {
 					...input,
+					image: input.image || '',
 					updated_at: new Date(),
 					maintained_at: new Date(),
 					Fish: {

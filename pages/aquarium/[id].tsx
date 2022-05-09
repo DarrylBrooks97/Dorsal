@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Error from 'next/error';
 import Spinner from '@components/Spinner';
+import Compressor from 'compressorjs';
 import TankRemindersCard from '@components/TankReminders';
 import TankOverviewCard from '@components/TankOverviewCard';
 import { trpc } from '@utils/trpc';
@@ -122,38 +123,59 @@ export default function Aquarium() {
 									onChange={(e: any) => {
 										try {
 											const file = e.target.files[0];
-											console.log('before');
-											if (file) {
-												const reader = new FileReader();
-												reader.readAsDataURL(file);
-												reader.onload = (e) => {
-													console.log('hellop');
-													const data = e.target
-														?.result as string;
 
-													adder.mutate(
-														{ id, image: data },
-														{
-															onSuccess: () => {
-																setEditing(
-																	false
-																);
-																console.log(
-																	'success'
-																);
-															},
-															onError: (
-																error: any
-															) => {
-																throw new Error(
-																	error
-																);
-															},
-														}
-													);
-												};
+											if (file) {
+												new Compressor(file, {
+													quality: 0.2,
+													success: async (
+														result: any
+													) => {
+														const reader =
+															new FileReader();
+														reader.readAsDataURL(
+															result
+														);
+
+														reader.onload = (e) => {
+															const image: string =
+																e.target
+																	?.result as string;
+															console.log(
+																image.length
+															);
+
+															adder.mutate(
+																{
+																	id,
+																	image,
+																},
+																{
+																	onSuccess:
+																		() => {
+																			setEditing(
+																				false
+																			);
+																			console.log(
+																				'success'
+																			);
+																		},
+																	onError: (
+																		error: any
+																	) => {
+																		throw new Error(
+																			error
+																		);
+																	},
+																}
+															);
+														};
+													},
+													error: (error: any) => {
+														console.log(error);
+													},
+												});
 											} else {
-												console.log('no file');
+												setEditing(false);
 											}
 										} catch (e) {
 											console.log(e);
