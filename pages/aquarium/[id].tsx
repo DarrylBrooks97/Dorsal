@@ -49,14 +49,6 @@ const tankCards = [
 
 export default function Aquarium() {
 	const invalidate = trpc.useContext();
-	const adder = trpc.useMutation(['user.updateTank'], {
-		onSuccess: () => {
-			invalidate.invalidateQueries(['user.tanks.byId']);
-		},
-		onError: (error: any) => {
-			console.error({ error });
-		},
-	});
 	const [activeTab, setActiveTab] = useState(0);
 	const [editing, setEditing] = useState(false);
 	const [tankName, setTankName] = useState('');
@@ -65,6 +57,14 @@ export default function Aquarium() {
 	);
 	const { id } = useRouter().query;
 	const { data } = trpc.useQuery(['user.tanks.byId', { id: id as string }]);
+	const adder = trpc.useMutation(['user.updateTank'], {
+		onSuccess: () => {
+			invalidate.invalidateQueries(['user.tanks.byId']);
+		},
+		onError: (error: any) => {
+			console.error({ error });
+		},
+	});
 
 	if (typeof id !== 'string') return;
 
@@ -143,21 +143,6 @@ export default function Aquarium() {
 																image.length
 															);
 															setTankImage(image);
-															// adder.mutate(
-															// 	{
-															// 		id,
-															// 		image,
-															// 	},
-															// 	{
-															// 		onError: (
-															// 			error: any
-															// 		) => {
-															// 			throw new Error(
-															// 				error
-															// 			);
-															// 		},
-															// 	}
-															// );
 														};
 													},
 													error: (error: any) => {
@@ -218,7 +203,10 @@ export default function Aquarium() {
 										setTankName(e.target.value)
 									}
 								/>
-								<InputRightElement mr="19" onClick={updateTank}>
+								<InputRightElement
+									mr="10%"
+									onClick={updateTank}
+								>
 									<CheckIcon
 										color="green"
 										style={{
@@ -228,7 +216,13 @@ export default function Aquarium() {
 									/>
 								</InputRightElement>
 								<InputRightElement
-									onClick={() => setEditing(false)}
+									onClick={() => {
+										setTankName(data.tank?.name as string);
+										setTankImage(
+											data.tank?.image as string
+										);
+										setEditing(false);
+									}}
 								>
 									<Cross1Icon
 										color="red"
