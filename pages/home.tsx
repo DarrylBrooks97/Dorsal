@@ -95,35 +95,32 @@ export default function Home() {
 					))}
 				</HStack>
 			</Stack>
-			<Center>
-				<HStack
-					ref={cardRef}
-					overflow="scroll"
-					spacing={50}
-					alignItems="start"
-					overflowX="scroll"
-					scrollSnapType="x mandatory"
-					shouldWrapChildren
-					css={{
-						'::-webkit-scrollbar': {
-							display: 'none',
-						},
-					}}
-				>
-					{componentCards.map((Card, idx) => (
-						// @ts-ignore
-						<Card
-							onEnterViewport={() => {
-								if (pos === idx) setNavClicked(false);
-								setPos(navClicked ? pos : idx);
-							}}
-							key={idx}
-							heading={headerOptions[idx].name}
-							subHeading={headerOptions[idx].subHeading}
-						/>
-					))}
-				</HStack>
-			</Center>
+			<HStack
+				ref={cardRef}
+				overflow="scroll"
+				spacing={50}
+				alignItems="start"
+				scrollSnapType="x mandatory"
+				shouldWrapChildren
+				css={{
+					'::-webkit-scrollbar': {
+						display: 'none',
+					},
+				}}
+			>
+				{componentCards.map((Card, idx) => (
+					// @ts-ignore
+					<Card
+						onEnterViewport={() => {
+							if (pos === idx) setNavClicked(false);
+							setPos(navClicked ? pos : idx);
+						}}
+						key={idx}
+						heading={headerOptions[idx].name}
+						subHeading={headerOptions[idx].subHeading}
+					/>
+				))}
+			</HStack>
 		</Stack>
 	);
 }
