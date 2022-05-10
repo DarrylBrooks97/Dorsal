@@ -224,7 +224,6 @@ export const userRouter = createRouter()
 				},
 				data: {
 					...input,
-					image: input.image || '',
 					updated_at: new Date(),
 					maintained_at: new Date(),
 					Fish: {

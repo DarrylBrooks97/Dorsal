@@ -9,7 +9,7 @@ import { AiOutlineCamera } from 'react-icons/ai';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import { CheckIcon, Pencil1Icon } from '@radix-ui/react-icons';
+import { CheckIcon, Cross1Icon, Pencil1Icon } from '@radix-ui/react-icons';
 import {
 	Box,
 	BoxProps,
@@ -60,6 +60,9 @@ export default function Aquarium() {
 	const [activeTab, setActiveTab] = useState(0);
 	const [editing, setEditing] = useState(false);
 	const [tankName, setTankName] = useState('');
+	const [tankImage, setTankImage] = useState(
+		'https://images.unsplash.com/photo-1619611384968-e45fbd60bc5c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1074&q=80'
+	);
 	const { id } = useRouter().query;
 	const { data } = trpc.useQuery(['user.tanks.byId', { id: id as string }]);
 
@@ -72,7 +75,7 @@ export default function Aquarium() {
 		}
 
 		adder.mutate(
-			{ id, name: tankName },
+			{ id, name: tankName, image: tankImage },
 			{
 				onSuccess: () => {
 					setEditing(false);
@@ -87,7 +90,7 @@ export default function Aquarium() {
 
 	return (
 		<Box w="100vw" p="3" h="full">
-			{data ? (
+			{data?.tank ? (
 				<Stack
 					align="center"
 					h="full"
@@ -102,11 +105,7 @@ export default function Aquarium() {
 						overflow="hidden"
 						borderRadius="15px"
 					>
-						<Image
-							src="https://images.unsplash.com/photo-1619611384968-e45fbd60bc5c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1074&q=80"
-							layout="fill"
-							alt="tank image"
-						/>
+						<Image src={tankImage} layout="fill" alt="tank image" />
 						{editing ? (
 							<Box
 								as="label"
@@ -143,31 +142,22 @@ export default function Aquarium() {
 															console.log(
 																image.length
 															);
-
-															adder.mutate(
-																{
-																	id,
-																	image,
-																},
-																{
-																	onSuccess:
-																		() => {
-																			setEditing(
-																				false
-																			);
-																			console.log(
-																				'success'
-																			);
-																		},
-																	onError: (
-																		error: any
-																	) => {
-																		throw new Error(
-																			error
-																		);
-																	},
-																}
-															);
+															setTankImage(image);
+															// adder.mutate(
+															// 	{
+															// 		id,
+															// 		image,
+															// 	},
+															// 	{
+															// 		onError: (
+															// 			error: any
+															// 		) => {
+															// 			throw new Error(
+															// 				error
+															// 			);
+															// 		},
+															// 	}
+															// );
 														};
 													},
 													error: (error: any) => {
@@ -200,10 +190,7 @@ export default function Aquarium() {
 					<HStack>
 						{!editing ? (
 							<>
-								<Heading
-									color="white"
-									onClick={() => console.log('editing...')}
-								>
+								<Heading color="white">
 									{data.tank?.name}
 								</Heading>
 								<Pencil1Icon
@@ -231,9 +218,20 @@ export default function Aquarium() {
 										setTankName(e.target.value)
 									}
 								/>
-								<InputRightElement onClick={updateTank}>
+								<InputRightElement mr="19" onClick={updateTank}>
 									<CheckIcon
-										color="white"
+										color="green"
+										style={{
+											width: 30,
+											height: 30,
+										}}
+									/>
+								</InputRightElement>
+								<InputRightElement
+									onClick={() => setEditing(false)}
+								>
+									<Cross1Icon
+										color="red"
 										style={{
 											width: 20,
 											height: 20,
