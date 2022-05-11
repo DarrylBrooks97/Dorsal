@@ -26,6 +26,7 @@ import {
 	GridItem,
 	Grid,
 } from '@chakra-ui/react';
+import { useSession } from 'next-auth/react';
 const tempPlants: Partial<Plant>[] = [
 	{
 		id: '1',
@@ -72,7 +73,9 @@ const tempPlants: Partial<Plant>[] = [
 ];
 export default function AddPlant() {
 	const { data } = trpc.useQuery(['user.tanks']);
+	const { data: plantsData } = trpc.useQuery(['general.plants']);
 	const [search, setSearch] = useState('');
+	const [viewedPlant, setViewedPlant] = useState<Partial<Plant> | null>(null);
 	const [selectedPlants, setSelectedPlants] = useState<Plant[] | null>(null);
 	const { isOpen: showPlantSelection, onToggle: toggleShowPlantSelection } =
 		useDisclosure();
@@ -99,7 +102,7 @@ export default function AddPlant() {
 					Aquarium Component
 				</Center>
 			) : (
-				<Box onClick={() => toggleShowPlantSelection()}>
+				<Box>
 					<Stack w="full" h="100vh" p="6">
 						<HStack
 							bg="rgba(0,0,0,0.8)"
@@ -123,7 +126,7 @@ export default function AddPlant() {
 							</Button>
 						</HStack>
 						<Stack spacing={30}>
-							{[0, 1, 2, 3, 4, 5, 6].map((i) => (
+							{plantsData?.plants.map((plant, i) => (
 								<HStack
 									key={i}
 									rounded="15px"
@@ -132,13 +135,18 @@ export default function AddPlant() {
 									w="calc(100vw - 3rem)"
 									h="100px"
 									pos="relative"
+									onClick={() => {
+										toggleShowPlantSelection();
+										// setViewedPlant(plant);
+									}}
 								>
 									<Image
 										priority
 										width="100%"
 										height="100%"
 										layout="fixed"
-										src="https://images.unsplash.com/photo-1567331711402-509c12c41959?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=773&q=80"
+										src={plant.image_url ?? ''}
+										alt="plant photo"
 									/>
 									<Stack
 										h="full"
@@ -150,13 +158,13 @@ export default function AddPlant() {
 											color="white"
 											textAlign="center"
 										>
-											Bamboo
+											{plant.name}
 										</Heading>
 										<Text color="gray.300" fontSize="sm">
 											Type: Semi Aquatic
 										</Text>
 										<Text color="gray.300" fontSize="sm">
-											Species: Poales
+											Species: {plant.species}
 										</Text>
 									</Stack>
 									<Center

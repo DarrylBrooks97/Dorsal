@@ -280,8 +280,18 @@ export const userRouter = createRouter()
 		},
 	})
 	.query('plants', {
-		async resolve() {
-			const plants = await prisma.plant.findMany();
+		input: z.object({
+			id: z.string().cuid(),
+		}),
+		async resolve({ input }) {
+			const plants = await prisma.user.findUnique({
+				where: {
+					id: input.id,
+				},
+				select: {
+					plants: true,
+				},
+			});
 			return {
 				plants,
 			};
