@@ -1,7 +1,8 @@
 import Image from 'next/image';
-import { useState } from 'react';
+import { Plant } from '@prisma/client';
 import { trpc } from '@utils/trpc';
-import { MdKeyboardArrowRight } from 'react-icons/md';
+import { useState } from 'react';
+import { AiOutlinePlus } from 'react-icons/ai';
 import {
 	Button,
 	Center,
@@ -19,25 +20,85 @@ import {
 	DrawerCloseButton,
 	DrawerFooter,
 	Select,
+	Box,
+	ButtonGroup,
+	GridItem,
+	Grid,
 } from '@chakra-ui/react';
-
+const tempPlants: Partial<Plant>[] = [
+	{
+		id: '1',
+		name: 'Plant 1',
+		image_url:
+			'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1373&q=80',
+		maintained_at: new Date(),
+	},
+	{
+		id: '2',
+		name: 'Plant 2',
+		image_url:
+			'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1373&q=80',
+		maintained_at: new Date(),
+	},
+	{
+		id: '3',
+		name: 'Plant 3',
+		image_url:
+			'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1373&q=80',
+		maintained_at: new Date(),
+	},
+	{
+		id: '4',
+		name: 'Plant 4',
+		image_url:
+			'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1373&q=80',
+		maintained_at: new Date(),
+	},
+	{
+		id: '5',
+		name: 'Plant 5',
+		image_url:
+			'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1373&q=80',
+		maintained_at: new Date(),
+	},
+	{
+		id: '6',
+		name: 'Plant 6',
+		image_url:
+			'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1373&q=80',
+		maintained_at: new Date(),
+	},
+];
 export default function AddPlant() {
 	const { data } = trpc.useQuery(['user.tanks']);
 	const [search, setSearch] = useState('');
-	const { isOpen: showPlantSelection, onToggle: togglePlantComponent } =
+	const [selectedPlants, setSelectedPlants] = useState<Plant[] | null>(null);
+	const { isOpen: showPlantSelection, onToggle: toggleShowPlantSelection } =
 		useDisclosure();
 	const {
 		isOpen: filterIsOpen,
 		onClose: filterOnClose,
 		onToggle: toggleFilter,
 	} = useDisclosure();
+	const {
+		isOpen: pickedIsOpen,
+		onClose: pickerOnClose,
+		onToggle: togglePicker,
+	} = useDisclosure();
 
 	return (
 		<>
 			{showPlantSelection ? (
-				<Center>Aquarium Component</Center>
+				<Center
+					onClick={() => toggleShowPlantSelection()}
+					bg="gray.300"
+					w="calc(100vw - 3rem)"
+					h="300px"
+				>
+					Aquarium Component
+				</Center>
 			) : (
-				<>
+				<Box onClick={() => toggleShowPlantSelection()}>
 					<Stack w="full" h="100vh" p="6">
 						<HStack
 							bg="rgba(0,0,0,0.8)"
@@ -70,7 +131,6 @@ export default function AddPlant() {
 									w="calc(100vw - 3rem)"
 									h="100px"
 									pos="relative"
-									onClick={() => {}}
 								>
 									<Image
 										width="100%"
@@ -106,7 +166,10 @@ export default function AddPlant() {
 										transform="translateY(50%)"
 										color="white"
 									>
-										<MdKeyboardArrowRight color="white" />
+										<AiOutlinePlus
+											color="white"
+											onClick={() => togglePicker()}
+										/>
 									</Center>
 								</HStack>
 							))}
@@ -150,7 +213,87 @@ export default function AddPlant() {
 							</DrawerFooter>
 						</DrawerContent>
 					</Drawer>
-				</>
+					<Drawer
+						isOpen={true}
+						onClose={pickerOnClose}
+						placement="right"
+					>
+						<DrawerOverlay />
+						<DrawerContent>
+							<DrawerCloseButton />
+							<DrawerHeader>
+								<Heading>Adder</Heading>
+							</DrawerHeader>
+
+							<DrawerBody>
+								<Stack spacing={5} shouldWrapChildren>
+									<Stack>
+										<Text>Tank</Text>
+										<Select>
+											{data?.tanks.map((tank, idx) => (
+												<option
+													key={idx}
+													value={tank.id}
+												>
+													{tank.name}
+												</option>
+											))}
+										</Select>
+									</Stack>
+									<Stack spacing="2" shouldWrapChildren>
+										<Text>Selected Plants</Text>
+										<Grid
+											templateColumns="repeat(2, 1fr)"
+											gap="5"
+										>
+											{tempPlants?.map((plant, idx) => (
+												<GridItem
+													borderRadius="15px"
+													overflow="hidden"
+													pos="relative"
+													w="full"
+													h="150px"
+													key={idx}
+												>
+													<Image
+														priority
+														layout="fill"
+														src={
+															plant.image_url ??
+															''
+														}
+													/>
+													<Text
+														textAlign="center"
+														zIndex="4"
+													>
+														{plant.name}
+													</Text>
+												</GridItem>
+											))}
+										</Grid>
+									</Stack>
+								</Stack>
+							</DrawerBody>
+							<DrawerFooter>
+								<ButtonGroup>
+									<Button
+										colorScheme="green"
+										onClick={() => {}}
+									>
+										Add
+									</Button>
+									<Button
+										variant="outline"
+										onClick={pickerOnClose}
+									>
+										<Text>Back</Text>
+									</Button>
+								</ButtonGroup>
+							</DrawerFooter>
+						</DrawerContent>
+					</Drawer>
+				</Box>
 			)}
 		</>
 	);
