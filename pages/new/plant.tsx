@@ -4,6 +4,7 @@ import { Plant } from '@prisma/client';
 import { trpc } from '@utils/trpc';
 import { useState } from 'react';
 import { GrNext } from 'react-icons/gr';
+import { Cross1Icon } from '@radix-ui/react-icons';
 import {
 	Button,
 	Center,
@@ -26,7 +27,7 @@ import {
 	GridItem,
 	Grid,
 } from '@chakra-ui/react';
-import { useSession } from 'next-auth/react';
+
 const tempPlants: Partial<Plant>[] = [
 	{
 		id: '1',
@@ -75,8 +76,8 @@ export default function AddPlant() {
 	const { data } = trpc.useQuery(['user.tanks']);
 	const { data: plantsData } = trpc.useQuery(['general.plants']);
 	const [search, setSearch] = useState('');
-	const [viewedPlant, setViewedPlant] = useState<Partial<Plant> | null>(null);
-	const [selectedPlants, setSelectedPlants] = useState<Plant[] | null>(null);
+	const [viewedPlant, setViewedPlant] = useState<Partial<Plant>>();
+	const [selectedPlants, setSelectedPlants] = useState<Plant[]>();
 	const { isOpen: showPlantSelection, onToggle: toggleShowPlantSelection } =
 		useDisclosure();
 	const {
@@ -93,36 +94,74 @@ export default function AddPlant() {
 	return (
 		<>
 			{showPlantSelection ? (
-				<Box h="100vh" w="full" p="6">
-					<Stack
-						onClick={() => toggleShowPlantSelection()}
-						w="calc(100vw - 3rem)"
+				<Box
+					h="100vh"
+					w="full"
+					p="6"
+					onClick={() => toggleShowPlantSelection()}
+				>
+					<Box
+						pos="relative"
+						w="full"
 						h="300px"
+						borderRadius="15px"
+						overflow="hidden"
+					>
+						<Image
+							src={
+								viewedPlant?.image_url ??
+								'https://images.unsplash.com/photo-1567331711402-509c12c41959?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=773&q=80'
+							}
+							layout="fill"
+						/>
+					</Box>
+					<Heading color="white" textAlign="center">
+						{viewedPlant?.name}
+					</Heading>
+					<Stack
+						w="calc(100vw - 3rem)"
 						alignContent="center"
 						justifyContent="center"
+						shouldWrapChildren
 					>
-						<Box
-							pos="relative"
-							w="full"
-							h="300px"
-							borderRadius="15px"
-							overflow="hidden"
-						>
-							<Image
-								src={
-									viewedPlant?.image_url ??
-									'https://images.unsplash.com/photo-1567331711402-509c12c41959?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=773&q=80'
-								}
-								layout="fill"
-							/>
-						</Box>
-						<Heading color="white" textAlign="center">
-							{viewedPlant?.name}
-						</Heading>
-						<Text color="gray.300" textAlign="center">
-							Species: {viewedPlant?.species}
-						</Text>
+						<HStack bg="gray" w="full" h="100px" rounded="15px">
+							<Box w="calc(100% / 3)">
+								<Text color="gray.300" textAlign="center">
+									Lighting
+								</Text>
+							</Box>
+							<Box w="calc(100% / 3)">
+								<Text color="gray.300" textAlign="center">
+									Soil
+								</Text>
+							</Box>
+							<Box w="calc(100%/ 3)">
+								<Text color="gray.300" textAlign="center">
+									Species
+								</Text>
+							</Box>
+						</HStack>
 					</Stack>
+					<Center
+						boxSize="50px"
+						pos="absolute"
+						bg="green"
+						rounded="full"
+						bottom="10"
+						right="5"
+						onClick={() => {
+							setSelectedPlants((prev: any) => [
+								...prev,
+								viewedPlant,
+							]);
+							togglePicker();
+						}}
+					>
+						<Cross1Icon
+							color="white"
+							style={{ transform: 'rotate(-45deg)' }}
+						/>
+					</Center>
 				</Box>
 			) : (
 				<Box>
