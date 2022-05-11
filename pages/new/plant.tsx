@@ -93,14 +93,37 @@ export default function AddPlant() {
 	return (
 		<>
 			{showPlantSelection ? (
-				<Center
-					onClick={() => toggleShowPlantSelection()}
-					bg="gray.300"
-					w="calc(100vw - 3rem)"
-					h="300px"
-				>
-					Aquarium Component
-				</Center>
+				<Box h="100vh" w="full" p="6">
+					<Stack
+						onClick={() => toggleShowPlantSelection()}
+						w="calc(100vw - 3rem)"
+						h="300px"
+						alignContent="center"
+						justifyContent="center"
+					>
+						<Box
+							pos="relative"
+							w="full"
+							h="300px"
+							borderRadius="15px"
+							overflow="hidden"
+						>
+							<Image
+								src={
+									viewedPlant?.image_url ??
+									'https://images.unsplash.com/photo-1567331711402-509c12c41959?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=773&q=80'
+								}
+								layout="fill"
+							/>
+						</Box>
+						<Heading color="white" textAlign="center">
+							{viewedPlant?.name}
+						</Heading>
+						<Text color="gray.300" textAlign="center">
+							Species: {viewedPlant?.species}
+						</Text>
+					</Stack>
+				</Box>
 			) : (
 				<Box>
 					<Stack w="full" h="100vh" p="6">
@@ -137,7 +160,7 @@ export default function AddPlant() {
 									pos="relative"
 									onClick={() => {
 										toggleShowPlantSelection();
-										// setViewedPlant(plant);
+										setViewedPlant(plant);
 									}}
 								>
 									<Image
@@ -157,6 +180,7 @@ export default function AddPlant() {
 											fontSize="24px"
 											color="white"
 											textAlign="center"
+											isTruncated
 										>
 											{plant.name}
 										</Heading>
