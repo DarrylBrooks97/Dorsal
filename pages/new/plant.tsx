@@ -1,8 +1,9 @@
 import Image from 'next/image';
+import { BsTrash } from 'react-icons/bs';
 import { Plant } from '@prisma/client';
 import { trpc } from '@utils/trpc';
 import { useState } from 'react';
-import { AiOutlinePlus } from 'react-icons/ai';
+import { GrNext } from 'react-icons/gr';
 import {
 	Button,
 	Center,
@@ -133,6 +134,7 @@ export default function AddPlant() {
 									pos="relative"
 								>
 									<Image
+										priority
 										width="100%"
 										height="100%"
 										layout="fixed"
@@ -166,10 +168,7 @@ export default function AddPlant() {
 										transform="translateY(50%)"
 										color="white"
 									>
-										<AiOutlinePlus
-											color="white"
-											onClick={() => togglePicker()}
-										/>
+										<GrNext color="white" />
 									</Center>
 								</HStack>
 							))}
@@ -214,7 +213,7 @@ export default function AddPlant() {
 						</DrawerContent>
 					</Drawer>
 					<Drawer
-						isOpen={true}
+						isOpen={pickedIsOpen}
 						onClose={pickerOnClose}
 						placement="right"
 					>
@@ -240,33 +239,44 @@ export default function AddPlant() {
 											))}
 										</Select>
 									</Stack>
-									<Stack spacing="2" shouldWrapChildren>
+									<Stack>
 										<Text>Selected Plants</Text>
 										<Grid
 											templateColumns="repeat(2, 1fr)"
 											gap="5"
 										>
 											{tempPlants?.map((plant, idx) => (
-												<GridItem
-													borderRadius="15px"
-													overflow="hidden"
-													pos="relative"
-													w="full"
-													h="150px"
-													key={idx}
-												>
-													<Image
-														priority
-														layout="fill"
-														src={
-															plant.image_url ??
-															''
-														}
-													/>
-													<Text
-														textAlign="center"
-														zIndex="4"
+												<GridItem key={idx}>
+													<Box
+														w="100%"
+														h="150px"
+														pos="relative"
+														borderRadius="15px"
 													>
+														<Image
+															priority
+															layout="fill"
+															src={
+																plant.image_url ??
+																''
+															}
+															style={{
+																borderRadius:
+																	'15px',
+															}}
+														/>
+														<Box
+															pos="absolute"
+															right="4"
+															bottom="4"
+														>
+															<BsTrash
+																color="red"
+																onClick={() => {}}
+															/>
+														</Box>
+													</Box>
+													<Text textAlign="center">
 														{plant.name}
 													</Text>
 												</GridItem>
