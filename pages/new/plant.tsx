@@ -28,56 +28,12 @@ import {
 	Grid,
 } from '@chakra-ui/react';
 
-const tempPlants: Partial<Plant>[] = [
-	{
-		id: '1',
-		name: 'Plant 1',
-		image_url:
-			'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1373&q=80',
-		maintained_at: new Date(),
-	},
-	{
-		id: '2',
-		name: 'Plant 2',
-		image_url:
-			'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1373&q=80',
-		maintained_at: new Date(),
-	},
-	{
-		id: '3',
-		name: 'Plant 3',
-		image_url:
-			'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1373&q=80',
-		maintained_at: new Date(),
-	},
-	{
-		id: '4',
-		name: 'Plant 4',
-		image_url:
-			'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1373&q=80',
-		maintained_at: new Date(),
-	},
-	{
-		id: '5',
-		name: 'Plant 5',
-		image_url:
-			'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1373&q=80',
-		maintained_at: new Date(),
-	},
-	{
-		id: '6',
-		name: 'Plant 6',
-		image_url:
-			'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1373&q=80',
-		maintained_at: new Date(),
-	},
-];
 export default function AddPlant() {
 	const { data } = trpc.useQuery(['user.tanks']);
 	const { data: plantsData } = trpc.useQuery(['general.plants']);
 	const [search, setSearch] = useState('');
-	const [viewedPlant, setViewedPlant] = useState<Partial<Plant>>();
-	const [selectedPlants, setSelectedPlants] = useState<Plant[]>();
+	const [viewedPlant, setViewedPlant] = useState<Plant>();
+	const [selectedPlants, setSelectedPlants] = useState<Plant[]>([]);
 	const { isOpen: showPlantSelection, onToggle: toggleShowPlantSelection } =
 		useDisclosure();
 	const {
@@ -316,42 +272,66 @@ export default function AddPlant() {
 											templateColumns="repeat(2, 1fr)"
 											gap="5"
 										>
-											{tempPlants?.map((plant, idx) => (
-												<GridItem key={idx}>
-													<Box
-														w="100%"
-														h="150px"
-														pos="relative"
-														borderRadius="15px"
-													>
-														<Image
-															priority
-															layout="fill"
-															src={
-																plant.image_url ??
-																''
-															}
-															style={{
-																borderRadius:
-																	'15px',
-															}}
-														/>
+											{selectedPlants?.map(
+												(plant, idx) => (
+													<GridItem key={idx}>
 														<Box
-															pos="absolute"
-															right="4"
-															bottom="4"
+															w="100%"
+															h="150px"
+															pos="relative"
+															borderRadius="15px"
 														>
-															<BsTrash
-																color="red"
-																onClick={() => {}}
+															<Image
+																priority
+																layout="fill"
+																src={
+																	plant.image_url ??
+																	''
+																}
+																style={{
+																	borderRadius:
+																		'15px',
+																}}
 															/>
+															<Box
+																pos="absolute"
+																right="4"
+																bottom="4"
+															>
+																<BsTrash
+																	color="red"
+																	onClick={() => {
+																		setSelectedPlants(
+																			selectedPlants.filter(
+																				(
+																					old
+																				) =>
+																					old.id !==
+																					plant.id
+																			)
+																		);
+																	}}
+																/>
+															</Box>
 														</Box>
-													</Box>
-													<Text textAlign="center">
-														{plant.name}
-													</Text>
-												</GridItem>
-											))}
+														<Text textAlign="center">
+															{plant.name}
+															{
+																selectedPlants.map(
+																	(x) => {
+																		if (
+																			x.id ===
+																			plant.id
+																		)
+																			return x;
+																	}
+																).length
+															}
+															x
+														</Text>
+													</GridItem>
+												)
+											)}
 										</Grid>
 									</Stack>
 								</Stack>
