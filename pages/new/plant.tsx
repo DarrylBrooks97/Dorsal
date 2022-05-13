@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import PlantView from '@components/PlantView';
 import { Plant } from '@prisma/client';
 import { trpc } from '@utils/trpc';
 import { useState } from 'react';
@@ -22,7 +23,6 @@ import {
 	Select,
 	Box,
 } from '@chakra-ui/react';
-import PlantView from '@components/PlantView';
 
 export interface SelectedPlant {
 	plant: Plant;

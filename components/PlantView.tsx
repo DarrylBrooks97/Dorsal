@@ -47,25 +47,6 @@ export default function PlantView({
 	pickerOnClose,
 }: PlantViewProps) {
 	const { data } = trpc.useQuery(['user.tanks']);
-	const [amount, setAmount] = useState(1);
-	const [updatedData, setUpdatedData] = useState<SelectedPlant[]>([]);
-
-	const updateSelectedPlants = () => {
-		setSelectedPlants(
-			selectedPlants.map((plant) => {
-				const exists = updatedData.find(
-					(p) => p.plant.id === plant.plant.id
-				);
-				if (exists) {
-					return {
-						plant: plant.plant,
-						quantity: exists.quantity,
-					};
-				}
-				return plant;
-			})
-		);
-	};
 
 	return (
 		<Box h="100vh" w="full" p="6">
@@ -131,7 +112,6 @@ export default function PlantView({
 
 					if (exisistingPlant) {
 						exisistingPlant.quantity += 1;
-						setAmount(exisistingPlant.quantity);
 					} else {
 						viewedPlant
 							? setSelectedPlants((prev: SelectedPlant[]) => [
@@ -150,10 +130,7 @@ export default function PlantView({
 			</Center>
 			<Drawer
 				isOpen={pickerIsOpen}
-				onClose={() => {
-					pickerOnClose();
-					updateSelectedPlants();
-				}}
+				onClose={pickerOnClose}
 				placement="right"
 			>
 				<DrawerOverlay />
@@ -177,118 +154,118 @@ export default function PlantView({
 							</Stack>
 							<Stack>
 								<Text>Selected Plants</Text>
-								<Grid templateColumns="repeat(2, 1fr)" gap="5">
-									{selectedPlants?.map(
-										(
-											{ plant, quantity }: SelectedPlant,
-											idx
-										) => (
-											<GridItem key={idx}>
+								{selectedPlants?.map(
+									(
+										{ plant, quantity }: SelectedPlant,
+										idx
+									) => (
+										<Box key={idx}>
+											<Box
+												w="100%"
+												h="250px"
+												pos="relative"
+												borderRadius="15px"
+											>
+												<Image
+													priority
+													layout="fill"
+													src={plant.image_url ?? ''}
+													style={{
+														borderRadius: '15px',
+													}}
+												/>
 												<Box
-													w="100%"
-													h="150px"
-													pos="relative"
-													borderRadius="15px"
+													pos="absolute"
+													right="4"
+													bottom="4"
 												>
-													<Image
-														priority
-														layout="fill"
-														src={
-															plant.image_url ??
-															''
-														}
-														style={{
-															borderRadius:
-																'15px',
-														}}
-													/>
-													<Box
-														pos="absolute"
-														right="4"
-														bottom="4"
-													>
-														<BsTrash
-															color="red"
-															onClick={() => {
-																setSelectedPlants(
-																	selectedPlants.filter(
-																		({
-																			plant: oldPlant,
-																		}: SelectedPlant) =>
-																			oldPlant.id !==
-																			plant.id
-																	)
-																);
-															}}
-														/>
-													</Box>
-												</Box>
-												<Text textAlign="center">
-													{plant.name}
-												</Text>
-												<HStack w="full">
-													<Button
-														colorScheme="red"
+													<BsTrash
+														color="red"
 														onClick={() => {
-															if (amount === 1) {
-																setSelectedPlants(
-																	selectedPlants.filter(
-																		({
-																			plant: oldPlant,
-																		}: SelectedPlant) =>
-																			oldPlant.id !==
-																			plant.id
-																	)
-																);
-																return;
-															}
-															setAmount(
-																(x) => x - 1
-															);
-															setUpdatedData(
-																updatedData.map(
+															setSelectedPlants(
+																selectedPlants.filter(
 																	({
-																		plant,
-																		quantity,
-																	}: SelectedPlant) => {
-																		return {
-																			plant,
-																			quantity:
-																				quantity -
-																				1,
-																		};
-																	}
+																		plant: oldPlant,
+																	}: SelectedPlant) =>
+																		oldPlant.id !==
+																		plant.id
 																)
-															);
-														}}
-													>
-														-
-													</Button>
-													<Input
-														w="60px"
-														value={amount}
-														onChange={(e) => {
-															setAmount(
-																Number(
-																	e.target
-																		.value
-																)
-															);
-
-															quantity = Number(
-																e.target.value
 															);
 														}}
 													/>
-													<Button
-														colorScheme="green"
-														onClick={() => {
-															setAmount(
-																(x) => x + 1
+												</Box>
+											</Box>
+											<Text textAlign="center">
+												{plant.name}
+											</Text>
+											<HStack w="full" justify="center">
+												<Button
+													colorScheme="red"
+													onClick={() => {
+														if (quantity === 1) {
+															setSelectedPlants(
+																selectedPlants.filter(
+																	({
+																		plant: oldPlant,
+																	}: SelectedPlant) =>
+																		oldPlant.id !==
+																		plant.id
+																)
 															);
-															const updatedPlant:
-																| SelectedPlant
-																| undefined = updatedData.find(
+															return;
+														}
+														setSelectedPlants(
+															selectedPlants.map(
+																({
+																	plant,
+																	quantity,
+																}: SelectedPlant) => {
+																	return {
+																		plant,
+																		quantity:
+																			quantity -
+																			1,
+																	};
+																}
+															)
+														);
+													}}
+												>
+													-
+												</Button>
+												<Input
+													w="60px"
+													value={
+														selectedPlants.find(
+															(x) =>
+																x.plant.id ===
+																plant.id
+														)?.quantity ?? 0
+													}
+													textAlign="center"
+													onChange={(e) => {
+														setSelectedPlants(
+															(p: any) =>
+																p.plant.id ===
+																plant.id
+																	? {
+																			...p,
+																			quantity:
+																				parseInt(
+																					e
+																						.target
+																						.value
+																				),
+																	  }
+																	: p
+														);
+													}}
+												/>
+												<Button
+													colorScheme="green"
+													onClick={() => {
+														const p =
+															selectedPlants.find(
 																({
 																	plant,
 																}: SelectedPlant) =>
@@ -296,42 +273,41 @@ export default function PlantView({
 																	plant
 															);
 
-															if (!updatedPlant) {
-																setUpdatedData([
-																	...updatedData,
-																	{
+														if (!p) {
+															setSelectedPlants([
+																...selectedPlants,
+																{
+																	plant,
+																	quantity:
+																		quantity +
+																		1,
+																},
+															]);
+														} else {
+															setSelectedPlants(
+																selectedPlants.map(
+																	({
 																		plant,
-																		quantity:
-																			quantity +
-																			1,
-																	},
-																]);
-															} else {
-																setUpdatedData(
-																	updatedData.map(
-																		({
+																		quantity,
+																	}: SelectedPlant) => {
+																		return {
 																			plant,
-																			quantity,
-																		}: SelectedPlant) => {
-																			return {
-																				plant,
-																				quantity:
-																					quantity +
-																					1,
-																			};
-																		}
-																	)
-																);
-															}
-														}}
-													>
-														+
-													</Button>
-												</HStack>
-											</GridItem>
-										)
-									)}
-								</Grid>
+																			quantity:
+																				quantity +
+																				1,
+																		};
+																	}
+																)
+															);
+														}
+													}}
+												>
+													+
+												</Button>
+											</HStack>
+										</Box>
+									)
+								)}
 							</Stack>
 						</Stack>
 					</DrawerBody>
