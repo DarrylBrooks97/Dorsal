@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { BsTrash } from 'react-icons/bs';
+import { BsArrowLeft, BsTrash } from 'react-icons/bs';
 import { Plant } from '@prisma/client';
 import { trpc } from '@utils/trpc';
 import { useState } from 'react';
@@ -26,14 +26,20 @@ import {
 	ButtonGroup,
 	GridItem,
 	Grid,
+	useNumberInput,
 } from '@chakra-ui/react';
+import PlantView from '@components/PlantView';
 
+export interface SelectedPlants {
+	plant: Plant;
+	quantity: number;
+}
 export default function AddPlant() {
 	const { data } = trpc.useQuery(['user.tanks']);
 	const { data: plantsData } = trpc.useQuery(['general.plants']);
 	const [search, setSearch] = useState('');
 	const [viewedPlant, setViewedPlant] = useState<Plant>();
-	const [selectedPlants, setSelectedPlants] = useState<Plant[]>([]);
+	const [selectedPlants, setSelectedPlants] = useState<SelectedPlants[]>([]);
 	const { isOpen: showPlantSelection, onToggle: toggleShowPlantSelection } =
 		useDisclosure();
 	const {
@@ -42,7 +48,7 @@ export default function AddPlant() {
 		onToggle: toggleFilter,
 	} = useDisclosure();
 	const {
-		isOpen: pickedIsOpen,
+		isOpen: pickerIsOpen,
 		onClose: pickerOnClose,
 		onToggle: togglePicker,
 	} = useDisclosure();
@@ -50,75 +56,17 @@ export default function AddPlant() {
 	return (
 		<>
 			{showPlantSelection ? (
-				<Box
-					h="100vh"
-					w="full"
-					p="6"
-					onClick={() => toggleShowPlantSelection()}
-				>
-					<Box
-						pos="relative"
-						w="full"
-						h="300px"
-						borderRadius="15px"
-						overflow="hidden"
-					>
-						<Image
-							src={
-								viewedPlant?.image_url ??
-								'https://images.unsplash.com/photo-1567331711402-509c12c41959?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=773&q=80'
-							}
-							layout="fill"
-						/>
-					</Box>
-					<Heading color="white" textAlign="center">
-						{viewedPlant?.name}
-					</Heading>
-					<Stack
-						w="calc(100vw - 3rem)"
-						alignContent="center"
-						justifyContent="center"
-						shouldWrapChildren
-					>
-						<HStack bg="gray" w="full" h="100px" rounded="15px">
-							<Box w="calc(100% / 3)">
-								<Text color="gray.300" textAlign="center">
-									Lighting
-								</Text>
-							</Box>
-							<Box w="calc(100% / 3)">
-								<Text color="gray.300" textAlign="center">
-									Soil
-								</Text>
-							</Box>
-							<Box w="calc(100%/ 3)">
-								<Text color="gray.300" textAlign="center">
-									Species
-								</Text>
-							</Box>
-						</HStack>
-					</Stack>
-					<Center
-						boxSize="50px"
-						pos="absolute"
-						bg="green"
-						rounded="full"
-						bottom="10"
-						right="5"
-						onClick={() => {
-							setSelectedPlants((prev: any) => [
-								...prev,
-								viewedPlant,
-							]);
-							togglePicker();
-						}}
-					>
-						<Cross1Icon
-							color="white"
-							style={{ transform: 'rotate(-45deg)' }}
-						/>
-					</Center>
-				</Box>
+				<PlantView
+					{...{
+						viewedPlant,
+						selectedPlants,
+						setSelectedPlants,
+						togglePicker,
+						pickerIsOpen,
+						toggleShowPlantSelection,
+						pickerOnClose,
+					}}
+				/>
 			) : (
 				<Box>
 					<Stack w="full" h="100vh" p="6">
@@ -154,8 +102,8 @@ export default function AddPlant() {
 									h="100px"
 									pos="relative"
 									onClick={() => {
-										toggleShowPlantSelection();
 										setViewedPlant(plant);
+										toggleShowPlantSelection();
 									}}
 								>
 									<Image
@@ -236,121 +184,6 @@ export default function AddPlant() {
 								>
 									<Text>Back</Text>
 								</Button>
-							</DrawerFooter>
-						</DrawerContent>
-					</Drawer>
-					<Drawer
-						isOpen={pickedIsOpen}
-						onClose={pickerOnClose}
-						placement="right"
-					>
-						<DrawerOverlay />
-						<DrawerContent>
-							<DrawerCloseButton />
-							<DrawerHeader>
-								<Heading>Adder</Heading>
-							</DrawerHeader>
-
-							<DrawerBody>
-								<Stack spacing={5} shouldWrapChildren>
-									<Stack>
-										<Text>Tank</Text>
-										<Select>
-											{data?.tanks.map((tank, idx) => (
-												<option
-													key={idx}
-													value={tank.id}
-												>
-													{tank.name}
-												</option>
-											))}
-										</Select>
-									</Stack>
-									<Stack>
-										<Text>Selected Plants</Text>
-										<Grid
-											templateColumns="repeat(2, 1fr)"
-											gap="5"
-										>
-											{selectedPlants?.map(
-												(plant, idx) => (
-													<GridItem key={idx}>
-														<Box
-															w="100%"
-															h="150px"
-															pos="relative"
-															borderRadius="15px"
-														>
-															<Image
-																priority
-																layout="fill"
-																src={
-																	plant.image_url ??
-																	''
-																}
-																style={{
-																	borderRadius:
-																		'15px',
-																}}
-															/>
-															<Box
-																pos="absolute"
-																right="4"
-																bottom="4"
-															>
-																<BsTrash
-																	color="red"
-																	onClick={() => {
-																		setSelectedPlants(
-																			selectedPlants.filter(
-																				(
-																					old
-																				) =>
-																					old.id !==
-																					plant.id
-																			)
-																		);
-																	}}
-																/>
-															</Box>
-														</Box>
-														<Text textAlign="center">
-															{plant.name}
-															{
-																selectedPlants.map(
-																	(x) => {
-																		if (
-																			x.id ===
-																			plant.id
-																		)
-																			return x;
-																	}
-																).length
-															}
-															x
-														</Text>
-													</GridItem>
-												)
-											)}
-										</Grid>
-									</Stack>
-								</Stack>
-							</DrawerBody>
-							<DrawerFooter>
-								<ButtonGroup>
-									<Button
-										colorScheme="green"
-										onClick={() => {}}
-									>
-										Add
-									</Button>
-									<Button
-										variant="outline"
-										onClick={pickerOnClose}
-									>
-										<Text>Back</Text>
-									</Button>
-								</ButtonGroup>
 							</DrawerFooter>
 						</DrawerContent>
 					</Drawer>
