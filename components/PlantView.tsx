@@ -3,7 +3,7 @@ import { trpc } from '@utils/trpc';
 import { Plant } from '@prisma/client';
 import { Dispatch, SetStateAction, useState } from 'react';
 import { Cross1Icon } from '@radix-ui/react-icons';
-import { SelectedPlants } from 'pages/new/plant';
+import { SelectedPlant } from 'pages/new/plant';
 import { BsArrowLeft, BsTrash } from 'react-icons/bs';
 import {
 	Box,
@@ -29,12 +29,12 @@ import {
 
 export interface PlantViewProps {
 	viewedPlant: Plant | undefined;
-	selectedPlants: SelectedPlants[];
-	setSelectedPlants: Dispatch<SetStateAction<SelectedPlants[]>>;
+	selectedPlants: SelectedPlant[];
 	pickerIsOpen: boolean;
 	togglePicker: () => void;
 	pickerOnClose: () => void;
 	toggleShowPlantSelection: () => void;
+	setSelectedPlants: Dispatch<SetStateAction<SelectedPlant[]>>;
 }
 
 export default function PlantView({
@@ -48,6 +48,24 @@ export default function PlantView({
 }: PlantViewProps) {
 	const { data } = trpc.useQuery(['user.tanks']);
 	const [amount, setAmount] = useState(1);
+	const [updatedData, setUpdatedData] = useState<SelectedPlant[]>([]);
+
+	const updateSelectedPlants = () => {
+		setSelectedPlants(
+			selectedPlants.map((plant) => {
+				const exists = updatedData.find(
+					(p) => p.plant.id === plant.plant.id
+				);
+				if (exists) {
+					return {
+						plant: plant.plant,
+						quantity: exists.quantity,
+					};
+				}
+				return plant;
+			})
+		);
+	};
 
 	return (
 		<Box h="100vh" w="full" p="6">
@@ -116,7 +134,7 @@ export default function PlantView({
 						setAmount(exisistingPlant.quantity);
 					} else {
 						viewedPlant
-							? setSelectedPlants((prev: SelectedPlants[]) => [
+							? setSelectedPlants((prev: SelectedPlant[]) => [
 									...prev,
 									{ plant: viewedPlant, quantity: 1 },
 							  ])
@@ -132,7 +150,10 @@ export default function PlantView({
 			</Center>
 			<Drawer
 				isOpen={pickerIsOpen}
-				onClose={pickerOnClose}
+				onClose={() => {
+					pickerOnClose();
+					updateSelectedPlants();
+				}}
 				placement="right"
 			>
 				<DrawerOverlay />
@@ -159,7 +180,7 @@ export default function PlantView({
 								<Grid templateColumns="repeat(2, 1fr)" gap="5">
 									{selectedPlants?.map(
 										(
-											{ plant, quantity }: SelectedPlants,
+											{ plant, quantity }: SelectedPlant,
 											idx
 										) => (
 											<GridItem key={idx}>
@@ -193,7 +214,7 @@ export default function PlantView({
 																	selectedPlants.filter(
 																		({
 																			plant: oldPlant,
-																		}: SelectedPlants) =>
+																		}: SelectedPlant) =>
 																			oldPlant.id !==
 																			plant.id
 																	)
@@ -214,7 +235,7 @@ export default function PlantView({
 																	selectedPlants.filter(
 																		({
 																			plant: oldPlant,
-																		}: SelectedPlants) =>
+																		}: SelectedPlant) =>
 																			oldPlant.id !==
 																			plant.id
 																	)
@@ -224,11 +245,27 @@ export default function PlantView({
 															setAmount(
 																(x) => x - 1
 															);
+															setUpdatedData(
+																updatedData.map(
+																	({
+																		plant,
+																		quantity,
+																	}: SelectedPlant) => {
+																		return {
+																			plant,
+																			quantity:
+																				quantity -
+																				1,
+																		};
+																	}
+																)
+															);
 														}}
 													>
 														-
 													</Button>
 													<Input
+														w="60px"
 														value={amount}
 														onChange={(e) => {
 															setAmount(
@@ -237,8 +274,11 @@ export default function PlantView({
 																		.value
 																)
 															);
+
+															quantity = Number(
+																e.target.value
+															);
 														}}
-														w="60px"
 													/>
 													<Button
 														colorScheme="green"
@@ -246,6 +286,43 @@ export default function PlantView({
 															setAmount(
 																(x) => x + 1
 															);
+															const updatedPlant:
+																| SelectedPlant
+																| undefined = updatedData.find(
+																({
+																	plant,
+																}: SelectedPlant) =>
+																	plant ===
+																	plant
+															);
+
+															if (!updatedPlant) {
+																setUpdatedData([
+																	...updatedData,
+																	{
+																		plant,
+																		quantity:
+																			quantity +
+																			1,
+																	},
+																]);
+															} else {
+																setUpdatedData(
+																	updatedData.map(
+																		({
+																			plant,
+																			quantity,
+																		}: SelectedPlant) => {
+																			return {
+																				plant,
+																				quantity:
+																					quantity +
+																					1,
+																			};
+																		}
+																	)
+																);
+															}
 														}}
 													>
 														+

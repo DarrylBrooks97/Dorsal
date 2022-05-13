@@ -1,10 +1,8 @@
 import Image from 'next/image';
-import { BsArrowLeft, BsTrash } from 'react-icons/bs';
 import { Plant } from '@prisma/client';
 import { trpc } from '@utils/trpc';
 import { useState } from 'react';
 import { GrNext } from 'react-icons/gr';
-import { Cross1Icon } from '@radix-ui/react-icons';
 import {
 	Button,
 	Center,
@@ -23,23 +21,18 @@ import {
 	DrawerFooter,
 	Select,
 	Box,
-	ButtonGroup,
-	GridItem,
-	Grid,
-	useNumberInput,
 } from '@chakra-ui/react';
 import PlantView from '@components/PlantView';
 
-export interface SelectedPlants {
+export interface SelectedPlant {
 	plant: Plant;
 	quantity: number;
 }
 export default function AddPlant() {
-	const { data } = trpc.useQuery(['user.tanks']);
 	const { data: plantsData } = trpc.useQuery(['general.plants']);
 	const [search, setSearch] = useState('');
 	const [viewedPlant, setViewedPlant] = useState<Plant>();
-	const [selectedPlants, setSelectedPlants] = useState<SelectedPlants[]>([]);
+	const [selectedPlants, setSelectedPlants] = useState<SelectedPlant[]>([]);
 	const { isOpen: showPlantSelection, onToggle: toggleShowPlantSelection } =
 		useDisclosure();
 	const {
