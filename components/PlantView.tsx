@@ -1,9 +1,9 @@
+import cuid from 'cuid';
 import Image from 'next/image';
 import { trpc } from '@utils/trpc';
 import { Plant } from '@prisma/client';
 import { Dispatch, SetStateAction, useState } from 'react';
 import { Cross1Icon } from '@radix-ui/react-icons';
-import { SelectedPlant } from 'pages/new/plant';
 import { BsArrowLeft, BsTrash } from 'react-icons/bs';
 import {
 	Box,
@@ -20,21 +20,20 @@ import {
 	DrawerHeader,
 	DrawerBody,
 	Select,
-	GridItem,
 	Button,
 	DrawerFooter,
 	ButtonGroup,
-	Grid,
+	useToast,
 } from '@chakra-ui/react';
 
 export interface PlantViewProps {
-	viewedPlant: Plant | undefined;
-	selectedPlants: SelectedPlant[];
+	viewedPlant: Plant;
+	selectedPlants: Plant[];
 	pickerIsOpen: boolean;
 	togglePicker: () => void;
 	pickerOnClose: () => void;
 	toggleShowPlantSelection: () => void;
-	setSelectedPlants: Dispatch<SetStateAction<SelectedPlant[]>>;
+	setSelectedPlants: Dispatch<SetStateAction<Plant[]>>;
 }
 
 export default function PlantView({
@@ -46,7 +45,10 @@ export default function PlantView({
 	toggleShowPlantSelection,
 	pickerOnClose,
 }: PlantViewProps) {
+	const toast = useToast();
 	const { data } = trpc.useQuery(['user.tanks']);
+	const mutate = trpc.useMutation(['user.addPlant']);
+	const [tankId, setTankId] = useState<string>('');
 
 	return (
 		<Box h="100vh" w="full" p="6">
@@ -69,6 +71,7 @@ export default function PlantView({
 						'https://images.unsplash.com/photo-1567331711402-509c12c41959?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=773&q=80'
 					}
 					layout="fill"
+					alt="plantImage"
 				/>
 			</Box>
 			<Heading color="white" textAlign="center">
@@ -106,20 +109,18 @@ export default function PlantView({
 				bottom="10"
 				right="5"
 				onClick={() => {
-					const exisistingPlant = selectedPlants.find(({ plant }) => {
-						return plant === viewedPlant;
-					});
+					const exisistingPlant = selectedPlants.find(
+						(plant: Plant) => {
+							return plant === viewedPlant;
+						}
+					);
 
-					if (exisistingPlant) {
-						exisistingPlant.quantity += 1;
-					} else {
-						viewedPlant
-							? setSelectedPlants((prev: SelectedPlant[]) => [
-									...prev,
-									{ plant: viewedPlant, quantity: 1 },
-							  ])
-							: null;
-					}
+					viewedPlant
+						? setSelectedPlants((prev: Plant[]) => [
+								...prev,
+								{ ...viewedPlant, uid: cuid(), tankId: tankId },
+						  ])
+						: null;
 					togglePicker();
 				}}
 			>
@@ -139,12 +140,15 @@ export default function PlantView({
 					<DrawerHeader>
 						<Heading>Adder</Heading>
 					</DrawerHeader>
-
 					<DrawerBody>
 						<Stack spacing={5} shouldWrapChildren>
 							<Stack>
 								<Text>Tank</Text>
-								<Select>
+								<Select
+									required
+									placeholder="Select a tank"
+									onChange={(e) => setTankId(e.target.value)}
+								>
 									{data?.tanks.map((tank, idx) => (
 										<option key={idx} value={tank.id}>
 											{tank.name}
@@ -154,160 +158,139 @@ export default function PlantView({
 							</Stack>
 							<Stack>
 								<Text>Selected Plants</Text>
-								{selectedPlants?.map(
-									(
-										{ plant, quantity }: SelectedPlant,
-										idx
-									) => (
-										<Box key={idx}>
+								{selectedPlants?.map((plant: Plant, idx) => (
+									<Box key={idx}>
+										<Box
+											w="100%"
+											h="250px"
+											pos="relative"
+											borderRadius="15px"
+										>
+											<Image
+												priority
+												layout="fill"
+												alt="selectedPlantImage"
+												src={plant.image_url ?? ''}
+												style={{
+													borderRadius: '15px',
+												}}
+											/>
 											<Box
-												w="100%"
-												h="250px"
-												pos="relative"
-												borderRadius="15px"
+												pos="absolute"
+												right="4"
+												bottom="4"
 											>
-												<Image
-													priority
-													layout="fill"
-													src={plant.image_url ?? ''}
-													style={{
-														borderRadius: '15px',
-													}}
-												/>
-												<Box
-													pos="absolute"
-													right="4"
-													bottom="4"
-												>
-													<BsTrash
-														color="red"
-														onClick={() => {
-															setSelectedPlants(
-																selectedPlants.filter(
-																	({
-																		plant: oldPlant,
-																	}: SelectedPlant) =>
-																		oldPlant.id !==
-																		plant.id
-																)
-															);
-														}}
-													/>
-												</Box>
-											</Box>
-											<Text textAlign="center">
-												{plant.name}
-											</Text>
-											<HStack w="full" justify="center">
-												<Button
-													colorScheme="red"
+												<BsTrash
+													color="red"
 													onClick={() => {
-														if (quantity === 1) {
-															setSelectedPlants(
-																selectedPlants.filter(
-																	({
-																		plant: oldPlant,
-																	}: SelectedPlant) =>
-																		oldPlant.id !==
-																		plant.id
-																)
-															);
-															return;
-														}
 														setSelectedPlants(
-															selectedPlants.map(
-																({
-																	plant,
-																	quantity,
-																}: SelectedPlant) => {
-																	return {
-																		plant,
-																		quantity:
-																			quantity -
-																			1,
-																	};
-																}
+															selectedPlants.filter(
+																(
+																	oldPlant: Plant
+																) =>
+																	oldPlant.id !==
+																	plant.id
 															)
 														);
 													}}
-												>
-													-
-												</Button>
-												<Input
-													w="60px"
-													value={
-														selectedPlants.find(
-															(x) =>
-																x.plant.id ===
-																plant.id
-														)?.quantity ?? 0
-													}
-													textAlign="center"
-													onChange={(e) => {
-														setSelectedPlants(
-															(p: any) =>
-																p.plant.id ===
-																plant.id
-																	? {
-																			...p,
-																			quantity:
-																				parseInt(
-																					e
-																						.target
-																						.value
-																				),
-																	  }
-																	: p
-														);
-													}}
 												/>
-												<Button
-													colorScheme="green"
-													onClick={() => {
-														const p =
-															selectedPlants.find(
-																({
-																	plant,
-																}: SelectedPlant) =>
-																	plant ===
-																	plant
-															);
-
-														if (!p) {
-															setSelectedPlants([
-																...selectedPlants,
-																{
-																	plant,
-																	quantity:
-																		quantity +
-																		1,
-																},
-															]);
-														} else {
-															setSelectedPlants(
-																selectedPlants.map(
-																	({
-																		plant,
-																		quantity,
-																	}: SelectedPlant) => {
-																		return {
-																			plant,
-																			quantity:
-																				quantity +
-																				1,
-																		};
-																	}
-																)
-															);
-														}
-													}}
-												>
-													+
-												</Button>
-											</HStack>
+											</Box>
 										</Box>
-									)
-								)}
+										<Text textAlign="center">
+											{plant.name}
+										</Text>
+										<HStack w="full" justify="center">
+											<Button
+												colorScheme="red"
+												onClick={() => {
+													const quantity =
+														selectedPlants.reduce(
+															(acc, { id }) => {
+																if (
+																	id ===
+																	plant.id
+																) {
+																	return (
+																		acc + 1
+																	);
+																}
+																return acc;
+															},
+															0
+														);
+													if (quantity === 1) {
+														setSelectedPlants(
+															selectedPlants.filter(
+																(
+																	oldPlant: Plant
+																) =>
+																	oldPlant.id !==
+																	plant.id
+															)
+														);
+														return;
+													}
+													selectedPlants.pop();
+												}}
+											>
+												-
+											</Button>
+											<Input
+												w="60px"
+												value={selectedPlants.reduce(
+													(acc, { id }) => {
+														if (id === plant.id) {
+															return acc + 1;
+														}
+														return acc;
+													},
+													0
+												)}
+												textAlign="center"
+												onChange={(e) => {
+													setSelectedPlants(
+														(p: any) =>
+															p.plant.id ===
+															plant.id
+																? {
+																		...p,
+																		quantity:
+																			parseInt(
+																				e
+																					.target
+																					.value
+																			),
+																  }
+																: p
+													);
+												}}
+											/>
+											<Button
+												colorScheme="green"
+												onClick={() => {
+													console.log({ plant });
+
+													setSelectedPlants([
+														...selectedPlants,
+														{
+															...plant,
+															uid: cuid() as string,
+															lighting:
+																plant.lighting,
+															soil: plant.soil,
+															illnesses:
+																plant.illnesses,
+															water_params:
+																plant.water_params,
+														},
+													]);
+												}}
+											>
+												+
+											</Button>
+										</HStack>
+									</Box>
+								))}
 							</Stack>
 						</Stack>
 					</DrawerBody>
@@ -316,7 +299,28 @@ export default function PlantView({
 							<Button
 								colorScheme="green"
 								onClick={() => {
-									console.log({ selectedPlants });
+									if (tankId === '') {
+										toast({
+											title: 'Select a tank first',
+											status: 'error',
+											duration: 5000,
+											isClosable: true,
+										});
+										return;
+									}
+									const plants = selectedPlants.map((p) => {
+										return {
+											...p,
+											tankId,
+										};
+									});
+									console.log({ plants });
+
+									mutate.mutate({
+										//@ts-ignore
+										plants,
+										tankId,
+									});
 								}}
 							>
 								Add

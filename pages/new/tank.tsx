@@ -36,8 +36,6 @@ export default function NewTank() {
 		const formData = new FormData(e.target as HTMLFormElement);
 		const tankcuid: string = cuid();
 
-		console.log({ data });
-
 		addTank.mutate({
 			id: tankcuid,
 			user_id: data?.userInfo.id as string,

@@ -23,16 +23,15 @@ import {
 	Select,
 	Box,
 } from '@chakra-ui/react';
+import cuid from 'cuid';
 
-export interface SelectedPlant {
-	plant: Plant;
-	quantity: number;
-}
 export default function AddPlant() {
 	const { data: plantsData } = trpc.useQuery(['general.plants']);
 	const [search, setSearch] = useState('');
-	const [viewedPlant, setViewedPlant] = useState<Plant>();
-	const [selectedPlants, setSelectedPlants] = useState<SelectedPlant[]>([]);
+	const [viewedPlant, setViewedPlant] = useState<Plant>(
+		plantsData?.plants[0] ?? ({} as Plant)
+	);
+	const [selectedPlants, setSelectedPlants] = useState<Plant[]>([]);
 	const { isOpen: showPlantSelection, onToggle: toggleShowPlantSelection } =
 		useDisclosure();
 	const {

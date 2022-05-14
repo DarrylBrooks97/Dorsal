@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { prisma } from '@clients/prisma';
 import { createRouter } from '../../createRouter';
+import { Plant } from '@prisma/client';
 
 export const userRouter = createRouter()
 	.query('fish', {
@@ -288,9 +289,9 @@ export const userRouter = createRouter()
 				where: {
 					id: input.id,
 				},
-				select: {
-					plants: true,
-				},
+				// select: {
+				// 	plants: true,
+				// },
 			});
 			return {
 				plants,
@@ -299,26 +300,44 @@ export const userRouter = createRouter()
 	})
 	.mutation('addPlant', {
 		input: z.object({
-			id: z.string().uuid(),
-			user_id: z.string().cuid().optional(),
-			name: z.string().min(1).max(255),
-			tank_id: z.string().cuid().optional(),
-			image_url: z.string().min(1).max(255),
-			species: z.string().min(1).max(255),
-			lighting: z.string().min(1).max(255),
-			soil: z.string().min(1).max(255),
-			water_params: z.object({
-				pH: z.number(),
-				nirate: z.number(),
-				hardness: z.number(),
-			}),
-			illnesses: z.string().min(1).max(255),
+			plants: z.array(
+				z.object({
+					id: z.string().cuid(),
+					uid: z.string().cuid(),
+					name: z.string().min(1).max(255),
+					image_url: z.string().min(1).max(255),
+					species: z.string().min(1).max(255),
+					lighting: z.string().min(1).max(255),
+					soil: z.string().min(1).max(255),
+					illnesses: z.string().min(1).max(255),
+					tankId: z.string().cuid(),
+					water_params: z.object({
+						pH: z.number(),
+						nirate: z.number(),
+						hardness: z.number(),
+					}),
+				})
+			),
+			tankId: z.string().cuid(),
 		}),
 		async resolve({ input }) {
+			await prisma.tank.update({
+				where: {
+					id: input.tankId,
+				},
+				data: {
+					Plant: {
+						set: [
+							...input.plants.map((p) => {
+								return { id: p.id };
+							}),
+						],
+					},
+				},
+			});
+
 			return {
-				plant: await prisma.plant.create({
-					data: input,
-				}),
+				status: 201,
 			};
 		},
 	})
