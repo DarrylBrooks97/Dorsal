@@ -57,7 +57,7 @@ model VerificationToken {
 
 model Fish {
   id            String    @id @default(cuid())
-  uid           String?   @unique
+  uid           String?   @default(cuid())
   tankId        String?   @default(cuid())
   tank          Tank?     @relation(fields: [tankId], references: [id], onDelete: Cascade)
   name          String    @db.VarChar(255)
@@ -76,7 +76,7 @@ model Fish {
 
 model Plant {
   id            String    @id @default(cuid())
-  uid           String?   @unique
+  uid           String?   @default(cuid())
   tankId        String?   @default(cuid())
   tank          Tank?     @relation(fields: [tankId], references: [id], onDelete: Cascade)
   name          String    @db.VarChar(255)
