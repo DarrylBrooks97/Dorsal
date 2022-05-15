@@ -37,14 +37,16 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String      @id @default(cuid())
   name          String?
-  email         String?   @unique
+  email         String?     @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
   tanks         Tank[]
+  userPlants    UserPlant[]
+  userFish      UserFish[]
 }
 
 model VerificationToken {
@@ -58,9 +60,8 @@ model VerificationToken {
 model Fish {
   id            String    @id @default(cuid())
   uid           String?   @default(cuid())
-  tankId        String?   @default(cuid())
-  tank          Tank?     @relation(fields: [tankId], references: [id], onDelete: Cascade)
   name          String    @db.VarChar(255)
+  userFishId    String?   @default(cuid())
   image_url     String    @db.VarChar(255)
   habitat       String    @db.VarChar(255)
   species       String    @db.VarChar(255)
@@ -71,14 +72,13 @@ model Fish {
   illnesses     String    @db.VarChar(255)
   maintained_at DateTime? @db.Timestamp(0)
 
-  @@index([tankId])
+  @@index([userFishId])
 }
 
 model Plant {
   id            String    @id @default(cuid())
   uid           String?   @default(cuid())
-  tankId        String?   @default(cuid())
-  tank          Tank?     @relation(fields: [tankId], references: [id], onDelete: Cascade)
+  userPlantId   String?   @default(cuid())
   name          String    @db.VarChar(255)
   image_url     String    @db.VarChar(255)
   species       String    @db.VarChar(255)
@@ -87,23 +87,48 @@ model Plant {
   water_params  Json
   illnesses     String    @db.VarChar(255)
   maintained_at DateTime? @db.Timestamp(0)
+  UserPlant     UserPlant[]
+}
 
-  @@index([tankId])
+model UserFish {
+  id            String    @id @default(cuid())
+  userId        String    @default(cuid())
+  tankId        String    @default(cuid())
+  name          String    @db.VarChar(255)
+  maintained_at DateTime? @db.Timestamp(0)
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tank          Tank      @relation(fields: [tankId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model UserPlant {
+  id            String    @id @default(cuid())
+  userId        String    @default(cuid())
+  tankId        String    @default(cuid())
+  plantId       String    @default(cuid())
+  name          String    @db.VarChar(255)
+  maintained_at DateTime? @db.Timestamp(0)
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tank          Tank      @relation(fields: [tankId], references: [id], onDelete: Cascade)
+  plant         Plant     @relation(fields: [plantId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model Tank {
-  id            String    @id @default(cuid())
-  user_id       String?   @default(cuid())
-  user          User?     @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  type          String    @db.VarChar(255)
-  name          String    @db.VarChar(255)
-  image         String    @db.MediumText
-  pH            Decimal   @db.Decimal(10, 0)
-  nirate        Decimal   @db.Decimal(10, 0)
-  hardness      Decimal   @db.Decimal(10, 0)
-  maintained_at DateTime? @db.Timestamp(0)
-  created_at    DateTime  @db.Timestamp(0)
-  updated_at    DateTime  @db.Timestamp(0)
-  Fish          Fish[]
-  Plant         Plant[]
+  id            String      @id @default(cuid())
+  user_id       String?     @default(cuid())
+  user          User?       @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  type          String      @db.VarChar(255)
+  name          String      @db.VarChar(255)
+  image         String      @db.MediumText
+  pH            Decimal     @db.Decimal(10, 0)
+  nirate        Decimal     @db.Decimal(10, 0)
+  hardness      Decimal     @db.Decimal(10, 0)
+  maintained_at DateTime?   @db.Timestamp(0)
+  created_at    DateTime    @db.Timestamp(0)
+  updated_at    DateTime    @db.Timestamp(0)
+  Fish          UserFish[]
+  Plant         UserPlant[]
 }
