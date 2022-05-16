@@ -1,7 +1,7 @@
 import cuid from 'cuid';
 import Image from 'next/image';
 import { trpc } from '@utils/trpc';
-import { Plant } from '@prisma/client';
+import { Plant, UserPlant } from '@prisma/client';
 import { Dispatch, SetStateAction, useState } from 'react';
 import { Cross1Icon } from '@radix-ui/react-icons';
 import { BsArrowLeft, BsTrash } from 'react-icons/bs';
@@ -25,6 +25,7 @@ import {
 	ButtonGroup,
 	useToast,
 } from '@chakra-ui/react';
+import { useSession } from 'next-auth/react';
 
 export interface PlantViewProps {
 	viewedPlant: Plant;
@@ -49,6 +50,7 @@ export default function PlantView({
 	const { data } = trpc.useQuery(['user.tanks']);
 	const mutate = trpc.useMutation(['user.addPlant']);
 	const [tankId, setTankId] = useState<string>('');
+	const { data: sessionData }: any = useSession();
 
 	return (
 		<Box h="100vh" w="full" p="6">
@@ -109,12 +111,6 @@ export default function PlantView({
 				bottom="10"
 				right="5"
 				onClick={() => {
-					const exisistingPlant = selectedPlants.find(
-						(plant: Plant) => {
-							return plant === viewedPlant;
-						}
-					);
-
 					viewedPlant
 						? setSelectedPlants((prev: Plant[]) => [
 								...prev,
@@ -310,14 +306,16 @@ export default function PlantView({
 									}
 									const plants = selectedPlants.map((p) => {
 										return {
-											...p,
+											id: cuid(),
+											name: p.name,
+											plantId: p.id,
+											userId: sessionData.userInfo.id,
+											maintained_at: new Date(),
 											tankId,
 										};
 									});
-									console.log({ plants });
 
 									mutate.mutate({
-										//@ts-ignore
 										plants,
 										tankId,
 									});

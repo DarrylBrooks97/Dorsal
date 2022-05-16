@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { prisma } from '@clients/prisma';
 import { createRouter } from '../../createRouter';
-import { Plant } from '@prisma/client';
+import { Plant, UserPlant } from '@prisma/client';
 
 export const userRouter = createRouter()
 	.query('fish', {
@@ -43,7 +43,7 @@ export const userRouter = createRouter()
 	.mutation('deleteFish', {
 		input: z.object({ id: z.string().cuid() }),
 		async resolve({ input }) {
-			const { tankId } = await prisma.fish.delete({
+			const { tankId } = await prisma.userFish.delete({
 				where: {
 					id: input.id,
 				},
@@ -108,13 +108,13 @@ export const userRouter = createRouter()
 					id: input.id,
 				},
 			});
-			const fish = await prisma.fish.findMany({
+			const fish = await prisma.userFish.findMany({
 				where: {
 					tankId: input.id,
 				},
 			});
 
-			const plants = await prisma.plant.findMany({
+			const plants = await prisma.userPlant.findMany({
 				where: {
 					tankId: input.id,
 				},
@@ -302,39 +302,20 @@ export const userRouter = createRouter()
 		input: z.object({
 			plants: z.array(
 				z.object({
-					id: z.string().cuid(),
-					uid: z.string().cuid(),
 					name: z.string().min(1).max(255),
-					image_url: z.string().min(1).max(255),
-					species: z.string().min(1).max(255),
-					lighting: z.string().min(1).max(255),
-					soil: z.string().min(1).max(255),
-					illnesses: z.string().min(1).max(255),
+					plantId: z.string().cuid(),
+					userId: z.string().cuid(),
 					tankId: z.string().cuid(),
-					water_params: z.object({
-						pH: z.number(),
-						nirate: z.number(),
-						hardness: z.number(),
-					}),
 				})
 			),
 			tankId: z.string().cuid(),
 		}),
 		async resolve({ input }) {
-			await prisma.tank.update({
-				where: {
-					id: input.tankId,
-				},
-				data: {
-					Plant: {
-						set: [
-							...input.plants.map((p) => {
-								return { id: p.id };
-							}),
-						],
-					},
-				},
+			const res = await prisma.userPlant.createMany({
+				data: input.plants,
 			});
+
+			console.log({ res });
 
 			return {
 				status: 201,
@@ -350,7 +331,7 @@ export const userRouter = createRouter()
 			illnesses: z.string().min(1).max(255).optional(),
 		}),
 		async resolve({ input }) {
-			await prisma.plant.update({
+			await prisma.userPlant.update({
 				where: {
 					id: input.id,
 				},
@@ -370,7 +351,7 @@ export const userRouter = createRouter()
 			id: z.string().cuid(),
 		}),
 		async resolve({ input }) {
-			const { tankId } = await prisma.plant.delete({
+			const { tankId } = await prisma.userPlant.delete({
 				where: {
 					id: input.id,
 				},
