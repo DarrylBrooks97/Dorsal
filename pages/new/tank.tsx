@@ -102,7 +102,7 @@ export default function NewTank() {
 									<AccordionButton>
 										<Box flex="1" textAlign="center">
 											<Text color="white">
-												Know your tank's parameters?
+												Know your tank&#39;s parameters?
 											</Text>
 										</Box>
 										<AccordionIcon color="white" />
