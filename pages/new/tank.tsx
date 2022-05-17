@@ -121,7 +121,7 @@ export default function NewTank() {
 											>
 												<Text mr="2">pH</Text>
 												<Tooltip
-													label="Hello World"
+													label="Optimal pH will minimize the stress on the fish"
 													placement="right"
 												>
 													<InfoCircledIcon color="white" />
@@ -144,7 +144,7 @@ export default function NewTank() {
 											>
 												<Text mr="2">Ammonia</Text>
 												<Tooltip
-													label="Hello World"
+													label="Build up of fish waste that can be very harmful for the fish"
 													placement="right"
 												>
 													<InfoCircledIcon color="white" />
@@ -167,7 +167,7 @@ export default function NewTank() {
 											>
 												<Text mr="2">Nirate</Text>
 												<Tooltip
-													label="Hello World"
+													label="Byproduct of good bacteria eating nitrite"
 													placement="right"
 												>
 													<InfoCircledIcon color="white" />
@@ -190,7 +190,7 @@ export default function NewTank() {
 											>
 												<Text mr="2">Nirite</Text>
 												<Tooltip
-													label="Hello World"
+													label="Byproduct of good bacteria eating ammonia"
 													placement="right"
 												>
 													<InfoCircledIcon color="white" />
@@ -213,7 +213,7 @@ export default function NewTank() {
 											>
 												<Text mr="2">Hardness</Text>
 												<Tooltip
-													label="Hello World"
+													label="Hard water is ok for fish, soft water can make water pH low"
 													placement="right"
 												>
 													<InfoCircledIcon color="white" />
@@ -236,7 +236,7 @@ export default function NewTank() {
 											>
 												<Text mr="2">Chlorine</Text>
 												<Tooltip
-													label="Hello World"
+													label="Any level is dangerous for fish"
 													placement="right"
 												>
 													<InfoCircledIcon color="white" />
@@ -260,7 +260,7 @@ export default function NewTank() {
 												<Text mr="2">Alkalinity</Text>
 												<Tooltip
 													hasArrow
-													label="Hello World"
+													label="Alkalinity is a critical part of the nitrogen cycle & should be above 100 ppm"
 													placement="right"
 												>
 													<InfoCircledIcon color="white" />
