@@ -16,6 +16,12 @@ import {
 	NumberInputField,
 	Select,
 	Stack,
+	Accordion,
+	AccordionItem,
+	AccordionButton,
+	AccordionIcon,
+	AccordionPanel,
+	Text,
 } from '@chakra-ui/react';
 
 export default function NewTank() {
@@ -36,15 +42,13 @@ export default function NewTank() {
 		const formData = new FormData(e.target as HTMLFormElement);
 		const tankcuid: string = cuid();
 
+		console.log({ alkalinity: Number(formData.get('alkalinity')) });
 		addTank.mutate({
 			id: tankcuid,
 			user_id: data?.userInfo.id as string,
 			type: formData.get('type') as string,
 			name: formData.get('name') as string,
 			image: 'https://images.unsplash.com/photo-1617994679330-2883951d0073?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80',
-			hardness: Number(formData.get('hardness')),
-			nirate: Number(formData.get('nirate')),
-			pH: Number(formData.get('pH')),
 		});
 
 		route.push('/aquarium/[id]', `/aquarium/${tankcuid}`);
@@ -91,36 +95,121 @@ export default function NewTank() {
 								<option value="Brackish">Brackish</option>
 								<option value="Breeder">Breeder</option>
 							</Select>
-							<Box>
-								<FormLabel htmlFor="pH" color="white">
-									pH
-								</FormLabel>
-								<NumberInput min={0} max={14}>
-									<NumberInputField color="white" name="pH" />
-								</NumberInput>
-							</Box>
-							<Box>
-								<FormLabel htmlFor="nirate" color="white">
-									Nirate
-								</FormLabel>
-								<NumberInput min={5} max={100}>
-									<NumberInputField
-										color="white"
-										name="nirate"
-									/>
-								</NumberInput>
-							</Box>
-							<Box>
-								<FormLabel htmlFor="hardness" color="white">
-									Hardness
-								</FormLabel>
-								<NumberInput min={100} max={400}>
-									<NumberInputField
-										color="white"
-										name="hardness"
-									/>
-								</NumberInput>
-							</Box>
+							<Accordion border="black" allowToggle>
+								<AccordionItem>
+									<AccordionButton>
+										<Box flex="1" textAlign="center">
+											<Text color="white">
+												Know your tank's parameters?
+											</Text>
+										</Box>
+										<AccordionIcon color="white" />
+									</AccordionButton>
+									<AccordionPanel
+										pos="relative"
+										overflowY="scroll"
+									>
+										<Box>
+											<FormLabel
+												htmlFor="pH"
+												color="white"
+											>
+												pH
+											</FormLabel>
+											<NumberInput min={6} max={14}>
+												<NumberInputField
+													color="white"
+													name="pH"
+												/>
+											</NumberInput>
+										</Box>
+										<Box>
+											<FormLabel
+												htmlFor="ammonia"
+												color="white"
+											>
+												Ammonia
+											</FormLabel>
+											<NumberInput min={0} max={6}>
+												<NumberInputField
+													color="white"
+													name="ammonia"
+												/>
+											</NumberInput>
+										</Box>
+										<Box>
+											<FormLabel
+												htmlFor="nirate"
+												color="white"
+											>
+												Nirate
+											</FormLabel>
+											<NumberInput min={0} max={300}>
+												<NumberInputField
+													color="white"
+													name="nirate"
+												/>
+											</NumberInput>
+										</Box>
+										<Box>
+											<FormLabel
+												htmlFor="nirite"
+												color="white"
+											>
+												Nirite
+											</FormLabel>
+											<NumberInput min={0} max={100}>
+												<NumberInputField
+													color="white"
+													name="nirite"
+												/>
+											</NumberInput>
+										</Box>
+										<Box>
+											<FormLabel
+												htmlFor="hardness"
+												color="white"
+											>
+												Hardness
+											</FormLabel>
+											<NumberInput min={0} max={400}>
+												<NumberInputField
+													color="white"
+													name="hardness"
+												/>
+											</NumberInput>
+										</Box>
+										<Box>
+											<FormLabel
+												htmlFor="chlorine"
+												color="white"
+											>
+												Chlorine
+											</FormLabel>
+											<NumberInput min={0} max={20}>
+												<NumberInputField
+													color="white"
+													name="chlorine"
+												/>
+											</NumberInput>
+										</Box>
+										<Box>
+											<FormLabel
+												htmlFor="alkalinity"
+												color="white"
+											>
+												Alkalinity
+											</FormLabel>
+											<NumberInput min={100} max={400}>
+												<NumberInputField
+													color="white"
+													name="alkalinity"
+												/>
+											</NumberInput>
+										</Box>
+									</AccordionPanel>
+								</AccordionItem>
+							</Accordion>
 							<ButtonGroup justifyContent="center" spacing="6">
 								<Button type="submit" colorScheme="green">
 									Add Tank
