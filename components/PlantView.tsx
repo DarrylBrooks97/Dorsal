@@ -289,7 +289,6 @@ export default function PlantView({
 															...selectedPlants,
 															{
 																...plant,
-																uid: cuid() as string,
 																lighting:
 																	plant.lighting,
 																soil: plant.soil,

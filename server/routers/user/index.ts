@@ -26,9 +26,13 @@ export const userRouter = createRouter()
 			diet: z.string().min(1).max(255),
 			tank_friends: z.string().min(1).max(255),
 			water_params: z.object({
-				pH: z.number(),
-				nirate: z.number(),
-				hardness: z.number(),
+				ammonia: z.number().min(0).max(6),
+				nirate: z.number().min(0).max(300),
+				nirite: z.number().min(0).max(100),
+				hardness: z.number().min(0).max(400),
+				chlorine: z.number().min(0).max(20),
+				alkalinity: z.number().min(0).max(400),
+				pH: z.number().min(6).max(14),
 				type: z.string().min(1).max(255),
 			}),
 		}),
@@ -130,13 +134,17 @@ export const userRouter = createRouter()
 	.mutation('addTank', {
 		input: z.object({
 			id: z.string().cuid(),
-			user_id: z.string().cuid().optional(),
+			user_id: z.string().cuid(),
 			image: z.string().optional(),
 			name: z.string().min(1).max(255),
 			type: z.string().min(1).max(255),
-			pH: z.number(),
-			nirate: z.number(),
-			hardness: z.number(),
+			ammonia: z.number().min(0).max(6).optional(),
+			nirate: z.number().min(0).max(300).optional(),
+			nirite: z.number().min(0).max(100).optional(),
+			hardness: z.number().min(0).max(400).optional(),
+			chlorine: z.number().min(0).max(20).optional(),
+			alkalinity: z.number().min(0).max(400).optional(),
+			pH: z.number().min(6).max(14).optional(),
 			Fish: z
 				.array(
 					z.object({
@@ -152,9 +160,13 @@ export const userRouter = createRouter()
 						diet: z.string().min(1).max(255),
 						tank_friends: z.string().min(1).max(255),
 						water_params: z.object({
-							pH: z.number(),
-							nirate: z.number(),
-							hardness: z.number(),
+							ammonia: z.number().min(0).max(6),
+							nirate: z.number().min(0).max(300),
+							nirite: z.number().min(0).max(100),
+							hardness: z.number().min(0).max(400),
+							chlorine: z.number().min(0).max(20),
+							alkalinity: z.number().min(0).max(400),
+							pH: z.number().min(6).max(14),
 							type: z.string().min(1).max(255),
 						}),
 					})
@@ -172,9 +184,13 @@ export const userRouter = createRouter()
 						lighting: z.string().min(1).max(255),
 						soil: z.string().min(1).max(255),
 						water_params: z.object({
-							pH: z.number(),
-							nirate: z.number(),
-							hardness: z.number(),
+							ammonia: z.number().min(0).max(6),
+							nirate: z.number().min(0).max(300),
+							nirite: z.number().min(0).max(100),
+							hardness: z.number().min(0).max(400),
+							chlorine: z.number().min(0).max(20),
+							alkalinity: z.number().min(0).max(400),
+							pH: z.number().min(6).max(14),
 						}),
 						illnesses: z.string().min(1).max(255),
 					})

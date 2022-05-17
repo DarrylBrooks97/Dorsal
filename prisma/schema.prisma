@@ -59,9 +59,7 @@ model VerificationToken {
 
 model Fish {
   id            String    @id @default(cuid())
-  uid           String?   @default(cuid())
   name          String    @db.VarChar(255)
-  userFishId    String?   @default(cuid())
   image_url     String    @db.VarChar(255)
   habitat       String    @db.VarChar(255)
   species       String    @db.VarChar(255)
@@ -72,13 +70,11 @@ model Fish {
   illnesses     String    @db.VarChar(255)
   maintained_at DateTime? @db.Timestamp(0)
 
-  @@index([userFishId])
+  UserFish UserFish[]
 }
 
 model Plant {
   id            String    @id @default(cuid())
-  uid           String?   @default(cuid())
-  userPlantId   String?   @default(cuid())
   name          String    @db.VarChar(255)
   image_url     String    @db.VarChar(255)
   species       String    @db.VarChar(255)
@@ -87,7 +83,8 @@ model Plant {
   water_params  Json
   illnesses     String    @db.VarChar(255)
   maintained_at DateTime? @db.Timestamp(0)
-  UserPlant     UserPlant[]
+
+  UserPlant UserPlant[]
 }
 
 model UserFish {
@@ -98,6 +95,7 @@ model UserFish {
   maintained_at DateTime? @db.Timestamp(0)
   user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   tank          Tank      @relation(fields: [tankId], references: [id], onDelete: Cascade)
+  fish          Fish      @relation(fields: [id], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
@@ -123,12 +121,17 @@ model Tank {
   type          String      @db.VarChar(255)
   name          String      @db.VarChar(255)
   image         String      @db.MediumText
-  pH            Decimal     @db.Decimal(10, 0)
-  nirate        Decimal     @db.Decimal(10, 0)
-  hardness      Decimal     @db.Decimal(10, 0)
+  pH            Decimal?    @db.Decimal(10, 0)
+  ammonia       Decimal?    @db.Decimal(10, 0)
+  alkalinity    Decimal?    @db.Decimal(10, 0)
+  chlorine      Decimal?    @db.Decimal(10, 0)
+  nirate        Decimal?    @db.Decimal(10, 0)
+  nirite        Decimal?    @db.Decimal(10, 0)
+  hardness      Decimal?    @db.Decimal(10, 0)
   maintained_at DateTime?   @db.Timestamp(0)
   created_at    DateTime    @db.Timestamp(0)
   updated_at    DateTime    @db.Timestamp(0)
+  
   Fish          UserFish[]
   Plant         UserPlant[]
 }
