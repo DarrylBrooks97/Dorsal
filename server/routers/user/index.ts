@@ -308,14 +308,11 @@ export const userRouter = createRouter()
 					tankId: z.string().cuid(),
 				})
 			),
-			tankId: z.string().cuid(),
 		}),
 		async resolve({ input }) {
-			const res = await prisma.userPlant.createMany({
+			await prisma.userPlant.createMany({
 				data: input.plants,
 			});
-
-			console.log({ res });
 
 			return {
 				status: 201,

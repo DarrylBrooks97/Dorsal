@@ -49,7 +49,20 @@ export default function PlantView({
 }: PlantViewProps) {
 	const toast = useToast();
 	const { data } = trpc.useQuery(['user.tanks']);
-	const mutate = trpc.useMutation(['user.addPlant']);
+	const mutate = trpc.useMutation(['user.addPlant'], {
+		onSuccess: () => {
+			window.location.href = `/aquarium/${tankId}`;
+		},
+		onError: (error) => {
+			toast({
+				title: 'Error',
+				description: error.message,
+				status: 'error',
+				duration: 9000,
+				isClosable: true,
+			});
+		},
+	});
 	const [tankId, setTankId] = useState<string>('');
 	const { data: sessionData }: any = useSession();
 
@@ -317,14 +330,12 @@ export default function PlantView({
 											name: p.name,
 											plantId: p.id,
 											userId: sessionData.userInfo.id,
-											maintained_at: new Date(),
 											tankId,
 										};
 									});
 
 									mutate.mutate({
 										plants,
-										tankId,
 									});
 								}}
 							>
