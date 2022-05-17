@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import Error from 'next/error';
 import Spinner from '@components/Spinner';
 import Compressor from 'compressorjs';
 import TankRemindersCard from '@components/TankReminders';
@@ -7,7 +6,7 @@ import TankOverviewCard from '@components/TankOverviewCard';
 import { trpc } from '@utils/trpc';
 import { AiOutlineCamera } from 'react-icons/ai';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { CheckIcon, Cross1Icon, Pencil1Icon } from '@radix-ui/react-icons';
 import {
@@ -21,6 +20,8 @@ import {
 	InputRightElement,
 	Stack,
 	Text,
+	toast,
+	useToast,
 } from '@chakra-ui/react';
 
 const MotionBox = motion<BoxProps>(Box);
@@ -48,44 +49,73 @@ const tankCards = [
 ];
 
 export default function Aquarium() {
+	const toast = useToast();
 	const invalidate = trpc.useContext();
-	const [activeTab, setActiveTab] = useState(0);
-	const [editing, setEditing] = useState(false);
-	const [tankName, setTankName] = useState('');
-	const [tankImage, setTankImage] = useState(
-		'https://images.unsplash.com/photo-1619611384968-e45fbd60bc5c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1074&q=80'
-	);
 	const { id } = useRouter().query;
 	const { data } = trpc.useQuery(['user.tanks.byId', { id: id as string }]);
 	const adder = trpc.useMutation(['user.updateTank'], {
 		onSuccess: () => {
 			invalidate.invalidateQueries(['user.tanks.byId']);
+			setEditing(false);
+			toast({
+				title: 'Tank Updated',
+				description: 'Tank updated successfully',
+				status: 'success',
+				duration: 5000,
+				isClosable: true,
+			});
 		},
 		onError: (error: any) => {
-			console.error({ error });
+			toast({
+				title: 'Error',
+				description: error.message,
+				status: 'error',
+				duration: 5000,
+				isClosable: true,
+			});
 		},
 	});
+	const [activeTab, setActiveTab] = useState(0);
+	const [editing, setEditing] = useState(false);
+	const [tankName, setTankName] = useState(data?.tank?.name ?? 'null');
+	const [tankImage, setTankImage] = useState(
+		data?.tank?.image ??
+			'https://images.unsplash.com/photo-1619611384968-e45fbd60bc5c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1074&q=80'
+	);
+
+	useEffect(() => {
+		if (data?.tank) {
+			setTankImage(data.tank.image);
+			setTankName(data.tank.name);
+		}
+	}, [data]);
 
 	if (typeof id !== 'string') return;
 
 	const updateTank = async () => {
-		if (tankName.length === 0 || data?.tank?.name === tankName) {
+		if (!data?.tank?.name) {
+			toast({
+				title: 'Error',
+				description: 'Error updating tank',
+				status: 'error',
+				duration: 5000,
+				isClosable: true,
+			});
+			return;
+		}
+
+		if (data.tank.name === tankName && data.tank.image === tankImage) {
 			setEditing(false);
 			return;
 		}
 
-		adder.mutate(
-			{ id, name: tankName, image: tankImage },
-			{
-				onSuccess: () => {
-					setEditing(false);
-					console.log('success');
-				},
-				onError: (error: any) => {
-					throw new Error(error);
-				},
-			}
-		);
+		const updatedTank: any = { id };
+
+		if (data.tank.name !== tankName) updatedTank.name = tankName;
+		if (data.tank.image !== tankImage) updatedTank.image = tankImage;
+
+		adder.mutate(updatedTank);
+		setEditing(false);
 	};
 
 	return (
@@ -139,14 +169,18 @@ export default function Aquarium() {
 															const image: string =
 																e.target
 																	?.result as string;
-															console.log(
-																image.length
-															);
 															setTankImage(image);
 														};
 													},
 													error: (error: any) => {
-														console.log(error);
+														toast({
+															title: 'Error',
+															description:
+																error.message,
+															status: 'error',
+															duration: 5000,
+															isClosable: true,
+														});
 													},
 												});
 											} else {
@@ -176,7 +210,7 @@ export default function Aquarium() {
 						{!editing ? (
 							<>
 								<Heading color="white">
-									{data.tank?.name}
+									{data.tank.name}
 								</Heading>
 								<Pencil1Icon
 									color="white"
