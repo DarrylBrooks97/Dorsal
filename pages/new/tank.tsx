@@ -22,7 +22,9 @@ import {
 	AccordionIcon,
 	AccordionPanel,
 	Text,
+	Tooltip,
 } from '@chakra-ui/react';
+import { InfoCircledIcon } from '@radix-ui/react-icons';
 
 export default function NewTank() {
 	const route = useRouter();
@@ -113,8 +115,17 @@ export default function NewTank() {
 											<FormLabel
 												htmlFor="pH"
 												color="white"
+												display="flex"
+												flexDirection="row"
+												alignItems="center"
 											>
-												pH
+												<Text mr="2">pH</Text>
+												<Tooltip
+													label="Hello World"
+													placement="right"
+												>
+													<InfoCircledIcon color="white" />
+												</Tooltip>
 											</FormLabel>
 											<NumberInput min={6} max={14}>
 												<NumberInputField
@@ -125,10 +136,19 @@ export default function NewTank() {
 										</Box>
 										<Box>
 											<FormLabel
-												htmlFor="ammonia"
+												htmlFor="pH"
 												color="white"
+												display="flex"
+												flexDirection="row"
+												alignItems="center"
 											>
-												Ammonia
+												<Text mr="2">Ammonia</Text>
+												<Tooltip
+													label="Hello World"
+													placement="right"
+												>
+													<InfoCircledIcon color="white" />
+												</Tooltip>
 											</FormLabel>
 											<NumberInput min={0} max={6}>
 												<NumberInputField
@@ -139,10 +159,19 @@ export default function NewTank() {
 										</Box>
 										<Box>
 											<FormLabel
-												htmlFor="nirate"
+												htmlFor="pH"
 												color="white"
+												display="flex"
+												flexDirection="row"
+												alignItems="center"
 											>
-												Nirate
+												<Text mr="2">Nirate</Text>
+												<Tooltip
+													label="Hello World"
+													placement="right"
+												>
+													<InfoCircledIcon color="white" />
+												</Tooltip>
 											</FormLabel>
 											<NumberInput min={0} max={300}>
 												<NumberInputField
@@ -153,10 +182,19 @@ export default function NewTank() {
 										</Box>
 										<Box>
 											<FormLabel
-												htmlFor="nirite"
+												htmlFor="pH"
 												color="white"
+												display="flex"
+												flexDirection="row"
+												alignItems="center"
 											>
-												Nirite
+												<Text mr="2">Nirite</Text>
+												<Tooltip
+													label="Hello World"
+													placement="right"
+												>
+													<InfoCircledIcon color="white" />
+												</Tooltip>
 											</FormLabel>
 											<NumberInput min={0} max={100}>
 												<NumberInputField
@@ -167,10 +205,19 @@ export default function NewTank() {
 										</Box>
 										<Box>
 											<FormLabel
-												htmlFor="hardness"
+												htmlFor="pH"
 												color="white"
+												display="flex"
+												flexDirection="row"
+												alignItems="center"
 											>
-												Hardness
+												<Text mr="2">Hardness</Text>
+												<Tooltip
+													label="Hello World"
+													placement="right"
+												>
+													<InfoCircledIcon color="white" />
+												</Tooltip>
 											</FormLabel>
 											<NumberInput min={0} max={400}>
 												<NumberInputField
@@ -181,10 +228,19 @@ export default function NewTank() {
 										</Box>
 										<Box>
 											<FormLabel
-												htmlFor="chlorine"
+												htmlFor="pH"
 												color="white"
+												display="flex"
+												flexDirection="row"
+												alignItems="center"
 											>
-												Chlorine
+												<Text mr="2">Chlorine</Text>
+												<Tooltip
+													label="Hello World"
+													placement="right"
+												>
+													<InfoCircledIcon color="white" />
+												</Tooltip>
 											</FormLabel>
 											<NumberInput min={0} max={20}>
 												<NumberInputField
@@ -195,10 +251,20 @@ export default function NewTank() {
 										</Box>
 										<Box>
 											<FormLabel
-												htmlFor="alkalinity"
+												htmlFor="pH"
 												color="white"
+												display="flex"
+												flexDirection="row"
+												alignItems="center"
 											>
-												Alkalinity
+												<Text mr="2">Alkalinity</Text>
+												<Tooltip
+													hasArrow
+													label="Hello World"
+													placement="right"
+												>
+													<InfoCircledIcon color="white" />
+												</Tooltip>
 											</FormLabel>
 											<NumberInput min={100} max={400}>
 												<NumberInputField

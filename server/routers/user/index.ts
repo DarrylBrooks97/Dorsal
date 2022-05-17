@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { prisma } from '@clients/prisma';
 import { createRouter } from '../../createRouter';
-import { Plant, UserPlant } from '@prisma/client';
 
 export const userRouter = createRouter()
 	.query('fish', {
