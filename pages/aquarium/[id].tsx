@@ -306,7 +306,11 @@ export default function Aquarium() {
 							{tankCards.map((Card, index) => (
 								<>
 									{index === activeTab ? (
-										<Card key={index} id={id} />
+										<Card
+											key={index}
+											id={id}
+											editing={editing}
+										/>
 									) : null}
 								</>
 							))}
