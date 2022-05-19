@@ -2,8 +2,9 @@ import { trpc } from '@utils/trpc';
 import { Tank } from '@prisma/client';
 import { motion } from 'framer-motion';
 import { FaWater } from 'react-icons/fa';
-import { GiDoubleFish } from 'react-icons/gi';
+import { StatView } from './StatView';
 import { RiPlantFill } from 'react-icons/ri';
+import { GiDoubleFish } from 'react-icons/gi';
 import {
 	Box,
 	Stack,
@@ -19,10 +20,7 @@ import {
 	StatArrow,
 	Progress,
 	HStack,
-	NumberInput,
-	NumberInputField,
 } from '@chakra-ui/react';
-import { ReactNode } from 'react';
 
 const MotionStack = motion<StackProps>(Stack);
 
@@ -30,54 +28,16 @@ const hasANullStat = (tank: Tank): boolean => {
 	return Object.values(tank).some((value) => value === null);
 };
 
-function StatView({
-	editing,
-	tank,
-	tankKey,
-	defaultValue,
-	min,
-	max,
-	step,
-	precision,
-}: {
-	editing: boolean;
-	tank: Tank;
-	tankKey: keyof Tank;
-	defaultValue: number;
-	min: number;
-	max: number;
-	step: number;
-	precision?: number;
-}): JSX.Element {
-	return (
-		<>
-			{editing ? (
-				<NumberInput
-					variant="flushed"
-					value={tank[tankKey] as any}
-					{...{
-						defaultValue,
-						min,
-						max,
-						step,
-						precision,
-					}}
-				>
-					<NumberInputField color="white" textAlign="center" />
-				</NumberInput>
-			) : (
-				<Text color="gray.400">{tank[tankKey] as any}</Text>
-			)}
-		</>
-	);
-}
-
 export default function TankOverviewCard({
 	id,
 	editing,
+	updatedTank,
+	setUpdatedTank,
 }: {
 	id: string;
 	editing: boolean;
+	updatedTank: Partial<Tank>;
+	setUpdatedTank: (tank: Partial<Tank>) => void;
 }): JSX.Element {
 	const { data } = trpc.useQuery(['user.tanks.byId', { id: id as string }]);
 
@@ -141,6 +101,8 @@ export default function TankOverviewCard({
 											max: 14,
 											step: 0.1,
 											precision: 1,
+											updatedTank,
+											setUpdatedTank,
 										}}
 									/>
 								</HStack>
@@ -171,6 +133,8 @@ export default function TankOverviewCard({
 											min: 0,
 											max: 6,
 											step: 1,
+											updatedTank,
+											setUpdatedTank,
 										}}
 									/>
 								</HStack>
@@ -202,6 +166,8 @@ export default function TankOverviewCard({
 											min: 0,
 											max: 300,
 											step: 1,
+											updatedTank,
+											setUpdatedTank,
 										}}
 									/>
 								</HStack>
@@ -233,6 +199,8 @@ export default function TankOverviewCard({
 											min: 0,
 											max: 100,
 											step: 1,
+											updatedTank,
+											setUpdatedTank,
 										}}
 									/>
 								</HStack>
@@ -264,6 +232,8 @@ export default function TankOverviewCard({
 											min: 0,
 											max: 400,
 											step: 1,
+											updatedTank,
+											setUpdatedTank,
 										}}
 									/>
 								</HStack>
@@ -297,6 +267,8 @@ export default function TankOverviewCard({
 											min: 0,
 											max: 20,
 											step: 1,
+											updatedTank,
+											setUpdatedTank,
 										}}
 									/>
 								</HStack>
@@ -328,6 +300,8 @@ export default function TankOverviewCard({
 											min: 0,
 											max: 400,
 											step: 1,
+											updatedTank,
+											setUpdatedTank,
 										}}
 									/>
 								</HStack>

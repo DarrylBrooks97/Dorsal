@@ -23,6 +23,7 @@ import {
 	toast,
 	useToast,
 } from '@chakra-ui/react';
+import { Tank } from '@prisma/client';
 
 const MotionBox = motion<BoxProps>(Box);
 
@@ -75,6 +76,7 @@ export default function Aquarium() {
 			});
 		},
 	});
+	const [updatedTank, setUpdatedTank] = useState<any>();
 	const [activeTab, setActiveTab] = useState(0);
 	const [editing, setEditing] = useState(false);
 	const [tankName, setTankName] = useState(data?.tank?.name ?? 'null');
@@ -87,10 +89,9 @@ export default function Aquarium() {
 		if (data?.tank) {
 			setTankImage(data.tank.image);
 			setTankName(data.tank.name);
+			setUpdatedTank({ ...updatedTank, id });
 		}
 	}, [data]);
-
-	if (typeof id !== 'string') return;
 
 	const updateTank = async () => {
 		if (!data?.tank?.name) {
@@ -104,13 +105,6 @@ export default function Aquarium() {
 			return;
 		}
 
-		if (data.tank.name === tankName && data.tank.image === tankImage) {
-			setEditing(false);
-			return;
-		}
-
-		const updatedTank: any = { id };
-
 		if (data.tank.name !== tankName) updatedTank.name = tankName;
 		if (data.tank.image !== tankImage) updatedTank.image = tankImage;
 
@@ -120,7 +114,7 @@ export default function Aquarium() {
 
 	return (
 		<Box w="100vw" p="3" h="full">
-			{data?.tank ? (
+			{data?.tank && typeof id === 'string' ? (
 				<Stack
 					align="center"
 					h="full"
@@ -307,6 +301,13 @@ export default function Aquarium() {
 								<>
 									{index === activeTab ? (
 										<Card
+											{...{
+												key: index,
+												id,
+												editing,
+												updatedTank,
+												setUpdatedTank,
+											}}
 											key={index}
 											id={id}
 											editing={editing}

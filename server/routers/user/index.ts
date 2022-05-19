@@ -214,10 +214,14 @@ export const userRouter = createRouter()
 			id: z.string().cuid(),
 			name: z.string().min(1).max(255).optional(),
 			type: z.string().min(1).max(255).optional(),
-			pH: z.number().optional(),
 			image: z.string().optional(),
-			nirate: z.number().optional(),
-			hardness: z.number().optional(),
+			ammonia: z.number().min(0).max(6).optional(),
+			nirate: z.number().min(0).max(300).optional(),
+			nirite: z.number().min(0).max(100).optional(),
+			hardness: z.number().min(0).max(400).optional(),
+			chlorine: z.number().min(0).max(20).optional(),
+			alkalinity: z.number().min(0).max(400).optional(),
+			pH: z.number().min(6).max(14).optional(),
 			Fish: z
 				.array(
 					z.object({
