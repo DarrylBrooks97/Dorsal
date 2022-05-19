@@ -3,6 +3,7 @@ import Spinner from '@components/Spinner';
 import Compressor from 'compressorjs';
 import TankRemindersCard from '@components/TankReminders';
 import TankOverviewCard from '@components/TankOverviewCard';
+import { addDays, formatDistance } from 'date-fns';
 import { trpc } from '@utils/trpc';
 import { AiOutlineCamera } from 'react-icons/ai';
 import { motion } from 'framer-motion';
@@ -51,6 +52,8 @@ function PlantList({
 		plant: Plant;
 	}[];
 }) {
+	console.log(plants);
+
 	return (
 		<Stack spacing={3} w="calc(100vw - 3rem)">
 			<Input placeholder="Search Plants" bg="white" />
@@ -67,24 +70,34 @@ function PlantList({
 					<Box
 						overflow="hidden"
 						position="relative"
-						w="355px"
+						w="60%"
 						h="200px"
 						rounded="15px"
 						bg="blue"
 					>
 						<Image
-							width="100%"
-							height="200px"
-							layout="fixed"
+							layout="fill"
 							alt={p.name}
 							src={p.plant.image_url as string}
 						/>
 					</Box>
-					<Stack spacing={3}>
+					<Stack spacing={3} textAlign="center" w="full" h="full">
 						<Heading color="white" textAlign="center">
 							{p.name}
 						</Heading>
 						<Text color="gray.400">{p.plant.species}</Text>
+						<Text color="white">
+							Next reminder in{' '}
+							{formatDistance(
+								addDays(
+									new Date(
+										p.maintained_at as unknown as string
+									),
+									3
+								),
+								new Date()
+							)}
+						</Text>
 					</Stack>
 				</HStack>
 			))}
