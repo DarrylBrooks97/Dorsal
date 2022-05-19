@@ -23,7 +23,6 @@ import {
 	Select,
 	Box,
 } from '@chakra-ui/react';
-import cuid from 'cuid';
 
 export default function AddPlant() {
 	const { data: plantsData } = trpc.useQuery(['general.plants']);

@@ -121,6 +121,12 @@ export const userRouter = createRouter()
 				where: {
 					tankId: input.id,
 				},
+				select: {
+					plant: true,
+					name: true,
+					id: true,
+					maintained_at: true,
+				},
 			});
 
 			return {

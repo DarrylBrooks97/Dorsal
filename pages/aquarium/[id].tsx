@@ -20,10 +20,9 @@ import {
 	InputRightElement,
 	Stack,
 	Text,
-	toast,
 	useToast,
 } from '@chakra-ui/react';
-import { Tank } from '@prisma/client';
+import { Plant, UserPlant } from '@prisma/client';
 
 const MotionBox = motion<BoxProps>(Box);
 
@@ -42,11 +41,62 @@ const TankOptions: { label: string }[] = [
 	},
 ];
 
+function PlantList({
+	plants,
+}: {
+	plants: {
+		id: string;
+		maintained_at: Date | null;
+		name: string;
+		plant: Plant;
+	}[];
+}) {
+	return (
+		<Stack spacing={3} w="calc(100vw - 3rem)">
+			<Input placeholder="Search Plants" bg="white" />
+			{plants.map((p) => (
+				<HStack
+					key={p.id}
+					w="full"
+					h="200px"
+					spacing={3}
+					pos="relative"
+					bg="rgba(255,255,255,0.4)"
+					rounded="15px"
+				>
+					<Box
+						overflow="hidden"
+						position="relative"
+						w="355px"
+						h="200px"
+						rounded="15px"
+						bg="blue"
+					>
+						<Image
+							width="100%"
+							height="200px"
+							layout="fixed"
+							alt={p.name}
+							src={p.plant.image_url as string}
+						/>
+					</Box>
+					<Stack spacing={3}>
+						<Heading color="white" textAlign="center">
+							{p.name}
+						</Heading>
+						<Text color="gray.400">{p.plant.species}</Text>
+					</Stack>
+				</HStack>
+			))}
+		</Stack>
+	);
+}
+
 const tankCards = [
 	TankOverviewCard,
 	TankRemindersCard,
 	TankRemindersCard,
-	TankRemindersCard,
+	PlantList,
 ];
 
 export default function Aquarium() {
@@ -109,6 +159,7 @@ export default function Aquarium() {
 		if (data.tank.image !== tankImage) updatedTank.image = tankImage;
 
 		adder.mutate(updatedTank);
+		setUpdatedTank({ id });
 		setEditing(false);
 	};
 
@@ -307,6 +358,7 @@ export default function Aquarium() {
 												editing,
 												updatedTank,
 												setUpdatedTank,
+												plants: data.plants,
 											}}
 											key={index}
 											id={id}
