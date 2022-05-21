@@ -115,6 +115,12 @@ export const userRouter = createRouter()
 				where: {
 					tankId: input.id,
 				},
+				select: {
+					id: true,
+					name: true,
+					maintained_at: true,
+					fish: true,
+				},
 			});
 
 			const plants = await prisma.userPlant.findMany({

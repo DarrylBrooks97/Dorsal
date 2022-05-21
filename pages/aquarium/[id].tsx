@@ -3,12 +3,13 @@ import Spinner from '@components/Spinner';
 import Compressor from 'compressorjs';
 import TankRemindersCard from '@components/TankReminders';
 import TankOverviewCard from '@components/TankOverviewCard';
-import { addDays, formatDistance } from 'date-fns';
 import { trpc } from '@utils/trpc';
-import { AiOutlineCamera } from 'react-icons/ai';
+import { Fish, Plant } from '@prisma/client';
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import { AiOutlineCamera } from 'react-icons/ai';
+import { useEffect, useState } from 'react';
+import { addDays, formatDistance } from 'date-fns';
 import { CheckIcon, Cross1Icon, Pencil1Icon } from '@radix-ui/react-icons';
 import {
 	Box,
@@ -23,7 +24,6 @@ import {
 	Text,
 	useToast,
 } from '@chakra-ui/react';
-import { Plant, UserPlant } from '@prisma/client';
 
 const MotionBox = motion<BoxProps>(Box);
 
@@ -42,6 +42,80 @@ const TankOptions: { label: string }[] = [
 	},
 ];
 
+function FishList({
+	fish,
+}: {
+	fish: {
+		id: string;
+		maintained_at: Date | null;
+		name: string;
+		fish: Fish;
+	}[];
+}) {
+	const [filteredFish, setFilteredFish] = useState(fish);
+
+	return (
+		<Stack spacing={3} w="calc(100vw - 3rem)">
+			<Input
+				placeholder="Search Plants"
+				bg="white"
+				onChange={(e) => {
+					setFilteredFish(
+						fish.filter((f) =>
+							f.name
+								.toLowerCase()
+								.includes(e.target.value.toLocaleLowerCase())
+						)
+					);
+				}}
+			/>
+			{filteredFish.map((f) => (
+				<HStack
+					key={f.id}
+					w="full"
+					h="200px"
+					spacing={3}
+					pos="relative"
+					bg="rgba(255,255,255,0.4)"
+					rounded="15px"
+				>
+					<Box
+						overflow="hidden"
+						position="relative"
+						w="full"
+						h="200px"
+						bg="blue"
+						rounded="15px"
+					>
+						<Image
+							layout="fill"
+							alt={f.name}
+							src={f.fish.image_url as string}
+						/>
+					</Box>
+					<Stack spacing={3} textAlign="center" w="full" h="full">
+						<Heading color="white" textAlign="center">
+							{f.name}
+						</Heading>
+						<Text color="gray.400">{f.fish.species}</Text>
+						<Text color="white" fontSize="sm">
+							Next reminder in{' '}
+							{formatDistance(
+								addDays(
+									new Date(
+										f.maintained_at as unknown as string
+									),
+									3
+								),
+								new Date()
+							)}
+						</Text>
+					</Stack>
+				</HStack>
+			))}
+		</Stack>
+	);
+}
 function PlantList({
 	plants,
 }: {
@@ -52,12 +126,24 @@ function PlantList({
 		plant: Plant;
 	}[];
 }) {
-	console.log(plants);
+	const [filteredPlants, setFilteredPlants] = useState(plants);
 
 	return (
 		<Stack spacing={3} w="calc(100vw - 3rem)">
-			<Input placeholder="Search Plants" bg="white" />
-			{plants.map((p) => (
+			<Input
+				placeholder="Search Plants"
+				bg="white"
+				onChange={(e) => {
+					setFilteredPlants(
+						plants.filter((p) =>
+							p.name
+								.toLowerCase()
+								.includes(e.target.value.toLocaleLowerCase())
+						)
+					);
+				}}
+			/>
+			{filteredPlants.map((p) => (
 				<HStack
 					key={p.id}
 					w="full"
@@ -70,10 +156,10 @@ function PlantList({
 					<Box
 						overflow="hidden"
 						position="relative"
-						w="60%"
+						w="full"
 						h="200px"
-						rounded="15px"
 						bg="blue"
+						rounded="15px"
 					>
 						<Image
 							layout="fill"
@@ -86,7 +172,7 @@ function PlantList({
 							{p.name}
 						</Heading>
 						<Text color="gray.400">{p.plant.species}</Text>
-						<Text color="white">
+						<Text color="white" fontSize="sm">
 							Next reminder in{' '}
 							{formatDistance(
 								addDays(
@@ -105,12 +191,7 @@ function PlantList({
 	);
 }
 
-const tankCards = [
-	TankOverviewCard,
-	TankRemindersCard,
-	TankRemindersCard,
-	PlantList,
-];
+const tankCards = [TankOverviewCard, TankRemindersCard, FishList, PlantList];
 
 export default function Aquarium() {
 	const toast = useToast();
@@ -372,6 +453,7 @@ export default function Aquarium() {
 												updatedTank,
 												setUpdatedTank,
 												plants: data.plants,
+												fish: data.fish,
 											}}
 											key={index}
 											id={id}
