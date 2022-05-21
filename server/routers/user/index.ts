@@ -13,32 +13,19 @@ export const userRouter = createRouter()
 	})
 	.mutation('addFish', {
 		input: z.object({
-			id: z.string().uuid(),
-			user_id: z.string().cuid().optional(),
-			tankId: z.string().cuid().optional(),
-			name: z.string().min(1).max(255),
-			image_url: z.string().min(1).max(255),
-			habitat: z.string().min(1).max(255),
-			species: z.string().min(1).max(255),
-			tank_sizes: z.string().min(1).max(255),
-			illnesses: z.string().min(1).max(255),
-			diet: z.string().min(1).max(255),
-			tank_friends: z.string().min(1).max(255),
-			water_params: z.object({
-				ammonia: z.number().min(0).max(6),
-				nirate: z.number().min(0).max(300),
-				nirite: z.number().min(0).max(100),
-				hardness: z.number().min(0).max(400),
-				chlorine: z.number().min(0).max(20),
-				alkalinity: z.number().min(0).max(400),
-				pH: z.number().min(6).max(14),
-				type: z.string().min(1).max(255),
-			}),
+			fish: z.array(
+				z.object({
+					id: z.string().uuid(),
+					user_id: z.string().cuid().optional(),
+					tankId: z.string().cuid().optional(),
+					name: z.string().min(1).max(255),
+				})
+			),
 		}),
 		async resolve({ input }) {
 			return {
-				fish: await prisma.fish.create({
-					data: input,
+				fish: await prisma.userFish.createMany({
+					data: input.fish,
 				}),
 			};
 		},

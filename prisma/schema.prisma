@@ -57,18 +57,23 @@ model VerificationToken {
 }
 
 model Fish {
-  id            String     @id @default(cuid())
-  name          String     @db.VarChar(255)
-  image_url     String     @db.VarChar(255)
-  habitat       String     @db.VarChar(255)
-  species       String     @db.VarChar(255)
-  tank_sizes    String     @db.VarChar(255)
-  diet          String     @db.VarChar(255)
+  id            String    @id @default(cuid())
+  friend_id     String    @default(cuid())
+  name          String    @db.VarChar(255)
+  image_url     String    @db.VarChar(255)
+  habitat       String    @db.VarChar(255)
+  species       String    @db.VarChar(255)
+  max_size      Int       @db.Int
+  temperament   String    @db.VarChar(255)
+  min_tank_size Int       @db.Int
+  diet          String    @db.VarChar(255)
   water_params  Json
-  tank_friends  Json
-  illnesses     String     @db.VarChar(255)
-  maintained_at DateTime?  @db.Timestamp(0)
-  UserFish      UserFish[]
+  illnesses     String    @db.VarChar(255)
+  maintained_at DateTime? @db.Timestamp(0)
+  friends       Fish[]    @relation("Friends")
+
+  fish_id  Fish       @relation("Friends", fields: [friend_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  UserFish UserFish[]
 }
 
 model Plant {
@@ -86,29 +91,29 @@ model Plant {
 
 model UserFish {
   id            String    @id @default(cuid())
-  userId        String    @default(cuid())
-  tankId        String    @default(cuid())
+  user_id       String    @default(cuid())
+  tank_id       String    @default(cuid())
   name          String    @db.VarChar(255)
   maintained_at DateTime? @db.Timestamp(0)
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tank          Tank      @relation(fields: [tankId], references: [id], onDelete: Cascade)
+  user          User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  tank          Tank      @relation(fields: [tank_id], references: [id], onDelete: Cascade)
   fish          Fish      @relation(fields: [id], references: [id], onDelete: Cascade)
 
-  @@index([userId])
+  @@index([user_id])
 }
 
 model UserPlant {
   id            String    @id @default(cuid())
-  userId        String    @default(cuid())
-  tankId        String    @default(cuid())
-  plantId       String    @default(cuid())
+  user_id       String    @default(cuid())
+  tank_id       String    @default(cuid())
+  plant_id      String    @default(cuid())
   name          String    @db.VarChar(255)
   maintained_at DateTime? @db.Timestamp(0)
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tank          Tank      @relation(fields: [tankId], references: [id], onDelete: Cascade)
-  plant         Plant     @relation(fields: [plantId], references: [id], onDelete: Cascade)
+  user          User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  tank          Tank      @relation(fields: [tank_id], references: [id], onDelete: Cascade)
+  plant         Plant     @relation(fields: [plant_id], references: [id], onDelete: Cascade)
 
-  @@index([userId])
+  @@index([user_id])
 }
 
 model Tank {
