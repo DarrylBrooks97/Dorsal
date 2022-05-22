@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { prisma } from '@clients/prisma';
 import { createRouter } from '../../createRouter';
+import { UserFish, UserPlant } from '@prisma/client';
 
 export const userRouter = createRouter()
 	.query('fish', {
@@ -17,7 +18,7 @@ export const userRouter = createRouter()
 				z.object({
 					id: z.string().uuid(),
 					user_id: z.string().cuid().optional(),
-					tankId: z.string().cuid().optional(),
+					tank_id: z.string().cuid().optional(),
 					name: z.string().min(1).max(255),
 				})
 			),
@@ -33,26 +34,11 @@ export const userRouter = createRouter()
 	.mutation('deleteFish', {
 		input: z.object({ id: z.string().cuid() }),
 		async resolve({ input }) {
-			const { tankId } = await prisma.userFish.delete({
+			await prisma.userFish.delete({
 				where: {
 					id: input.id,
 				},
 			});
-
-			if (tankId) {
-				await prisma.tank.update({
-					where: {
-						id: tankId,
-					},
-					data: {
-						Fish: {
-							delete: {
-								id: input.id,
-							},
-						},
-					},
-				});
-			}
 
 			return {
 				status: 202,
@@ -93,34 +79,55 @@ export const userRouter = createRouter()
 			id: z.string().cuid(),
 		}),
 		async resolve({ input }) {
-			const tank = await prisma.tank.findUnique({
+			const tank = await prisma.tank.findFirst({
 				where: {
 					id: input.id,
 				},
 			});
-			const fish = await prisma.userFish.findMany({
+
+			const userFish = await prisma.userFish.findMany({
 				where: {
-					tankId: input.id,
-				},
-				select: {
-					id: true,
-					name: true,
-					maintained_at: true,
-					fish: true,
+					tank_id: input.id,
 				},
 			});
 
-			const plants = await prisma.userPlant.findMany({
+			const fish = await Promise.all(
+				userFish.map(async (f: UserFish) => {
+					const parentFish = await prisma.fish.findFirst({
+						where: {
+							id: f.id,
+						},
+					});
+
+					return {
+						...f,
+						image_url: parentFish?.image_url,
+						species: parentFish?.species,
+					};
+				})
+			);
+
+			const userPlant = await prisma.userPlant.findMany({
 				where: {
-					tankId: input.id,
-				},
-				select: {
-					plant: true,
-					name: true,
-					id: true,
-					maintained_at: true,
+					tank_id: input.id,
 				},
 			});
+
+			const plants = await Promise.all(
+				userPlant.map(async (p: UserPlant) => {
+					const parentPlant = await prisma.plant.findFirst({
+						where: {
+							id: p.plant_id,
+						},
+					});
+
+					return {
+						...p,
+						image_url: parentPlant?.image_url,
+						species: parentPlant?.species,
+					};
+				})
+			);
 
 			return {
 				tank,
@@ -148,7 +155,7 @@ export const userRouter = createRouter()
 					z.object({
 						id: z.string().uuid(),
 						user_id: z.string().cuid().optional(),
-						tankId: z.string().cuid().optional(),
+						tank_id: z.string().cuid().optional(),
 						name: z.string().min(1).max(255),
 						image_url: z.string().min(1).max(255),
 						habitat: z.string().min(1).max(255),
@@ -321,9 +328,9 @@ export const userRouter = createRouter()
 			plants: z.array(
 				z.object({
 					name: z.string().min(1).max(255),
-					plantId: z.string().cuid(),
-					userId: z.string().cuid(),
-					tankId: z.string().cuid(),
+					plant_id: z.string().cuid(),
+					user_id: z.string().cuid(),
+					tank_id: z.string().cuid(),
 				})
 			),
 		}),
@@ -341,7 +348,7 @@ export const userRouter = createRouter()
 		input: z.object({
 			id: z.string().cuid(),
 			name: z.string().min(1).max(255).optional(),
-			tankId: z.string().cuid().optional(),
+			tank_id: z.string().cuid().optional(),
 			image_url: z.string().min(1).max(255).optional(),
 			illnesses: z.string().min(1).max(255).optional(),
 		}),
@@ -366,26 +373,11 @@ export const userRouter = createRouter()
 			id: z.string().cuid(),
 		}),
 		async resolve({ input }) {
-			const { tankId } = await prisma.userPlant.delete({
+			await prisma.userPlant.delete({
 				where: {
 					id: input.id,
 				},
 			});
-
-			if (tankId) {
-				await prisma.tank.update({
-					where: {
-						id: tankId,
-					},
-					data: {
-						Plant: {
-							delete: {
-								id: input.id,
-							},
-						},
-					},
-				});
-			}
 
 			return {
 				status: 202,

@@ -4,7 +4,7 @@ import Compressor from 'compressorjs';
 import TankRemindersCard from '@components/TankReminders';
 import TankOverviewCard from '@components/TankOverviewCard';
 import { trpc } from '@utils/trpc';
-import { Fish, Plant } from '@prisma/client';
+import { Fish, Plant, UserFish, UserPlant } from '@prisma/client';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/router';
 import { AiOutlineCamera } from 'react-icons/ai';
@@ -42,16 +42,12 @@ const TankOptions: { label: string }[] = [
 	},
 ];
 
-function FishList({
-	fish,
-}: {
-	fish: {
-		id: string;
-		maintained_at: Date | null;
-		name: string;
-		fish: Fish;
-	}[];
-}) {
+interface FishList extends UserFish {
+	species: string;
+	image_url: string;
+}
+
+function FishList({ fish }: { fish: FishList[] }) {
 	const [filteredFish, setFilteredFish] = useState(fish);
 
 	return (
@@ -90,14 +86,14 @@ function FishList({
 						<Image
 							layout="fill"
 							alt={f.name}
-							src={f.fish.image_url as string}
+							src={f.image_url as string}
 						/>
 					</Box>
 					<Stack spacing={3} textAlign="center" w="full" h="full">
 						<Heading color="white" textAlign="center">
 							{f.name}
 						</Heading>
-						<Text color="gray.400">{f.fish.species}</Text>
+						<Text color="gray.400">{f.species}</Text>
 						<Text color="white" fontSize="sm">
 							Next reminder in{' '}
 							{formatDistance(
@@ -116,16 +112,13 @@ function FishList({
 		</Stack>
 	);
 }
-function PlantList({
-	plants,
-}: {
-	plants: {
-		id: string;
-		maintained_at: Date | null;
-		name: string;
-		plant: Plant;
-	}[];
-}) {
+
+interface PlantList extends UserPlant {
+	species: string;
+	image_url: string;
+}
+
+function PlantList({ plants }: { plants: PlantList[] }) {
 	const [filteredPlants, setFilteredPlants] = useState(plants);
 
 	return (
@@ -164,14 +157,14 @@ function PlantList({
 						<Image
 							layout="fill"
 							alt={p.name}
-							src={p.plant.image_url as string}
+							src={p.image_url as string}
 						/>
 					</Box>
 					<Stack spacing={3} textAlign="center" w="full" h="full">
 						<Heading color="white" textAlign="center">
 							{p.name}
 						</Heading>
-						<Text color="gray.400">{p.plant.species}</Text>
+						<Text color="gray.400">{p.species}</Text>
 						<Text color="white" fontSize="sm">
 							Next reminder in{' '}
 							{formatDistance(
@@ -452,12 +445,9 @@ export default function Aquarium() {
 												editing,
 												updatedTank,
 												setUpdatedTank,
-												plants: data.plants,
-												fish: data.fish,
+												plants: data.plants as unknown as PlantList[],
+												fish: data.fish as unknown as FishList[],
 											}}
-											key={index}
-											id={id}
-											editing={editing}
 										/>
 									) : null}
 								</>

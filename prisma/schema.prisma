@@ -58,7 +58,7 @@ model VerificationToken {
 
 model Fish {
   id            String    @id @default(cuid())
-  friend_id     String    @default(cuid())
+  friend_id     String?   @default(cuid())
   name          String    @db.VarChar(255)
   image_url     String    @db.VarChar(255)
   habitat       String    @db.VarChar(255)
@@ -72,7 +72,7 @@ model Fish {
   maintained_at DateTime? @db.Timestamp(0)
   friends       Fish[]    @relation("Friends")
 
-  fish_id  Fish       @relation("Friends", fields: [friend_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  fish_id  Fish?      @relation("Friends", fields: [friend_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   UserFish UserFish[]
 }
 

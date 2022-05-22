@@ -327,9 +327,9 @@ export default function PlantView({
 										return {
 											id: cuid(),
 											name: p.name,
-											plantId: p.id,
-											userId: sessionData.userInfo.id,
-											tankId,
+											plant_id: p.id,
+											user_id: sessionData.userInfo.id,
+											tank_id: tankId,
 										};
 									});
 
