@@ -1,10 +1,11 @@
 import { trpc } from '@utils/trpc';
+import { Fish } from '@prisma/client';
 import { motion } from 'framer-motion';
 import { BaseSyntheticEvent, useEffect, useState } from 'react';
 import {
 	Stack,
-	Input,
 	HStack,
+	Input,
 	Button,
 	Center,
 	Text,
@@ -28,28 +29,28 @@ import {
 	AccordionPanel,
 } from '@chakra-ui/react';
 import Image from 'next/image';
-import { Fish } from '@prisma/client';
+import { pl } from 'date-fns/locale';
 
 const MotionCenter = motion<CenterProps>(Center);
 
 export default function AddFish() {
 	const { data } = trpc.useQuery(['user.fish']);
 	const [filteredFish, setFilteredFish] = useState(data?.fish);
-	const [selectedFish, setSelectedFish] = useState<Fish>();
+	const [viewedFish, setViewedFish] = useState<Fish>();
+	const [selectedFish, setSelectedFish] = useState<Fish[]>([] as Fish[]);
 	const {
 		isOpen: isFilterOpen,
 		onClose: onFilterClose,
-		onToggle: onFilterToggle,
+		onToggle: filterToggle,
 	} = useDisclosure();
 	const {
 		isOpen: isFishOpen,
 		onClose: onFishClose,
-		onToggle: onFishToggle,
+		onToggle: fishToggle,
 	} = useDisclosure();
 
 	useEffect(() => {
 		setFilteredFish(data?.fish);
-		console.log(data?.fish);
 	}, [data]);
 
 	const handleFilter = (e: BaseSyntheticEvent) => {
@@ -105,8 +106,8 @@ export default function AddFish() {
 							}),
 						}}
 						onClick={() => {
-							onFishToggle();
-							setSelectedFish(fish);
+							fishToggle();
+							setViewedFish(fish);
 						}}
 					>
 						<Image
@@ -134,7 +135,7 @@ export default function AddFish() {
 				<DrawerOverlay />
 				<DrawerContent>
 					<DrawerCloseButton />
-					<DrawerHeader>{selectedFish?.name}</DrawerHeader>
+					<DrawerHeader>{viewedFish?.name}</DrawerHeader>
 					<DrawerBody>
 						<Stack mb="1em">
 							<Box
@@ -147,7 +148,7 @@ export default function AddFish() {
 							>
 								<Image
 									src={
-										selectedFish?.image_url ??
+										viewedFish?.image_url ??
 										'https://images.unsplash.com/photo-1617994679330-2883951d0073?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80'
 									}
 									alt="fish"
@@ -179,7 +180,8 @@ export default function AddFish() {
 										>
 											<Heading fontSize="1.5rem">
 												{
-													selectedFish?.water_params[
+													//@ts-ignore
+													viewedFish?.water_params[
 														'pH'
 													]
 												}
@@ -194,7 +196,8 @@ export default function AddFish() {
 										>
 											<Heading fontSize="1.5rem">
 												{
-													selectedFish?.water_params[
+													//@ts-ignore
+													viewedFish?.water_params[
 														'ammonia'
 													]
 												}
@@ -209,7 +212,8 @@ export default function AddFish() {
 										>
 											<Heading fontSize="1.5rem">
 												{
-													selectedFish?.water_params[
+													//@ts-ignore
+													viewedFish?.water_params[
 														'alkalinity'
 													]
 												}
@@ -224,7 +228,8 @@ export default function AddFish() {
 										>
 											<Heading fontSize="1.5rem">
 												{
-													selectedFish?.water_params[
+													//@ts-ignore
+													viewedFish?.water_params[
 														'chlorine'
 													]
 												}
@@ -239,7 +244,8 @@ export default function AddFish() {
 										>
 											<Heading fontSize="1.5rem">
 												{
-													selectedFish?.water_params[
+													//@ts-ignore
+													viewedFish?.water_params[
 														'nirate'
 													]
 												}
@@ -254,7 +260,8 @@ export default function AddFish() {
 										>
 											<Heading fontSize="1.5rem">
 												{
-													selectedFish?.water_params[
+													//@ts-ignore
+													viewedFish?.water_params[
 														'nirite'
 													]
 												}
@@ -269,7 +276,8 @@ export default function AddFish() {
 										>
 											<Heading fontSize="1.5rem">
 												{
-													selectedFish?.water_params[
+													//@ts-ignore
+													viewedFish?.water_params[
 														'hardness'
 													]
 												}
@@ -288,7 +296,7 @@ export default function AddFish() {
 								alignSelf="end"
 							>
 								<Heading fontSize="1.5rem">
-									{selectedFish?.max_size} in
+									{viewedFish?.max_size} in
 								</Heading>
 								<Text>Max Size</Text>
 							</GridItem>
@@ -298,7 +306,7 @@ export default function AddFish() {
 								alignSelf="end"
 							>
 								<Heading fontSize="1.5rem">
-									{selectedFish?.min_tank_size} gal
+									{viewedFish?.min_tank_size} gal
 								</Heading>
 								<Text>Tank Size</Text>
 							</GridItem>
@@ -308,7 +316,7 @@ export default function AddFish() {
 								alignSelf="end"
 							>
 								<Heading fontSize="1.5rem">
-									{selectedFish?.habitat}
+									{viewedFish?.habitat}
 								</Heading>
 								<Text>Habitat</Text>
 							</GridItem>
@@ -318,7 +326,7 @@ export default function AddFish() {
 								alignSelf="end"
 							>
 								<Heading fontSize="1.5rem">
-									{selectedFish?.diet}
+									{viewedFish?.diet}
 								</Heading>
 								<Text>Diet</Text>
 							</GridItem>
@@ -328,7 +336,7 @@ export default function AddFish() {
 								alignSelf="end"
 							>
 								<Heading fontSize="1.5rem">
-									{selectedFish?.illnesses}
+									{viewedFish?.illnesses}
 								</Heading>
 								<Text>Illnesses</Text>
 							</GridItem>
@@ -338,24 +346,79 @@ export default function AddFish() {
 								alignSelf="end"
 							>
 								<Heading fontSize="1.5rem">
-									{selectedFish?.temperament}
+									{viewedFish?.temperament}
 								</Heading>
 								<Text>Temperament</Text>
 							</GridItem>
 						</Grid>
+						<HStack w="full" justify="center">
+							<Button
+								colorScheme="red"
+								onClick={() => {
+									const quantity = selectedFish.reduce(
+										(acc, { id }) => {
+											if (id === viewedFish?.id) {
+												return acc + 1;
+											}
+											return acc;
+										},
+										0
+									);
+									if (quantity === 1) {
+										setSelectedFish(
+											selectedFish.filter(
+												(oldFish: Fish) =>
+													oldFish.id !==
+													viewedFish?.id
+											)
+										);
+										fishToggle();
+										return;
+									}
+									selectedFish.pop();
+								}}
+							>
+								-
+							</Button>
+							<Input
+								w="60px"
+								value={selectedFish.reduce((acc, { id }) => {
+									if (id === viewedFish?.id) {
+										return acc + 1;
+									}
+									return acc;
+								}, 0)}
+								textAlign="center"
+								onChange={(e) => {}}
+							/>
+							<Button
+								colorScheme="green"
+								onClick={() => {
+									setSelectedFish([
+										...(selectedFish as any),
+										viewedFish,
+									]);
+								}}
+							>
+								+
+							</Button>
+						</HStack>
 					</DrawerBody>
 					<DrawerFooter>
 						<Button
 							colorScheme="green"
 							mr={3}
-							onClick={() => onFishToggle()}
+							onClick={() => {
+								fishToggle();
+								return {};
+							}}
 						>
 							Add
 						</Button>
 						<Button
 							variant="outline"
 							colorScheme="red"
-							onClick={() => onFishToggle()}
+							onClick={() => fishToggle()}
 						>
 							Cancel
 						</Button>
