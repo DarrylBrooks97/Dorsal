@@ -4,7 +4,7 @@ import Compressor from 'compressorjs';
 import TankRemindersCard from '@components/TankReminders';
 import TankOverviewCard from '@components/TankOverviewCard';
 import { trpc } from '@utils/trpc';
-import { Fish, Plant, UserFish, UserPlant } from '@prisma/client';
+import { UserFish, UserPlant } from '@prisma/client';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/router';
 import { AiOutlineCamera } from 'react-icons/ai';
@@ -191,28 +191,6 @@ export default function Aquarium() {
 	const invalidate = trpc.useContext();
 	const { id } = useRouter().query;
 	const { data } = trpc.useQuery(['user.tanks.byId', { id: id as string }]);
-	const adder = trpc.useMutation(['user.updateTank'], {
-		onSuccess: () => {
-			invalidate.invalidateQueries(['user.tanks.byId']);
-			setEditing(false);
-			toast({
-				title: 'Tank Updated',
-				description: 'Tank updated successfully',
-				status: 'success',
-				duration: 5000,
-				isClosable: true,
-			});
-		},
-		onError: (error: any) => {
-			toast({
-				title: 'Error',
-				description: error.message,
-				status: 'error',
-				duration: 5000,
-				isClosable: true,
-			});
-		},
-	});
 	const [updatedTank, setUpdatedTank] = useState<any>();
 	const [activeTab, setActiveTab] = useState(0);
 	const [editing, setEditing] = useState(false);
@@ -221,6 +199,34 @@ export default function Aquarium() {
 		data?.tank?.image ??
 			'https://images.unsplash.com/photo-1619611384968-e45fbd60bc5c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1074&q=80'
 	);
+	const adder = trpc.useMutation(['user.updateTank'], {
+		onMutate: async (updatedTank: any) => {
+			invalidate.cancelQuery(['user.tanks.byId', { id: id as string }]);
+			invalidate.setQueryData(['user.tanks.byId', { id: id as string }], {
+				...updatedTank,
+			});
+			return {
+				updatedTank,
+			};
+		},
+		onSettled: (_newData, error, _variables, context: any) => {
+			if (error) {
+				toast({
+					title: 'Error',
+					description: error.message,
+					status: 'error',
+					duration: 5000,
+					isClosable: true,
+				});
+				setUpdatedTank(context?.updatedTank);
+			}
+			invalidate.invalidateQueries([
+				'user.tanks.byId',
+				{ id: id as string },
+			]);
+			setEditing(false);
+		},
+	});
 
 	useEffect(() => {
 		if (data?.tank) {
@@ -342,7 +348,7 @@ export default function Aquarium() {
 						{!editing ? (
 							<>
 								<Heading color="white">
-									{data.tank.name}
+									{data?.tank?.name}
 								</Heading>
 								<Pencil1Icon
 									color="white"
@@ -364,7 +370,6 @@ export default function Aquarium() {
 									textAlign="center"
 									variant="flushed"
 									placeholder={data.tank?.name}
-									value={tankName}
 									onChange={(e) =>
 										setTankName(e.target.value)
 									}
@@ -411,6 +416,7 @@ export default function Aquarium() {
 					>
 						{TankOptions.map((option, index) => (
 							<Text
+								as="h3"
 								key={index}
 								fontSize="20px"
 								color="white"
