@@ -19,15 +19,23 @@ import {
 	DrawerHeader,
 	DrawerFooter,
 	Box,
+	Grid,
+	GridItem,
+	Accordion,
+	AccordionItem,
+	AccordionButton,
+	AccordionIcon,
+	AccordionPanel,
 } from '@chakra-ui/react';
 import Image from 'next/image';
+import { Fish } from '@prisma/client';
 
 const MotionCenter = motion<CenterProps>(Center);
 
 export default function AddFish() {
 	const { data } = trpc.useQuery(['user.fish']);
 	const [filteredFish, setFilteredFish] = useState(data?.fish);
-	// const [selectedFish, setSelectedFish] = useState<>();
+	const [selectedFish, setSelectedFish] = useState<Fish>();
 	const {
 		isOpen: isFilterOpen,
 		onClose: onFilterClose,
@@ -41,6 +49,7 @@ export default function AddFish() {
 
 	useEffect(() => {
 		setFilteredFish(data?.fish);
+		console.log(data?.fish);
 	}, [data]);
 
 	const handleFilter = (e: BaseSyntheticEvent) => {
@@ -95,7 +104,10 @@ export default function AddFish() {
 								},
 							}),
 						}}
-						onClick={() => onFishToggle()}
+						onClick={() => {
+							onFishToggle();
+							setSelectedFish(fish);
+						}}
 					>
 						<Image
 							layout="fill"
@@ -106,11 +118,13 @@ export default function AddFish() {
 						<Stack
 							pos="absolute"
 							left="50%"
-							bottom="5%"
+							bottom="3%"
 							textAlign="center"
 							transform="translateX(-50%)"
 						>
-							<Heading color="black">{fish.name}</Heading>
+							<Heading color="black" fontSize="2xl">
+								{fish.name}
+							</Heading>
 							<Text color="gray.600">{fish.species}</Text>
 						</Stack>
 					</MotionCenter>
@@ -120,34 +134,229 @@ export default function AddFish() {
 				<DrawerOverlay />
 				<DrawerContent>
 					<DrawerCloseButton />
-					<DrawerHeader>Change me</DrawerHeader>
+					<DrawerHeader>{selectedFish?.name}</DrawerHeader>
 					<DrawerBody>
-						<Stack>
+						<Stack mb="1em">
 							<Box
 								w="full"
 								h="300px"
 								pos="relative"
 								rounded="15px"
 								overflow="hidden"
+								boxShadow="md"
 							>
 								<Image
-									src="https://images.unsplash.com/photo-1617994679330-2883951d0073?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80"
+									src={
+										selectedFish?.image_url ??
+										'https://images.unsplash.com/photo-1617994679330-2883951d0073?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80'
+									}
 									alt="fish"
 									layout="fill"
 								/>
 							</Box>
-							<Text>Fish name</Text>
 						</Stack>
+						<Accordion border="white" mb={9} allowToggle>
+							<AccordionItem>
+								<AccordionButton>
+									<Box flex="1" textAlign="center">
+										<Text>Tank Parameters</Text>
+									</Box>
+									<AccordionIcon color="green" />
+								</AccordionButton>
+								<AccordionPanel
+									pos="relative"
+									overflowY="scroll"
+								>
+									<Grid
+										gap={5}
+										templateColumns="repeat(2, 1fr)"
+									>
+										<GridItem
+											rounded="15px"
+											flexDirection="column"
+											textAlign="center"
+											alignSelf="end"
+										>
+											<Heading fontSize="1.5rem">
+												{
+													selectedFish?.water_params[
+														'pH'
+													]
+												}
+											</Heading>
+											<Text>pH</Text>
+										</GridItem>
+										<GridItem
+											rounded="15px"
+											flexDirection="column"
+											textAlign="center"
+											alignSelf="end"
+										>
+											<Heading fontSize="1.5rem">
+												{
+													selectedFish?.water_params[
+														'ammonia'
+													]
+												}
+											</Heading>
+											<Text>Ammonia</Text>
+										</GridItem>
+										<GridItem
+											rounded="15px"
+											flexDirection="column"
+											textAlign="center"
+											alignSelf="end"
+										>
+											<Heading fontSize="1.5rem">
+												{
+													selectedFish?.water_params[
+														'alkalinity'
+													]
+												}
+											</Heading>
+											<Text>Alkalinity</Text>
+										</GridItem>
+										<GridItem
+											rounded="15px"
+											flexDirection="column"
+											textAlign="center"
+											alignSelf="end"
+										>
+											<Heading fontSize="1.5rem">
+												{
+													selectedFish?.water_params[
+														'chlorine'
+													]
+												}
+											</Heading>
+											<Text>Chlorine</Text>
+										</GridItem>
+										<GridItem
+											rounded="15px"
+											flexDirection="column"
+											textAlign="center"
+											alignSelf="end"
+										>
+											<Heading fontSize="1.5rem">
+												{
+													selectedFish?.water_params[
+														'nirate'
+													]
+												}
+											</Heading>
+											<Text>Nitrate</Text>
+										</GridItem>
+										<GridItem
+											rounded="15px"
+											flexDirection="column"
+											textAlign="center"
+											alignSelf="end"
+										>
+											<Heading fontSize="1.5rem">
+												{
+													selectedFish?.water_params[
+														'nirite'
+													]
+												}
+											</Heading>
+											<Text>Nitrite</Text>
+										</GridItem>
+										<GridItem
+											rounded="15px"
+											flexDirection="column"
+											textAlign="center"
+											alignSelf="end"
+										>
+											<Heading fontSize="1.5rem">
+												{
+													selectedFish?.water_params[
+														'hardness'
+													]
+												}
+											</Heading>
+											<Text>Hardness</Text>
+										</GridItem>
+									</Grid>
+								</AccordionPanel>
+							</AccordionItem>
+						</Accordion>
+						<Grid gap={5} templateColumns="repeat(2, 1fr)">
+							<GridItem
+								rounded="15px"
+								flexDirection="column"
+								textAlign="center"
+								alignSelf="end"
+							>
+								<Heading fontSize="1.5rem">
+									{selectedFish?.max_size} in
+								</Heading>
+								<Text>Max Size</Text>
+							</GridItem>
+							<GridItem
+								flexDirection="column"
+								textAlign="center"
+								alignSelf="end"
+							>
+								<Heading fontSize="1.5rem">
+									{selectedFish?.min_tank_size} gal
+								</Heading>
+								<Text>Tank Size</Text>
+							</GridItem>
+							<GridItem
+								flexDirection="column"
+								textAlign="center"
+								alignSelf="end"
+							>
+								<Heading fontSize="1.5rem">
+									{selectedFish?.habitat}
+								</Heading>
+								<Text>Habitat</Text>
+							</GridItem>
+							<GridItem
+								flexDirection="column"
+								textAlign="center"
+								alignSelf="end"
+							>
+								<Heading fontSize="1.5rem">
+									{selectedFish?.diet}
+								</Heading>
+								<Text>Diet</Text>
+							</GridItem>
+							<GridItem
+								flexDirection="column"
+								textAlign="center"
+								alignSelf="end"
+							>
+								<Heading fontSize="1.5rem">
+									{selectedFish?.illnesses}
+								</Heading>
+								<Text>Illnesses</Text>
+							</GridItem>
+							<GridItem
+								flexDirection="column"
+								textAlign="center"
+								alignSelf="end"
+							>
+								<Heading fontSize="1.5rem">
+									{selectedFish?.temperament}
+								</Heading>
+								<Text>Temperament</Text>
+							</GridItem>
+						</Grid>
 					</DrawerBody>
 					<DrawerFooter>
 						<Button
-							variant="green"
+							colorScheme="green"
 							mr={3}
 							onClick={() => onFishToggle()}
 						>
 							Add
 						</Button>
-						<Button variant="red" onClick={() => onFishToggle()}>
+						<Button
+							variant="outline"
+							colorScheme="red"
+							onClick={() => onFishToggle()}
+						>
 							Cancel
 						</Button>
 					</DrawerFooter>
