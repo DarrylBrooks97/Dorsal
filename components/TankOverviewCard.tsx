@@ -65,7 +65,7 @@ export default function TankOverviewCard({
 					>
 						<GiDoubleFish color="white" />
 						<Text color="white"># of fish</Text>
-						<Text color="gray.400">{data?.fish.length}</Text>
+						<Text color="gray.400">{data?.fish?.length}</Text>
 					</Stack>
 				</GridItem>
 				<GridItem>
@@ -77,7 +77,7 @@ export default function TankOverviewCard({
 					>
 						<RiPlantFill color="white" />
 						<Text color="white"># of plants</Text>
-						<Text color="gray.400">{data?.plants.length}</Text>
+						<Text color="gray.400">{data?.plants?.length}</Text>
 					</Stack>
 				</GridItem>
 			</Grid>
