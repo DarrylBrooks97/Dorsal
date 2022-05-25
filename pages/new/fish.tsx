@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { trpc } from '@utils/trpc';
 import { Fish } from '@prisma/client';
 import { motion } from 'framer-motion';
@@ -28,8 +29,6 @@ import {
 	AccordionIcon,
 	AccordionPanel,
 } from '@chakra-ui/react';
-import Image from 'next/image';
-import { pl } from 'date-fns/locale';
 
 const MotionCenter = motion<CenterProps>(Center);
 

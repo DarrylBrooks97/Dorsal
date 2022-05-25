@@ -255,8 +255,6 @@ export default function Aquarium(): JSX.Element {
 	});
 
 	useEffect(() => {
-		console.log({ data });
-
 		if (data?.tank) {
 			setTankImage(data.tank.image);
 			setTankName(data.tank.name);
