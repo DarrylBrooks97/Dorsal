@@ -1,6 +1,7 @@
 import Image from 'next/image';
-import { motion } from 'framer-motion';
 import { trpc } from '@utils/trpc';
+import { Loader } from '@components/atoms';
+import { motion } from 'framer-motion';
 import { BsCalendar3 } from 'react-icons/bs';
 import { addDays, formatDistance } from 'date-fns';
 import {
@@ -16,9 +17,32 @@ const MotionBox = motion<BoxProps>(Box);
 const MotionStack = motion<StackProps>(Stack);
 
 export default function Remainders({ id }: { id: string }): JSX.Element {
-	const { data } = trpc.useQuery(['user.tanks.byId', { id: id as string }]);
+	const { data, isLoading } = trpc.useQuery([
+		'user.tanks.byId',
+		{ id: id as string },
+	]);
+	const getReminders = (fetchedData: typeof data) => {
+		const fishFeeding = fetchedData?.fish.map((fish) => {
+			return {
+				id: fish.id,
+				fish_id: fish.fish_id,
+				maintained_at: fish.maintained_at as Date,
+			};
+		});
 
-	if (typeof id !== 'string') return <></>;
+		const sortedFishFeeding = fishFeeding?.sort((a: any, b: any) => {
+			return a.maintained_at - b.maintained_at;
+		});
+
+		return {
+			reminders: sortedFishFeeding,
+		};
+	};
+	const { reminders } = getReminders(data);
+
+	if (isLoading || typeof id !== 'string') {
+		return <Loader />;
+	}
 
 	// todo: Replace with actual remainder stuff
 	return (
