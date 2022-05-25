@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { trpc } from '@utils/trpc';
 import { Fish } from '@prisma/client';
 import { motion } from 'framer-motion';
+import { useSession } from 'next-auth/react';
 import { BaseSyntheticEvent, useEffect, useState } from 'react';
 import {
 	Stack,
@@ -10,6 +11,7 @@ import {
 	Button,
 	Center,
 	Text,
+	Select,
 	CenterProps,
 	Heading,
 	useDisclosure,
@@ -28,20 +30,43 @@ import {
 	AccordionButton,
 	AccordionIcon,
 	AccordionPanel,
+	useToast,
 } from '@chakra-ui/react';
 
 const MotionCenter = motion<CenterProps>(Center);
 
 export default function AddFish() {
-	const { data } = trpc.useQuery(['user.fish']);
-	const [filteredFish, setFilteredFish] = useState(data?.fish);
+	const toast = useToast();
+	const { data: fishData } = trpc.useQuery(['user.fish']);
+	const { data: userTanks } = trpc.useQuery(['user.tanks']);
+	const { data: sessionData }: any = useSession();
+	const [tankId, setTankId] = useState('');
+	const [filteredFish, setFilteredFish] = useState(fishData?.fish);
 	const [viewedFish, setViewedFish] = useState<Fish>();
 	const [selectedFish, setSelectedFish] = useState<Fish[]>([] as Fish[]);
-	const {
-		isOpen: isFilterOpen,
-		onClose: onFilterClose,
-		onToggle: filterToggle,
-	} = useDisclosure();
+	const adder = trpc.useMutation(['user.addFish'], {
+		onSuccess: () => {
+			setSelectedFish([]);
+			setTankId('');
+			fishToggle();
+			toast({
+				title: 'Success',
+				description: 'Fish added to tank',
+				status: 'success',
+				duration: 5000,
+				isClosable: true,
+			});
+		},
+		onError: (error) => {
+			toast({
+				title: 'Error',
+				description: `${error.message}`,
+				status: 'error',
+				duration: 5000,
+				isClosable: true,
+			});
+		},
+	});
 	const {
 		isOpen: isFishOpen,
 		onClose: onFishClose,
@@ -49,17 +74,18 @@ export default function AddFish() {
 	} = useDisclosure();
 
 	useEffect(() => {
-		setFilteredFish(data?.fish);
-	}, [data]);
+		setFilteredFish(fishData?.fish);
+	}, [fishData]);
 
 	const handleFilter = (e: BaseSyntheticEvent) => {
 		const { value } = e.target as HTMLInputElement;
 		setFilteredFish(
-			data?.fish.filter((fish) =>
+			fishData?.fish.filter((fish) =>
 				fish.name.toLowerCase().includes(value.toLowerCase())
 			)
 		);
 	};
+
 	return (
 		<Stack
 			shouldWrapChildren
@@ -130,12 +156,32 @@ export default function AddFish() {
 					</MotionCenter>
 				))}
 			</Stack>
-			<Drawer placement="right" isOpen={isFishOpen} onClose={onFishClose}>
+			<Drawer
+				placement="right"
+				isOpen={isFishOpen}
+				onClose={() => {
+					setViewedFish(undefined);
+					setSelectedFish([]);
+					setTankId('');
+					fishToggle();
+				}}
+			>
 				<DrawerOverlay />
 				<DrawerContent>
 					<DrawerCloseButton />
 					<DrawerHeader>{viewedFish?.name}</DrawerHeader>
 					<DrawerBody>
+						<Select
+							placeholder="Select Tanks"
+							mb="3"
+							onChange={(e) => setTankId(e.target.value)}
+						>
+							{userTanks?.tanks.map((tank) => (
+								<option key={tank.id} value={tank.id}>
+									{tank.name}
+								</option>
+							))}
+						</Select>
 						<Stack mb="1em">
 							<Box
 								w="full"
@@ -354,48 +400,48 @@ export default function AddFish() {
 							<Button
 								colorScheme="red"
 								onClick={() => {
-									const quantity = selectedFish.reduce(
-										(acc, { id }) => {
-											if (id === viewedFish?.id) {
-												return acc + 1;
-											}
-											return acc;
-										},
-										0
-									);
-									if (quantity === 1) {
-										setSelectedFish(
-											selectedFish.filter(
-												(oldFish: Fish) =>
-													oldFish.id !==
-													viewedFish?.id
-											)
-										);
-										fishToggle();
-										return;
-									}
 									selectedFish.pop();
+									setSelectedFish([...selectedFish]);
 								}}
 							>
 								-
 							</Button>
 							<Input
 								w="60px"
-								value={selectedFish.reduce((acc, { id }) => {
-									if (id === viewedFish?.id) {
-										return acc + 1;
-									}
-									return acc;
-								}, 0)}
+								value={selectedFish.reduce(
+									(acc, { fish_id }: any) => {
+										if (fish_id === viewedFish?.id) {
+											return acc + 1;
+										}
+										return acc;
+									},
+									0
+								)}
 								textAlign="center"
 								onChange={(e) => {}}
 							/>
 							<Button
 								colorScheme="green"
 								onClick={() => {
+									if (tankId.length === 0) {
+										toast({
+											title: 'Please select a tank',
+											description: '',
+											status: 'error',
+											duration: 5000,
+											isClosable: true,
+										});
+										return;
+									}
+
 									setSelectedFish([
 										...(selectedFish as any),
-										viewedFish,
+										{
+											name: viewedFish?.name,
+											tank_id: tankId,
+											user_id: sessionData.userInfo.id,
+											fish_id: viewedFish?.id,
+										},
 									]);
 								}}
 							>
@@ -408,8 +454,22 @@ export default function AddFish() {
 							colorScheme="green"
 							mr={3}
 							onClick={() => {
-								fishToggle();
-								return {};
+								if (
+									selectedFish.length === 0 ||
+									tankId.length === 0
+								) {
+									toast({
+										title: 'Please select a tank and fish',
+										description: '',
+										status: 'error',
+										duration: 5000,
+										isClosable: true,
+									});
+
+									return;
+								}
+
+								adder.mutate({ fish: selectedFish as any });
 							}}
 						>
 							Add
@@ -417,7 +477,12 @@ export default function AddFish() {
 						<Button
 							variant="outline"
 							colorScheme="red"
-							onClick={() => fishToggle()}
+							onClick={() => {
+								setViewedFish(undefined);
+								setSelectedFish([]);
+								setTankId('');
+								fishToggle();
+							}}
 						>
 							Cancel
 						</Button>

@@ -1,4 +1,3 @@
-import cuid from 'cuid';
 import Image from 'next/image';
 import { useSession } from 'next-auth/react';
 import { Plant } from '@prisma/client';
@@ -33,7 +32,6 @@ import {
 	GridItem,
 	useToast,
 } from '@chakra-ui/react';
-import { FaOldRepublic } from 'react-icons/fa';
 
 const MotionCenter = motion<CenterProps>(Center);
 
@@ -51,8 +49,9 @@ export default function AddPlant() {
 				duration: 5000,
 				isClosable: true,
 			});
-			plantToggle();
+			setTankId('');
 			setSelectedPlants([]);
+			plantToggle();
 		},
 		onError: (error) => {
 			toast({
@@ -372,16 +371,6 @@ export default function AddPlant() {
 							<Button
 								colorScheme="red"
 								onClick={() => {
-									const quantity = selectedPlants.reduce(
-										(acc, { plant_id }: any) => {
-											if (plant_id === viewedPlant?.id) {
-												return acc + 1;
-											}
-											return acc;
-										},
-										0
-									);
-
 									selectedPlants.pop();
 									setSelectedPlants([...selectedPlants]);
 								}}
@@ -435,6 +424,20 @@ export default function AddPlant() {
 							colorScheme="green"
 							mr={3}
 							onClick={() => {
+								if (
+									selectedPlants.length === 0 ||
+									tankId.length === 0
+								) {
+									toast({
+										title: 'Please select a tank and fish',
+										description: '',
+										status: 'error',
+										duration: 5000,
+										isClosable: true,
+									});
+									return;
+								}
+
 								adder.mutate({
 									plants: selectedPlants as any,
 								});
