@@ -3,8 +3,8 @@ import { Loader } from '@components/atoms';
 import Compressor from 'compressorjs';
 import TankRemindersCard from '@components/TankReminders';
 import TankOverviewCard from '@components/TankOverviewCard';
+import { TankTabs } from '@components/molecules';
 import { trpc } from '@utils/trpc';
-import { filterProps, motion } from 'framer-motion';
 import { useRouter } from 'next/router';
 import { FishList, PlantList } from '@components/organisms';
 import { AiOutlineCamera } from 'react-icons/ai';
@@ -12,7 +12,6 @@ import { useEffect, useState } from 'react';
 import { CheckIcon, Cross1Icon, Pencil1Icon } from '@radix-ui/react-icons';
 import {
 	Box,
-	BoxProps,
 	Center,
 	Heading,
 	HStack,
@@ -20,26 +19,8 @@ import {
 	InputGroup,
 	InputRightElement,
 	Stack,
-	Text,
 	useToast,
 } from '@chakra-ui/react';
-
-const MotionBox = motion<BoxProps>(Box);
-
-const TankOptions: { label: string }[] = [
-	{
-		label: 'Overview',
-	},
-	{
-		label: 'Reminders',
-	},
-	{
-		label: 'Fish',
-	},
-	{
-		label: 'Plants',
-	},
-];
 
 const tankCards = [TankOverviewCard, TankRemindersCard, FishList, PlantList];
 
@@ -278,39 +259,7 @@ export default function Aquarium(): JSX.Element {
 						</InputGroup>
 					)}
 				</HStack>
-				<HStack
-					p="3"
-					h="31px"
-					w="full"
-					pos="relative"
-					spacing={3}
-					shouldWrapChildren
-				>
-					{TankOptions.map((option, index) => (
-						<Text
-							as="h3"
-							key={index}
-							fontSize="20px"
-							color="white"
-							pos="relative"
-							onClick={() => setActiveTab(index)}
-						>
-							{option.label}
-							{index === activeTab ? (
-								<MotionBox
-									pos="absolute"
-									bottom="-1px"
-									left="0"
-									right="0"
-									h="1px"
-									w=""
-									bg="white"
-									layoutId="active-tab"
-								/>
-							) : null}
-						</Text>
-					))}
-				</HStack>
+				<TankTabs {...{ activeTab, setActiveTab }} />
 				<Center h="full" w="calc(100vw - 3rem)">
 					<HStack overflowX="scroll" spacing={6}>
 						{tankCards.map((Card, index) => (
