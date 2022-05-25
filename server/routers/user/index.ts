@@ -16,7 +16,7 @@ export const userRouter = createRouter()
 		input: z.object({
 			fish: z.array(
 				z.object({
-					id: z.string().uuid(),
+					fish_id: z.string().cuid(),
 					user_id: z.string().cuid().optional(),
 					tank_id: z.string().cuid().optional(),
 					name: z.string().min(1).max(255),
