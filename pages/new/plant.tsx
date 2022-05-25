@@ -1,4 +1,6 @@
+import cuid from 'cuid';
 import Image from 'next/image';
+import { useSession } from 'next-auth/react';
 import { Plant } from '@prisma/client';
 import { trpc } from '@utils/trpc';
 import { motion } from 'framer-motion';
@@ -29,29 +31,45 @@ import {
 	AccordionPanel,
 	Grid,
 	GridItem,
+	useToast,
 } from '@chakra-ui/react';
+import { FaOldRepublic } from 'react-icons/fa';
 
 const MotionCenter = motion<CenterProps>(Center);
 
 export default function AddPlant() {
+	const toast = useToast();
+	const { data: sessionData }: any = useSession();
 	const { data } = trpc.useQuery(['general.plants']);
 	const { data: userTanks } = trpc.useQuery(['user.tanks']);
-	const adder = trpc.useMutation(['user.updateTank'], {
-		onSuccess: () => {},
-		onError: (error) => {},
+	const adder = trpc.useMutation(['user.addPlant'], {
+		onSuccess: () => {
+			toast({
+				title: 'Success',
+				description: `Plant added to your tank !`,
+				status: 'success',
+				duration: 5000,
+				isClosable: true,
+			});
+			plantToggle();
+			setSelectedPlants([]);
+		},
+		onError: (error) => {
+			toast({
+				title: 'Error',
+				description: `${error.message}`,
+				status: 'error',
+				duration: 5000,
+				isClosable: true,
+			});
+		},
 	});
+	const [tankId, setTankId] = useState('');
 	const [viewedPlant, setViewedPlant] = useState<Plant>();
 	const [selectedPlants, setSelectedPlants] = useState<Plant[]>(
 		[] as Plant[]
 	);
 	const [filteredPlants, setFilteredPlants] = useState(data?.plants);
-	const { isOpen: showPlantSelection, onToggle: toggleShowPlantSelection } =
-		useDisclosure();
-	const {
-		isOpen: filterIsOpen,
-		onClose: filterOnClose,
-		onToggle: toggleFilter,
-	} = useDisclosure();
 	const {
 		isOpen: isPlantOpen,
 		onClose: onPlantClose,
@@ -111,7 +129,7 @@ export default function AddPlant() {
 								y: 0,
 								transition: {
 									delay: index * 0.35,
-									duration: 0.5,
+									duration: 0.35,
 								},
 							}),
 						}}
@@ -144,14 +162,22 @@ export default function AddPlant() {
 			<Drawer
 				placement="right"
 				isOpen={isPlantOpen}
-				onClose={onPlantClose}
+				onClose={() => {
+					setSelectedPlants([]);
+					setTankId('');
+					plantToggle();
+				}}
 			>
 				<DrawerOverlay />
 				<DrawerContent>
 					<DrawerCloseButton />
 					<DrawerHeader>{viewedPlant?.name}</DrawerHeader>
 					<DrawerBody>
-						<Select placeholder="Select Tanks" mb="3">
+						<Select
+							placeholder="Select Tanks"
+							mb="3"
+							onChange={(e) => setTankId(e.target.value)}
+						>
 							{userTanks?.tanks.map((tank) => (
 								<option key={tank.id} value={tank.id}>
 									{tank.name}
@@ -172,7 +198,7 @@ export default function AddPlant() {
 										viewedPlant?.image_url ??
 										'https://images.unsplash.com/photo-1617994679330-2883951d0073?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80'
 									}
-									alt="fish"
+									alt="plant"
 									layout="fill"
 								/>
 							</Box>
@@ -347,47 +373,56 @@ export default function AddPlant() {
 								colorScheme="red"
 								onClick={() => {
 									const quantity = selectedPlants.reduce(
-										(acc, { id }) => {
-											if (id === viewedPlant?.id) {
+										(acc, { plant_id }: any) => {
+											if (plant_id === viewedPlant?.id) {
 												return acc + 1;
 											}
 											return acc;
 										},
 										0
 									);
-									if (quantity === 1) {
-										setSelectedPlants(
-											selectedPlants.filter(
-												(oldFish: Plant) =>
-													oldFish.id !==
-													viewedPlant?.id
-											)
-										);
-										plantToggle();
-										return;
-									}
+
 									selectedPlants.pop();
+									setSelectedPlants([...selectedPlants]);
 								}}
 							>
 								-
 							</Button>
 							<Input
 								w="60px"
-								value={selectedPlants.reduce((acc, { id }) => {
-									if (id === viewedPlant?.id) {
-										return acc + 1;
-									}
-									return acc;
-								}, 0)}
-								textAlign="center"
+								value={selectedPlants.reduce(
+									(acc, { plant_id }: any) => {
+										if (plant_id === viewedPlant?.id) {
+											return acc + 1;
+										}
+										return acc;
+									},
+									0
+								)}
 								onChange={(e) => {}}
+								textAlign="center"
 							/>
 							<Button
 								colorScheme="green"
 								onClick={() => {
+									if (tankId.length === 0) {
+										toast({
+											title: 'Please select a tank',
+											status: 'error',
+											duration: 9000,
+											isClosable: true,
+										});
+										return;
+									}
+
 									setSelectedPlants([
 										...(selectedPlants as any),
-										viewedPlant,
+										{
+											name: viewedPlant?.name,
+											plant_id: viewedPlant?.id,
+											user_id: sessionData.userInfo.id,
+											tank_id: tankId,
+										},
 									]);
 								}}
 							>
@@ -400,8 +435,9 @@ export default function AddPlant() {
 							colorScheme="green"
 							mr={3}
 							onClick={() => {
-								plantToggle();
-								return {};
+								adder.mutate({
+									plants: selectedPlants as any,
+								});
 							}}
 						>
 							Add
@@ -409,7 +445,11 @@ export default function AddPlant() {
 						<Button
 							variant="outline"
 							colorScheme="red"
-							onClick={() => plantToggle()}
+							onClick={() => {
+								setSelectedPlants([]);
+								setTankId('');
+								plantToggle();
+							}}
 						>
 							Cancel
 						</Button>
