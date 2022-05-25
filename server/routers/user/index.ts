@@ -95,7 +95,7 @@ export const userRouter = createRouter()
 				userFish.map(async (f: UserFish) => {
 					const parentFish = await prisma.fish.findFirst({
 						where: {
-							id: f.id,
+							id: f.fish_id,
 						},
 					});
 

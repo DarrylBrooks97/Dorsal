@@ -83,11 +83,7 @@ function FishList({ fish }: { fish: FishList[] }) {
 						bg="blue"
 						rounded="15px"
 					>
-						<Image
-							layout="fill"
-							alt={f.name}
-							src={f.image_url as string}
-						/>
+						<Image layout="fill" alt={f.name} src={f.image_url} />
 					</Box>
 					<Stack spacing={3} textAlign="center" w="full" h="full">
 						<Heading color="white" textAlign="center">
