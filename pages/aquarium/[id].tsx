@@ -204,10 +204,30 @@ export default function Aquarium(): JSX.Element {
 	);
 	const adder = trpc.useMutation(['user.updateTank'], {
 		onMutate: async (updatedTank: any) => {
-			invalidate.cancelQuery(['user.tanks.byId', { id: id as string }]);
-			invalidate.setQueryData(['user.tanks.byId', { id: id as string }], {
-				...updatedTank,
-			});
+			await invalidate.cancelQuery([
+				'user.tanks.byId',
+				{ id: id as string },
+			]);
+
+			type Tank = typeof data;
+
+			const newTankData: Tank = {
+				...data,
+				fish: [...(data?.fish as any)],
+				plants: [...(data?.plants as any)],
+				tank: {
+					...data?.tank,
+					...updatedTank,
+				},
+			};
+
+			invalidate.setQueryData(
+				['user.tanks.byId', { id: id as string }],
+				newTankData
+			);
+
+			setEditing(false);
+
 			return {
 				updatedTank,
 			};
@@ -235,6 +255,8 @@ export default function Aquarium(): JSX.Element {
 	});
 
 	useEffect(() => {
+		console.log({ data });
+
 		if (data?.tank) {
 			setTankImage(data.tank.image);
 			setTankName(data.tank.name);
@@ -445,7 +467,7 @@ export default function Aquarium(): JSX.Element {
 									<Card
 										{...{
 											key: index,
-											id,
+											id: id as string,
 											editing,
 											updatedTank,
 											setUpdatedTank,
