@@ -93,7 +93,7 @@ model UserFish {
   id            String    @id @default(cuid())
   user_id       String    @default(cuid())
   tank_id       String    @default(cuid())
-  fish_id      String    @default(cuid())
+  fish_id       String    @default(cuid())
   name          String    @db.VarChar(255)
   maintained_at DateTime? @db.Timestamp(0)
   user          User      @relation(fields: [user_id], references: [id], onDelete: Cascade)

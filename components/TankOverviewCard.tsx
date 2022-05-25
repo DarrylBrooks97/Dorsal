@@ -81,11 +81,12 @@ export default function TankOverviewCard({
 					</Stack>
 				</GridItem>
 			</Grid>
-			{data?.tank && !hasANullStat(data?.tank) ? (
+			// Stats
+			<Text color="white" fontSize="18px">
+				Stats
+			</Text>
+			{data?.tank && (
 				<>
-					<Text color="white" mb={3} fontSize="18px">
-						Stats
-					</Text>
 					<Grid templateColumns="repeat(2, 1fr)" gap={3}>
 						<GridItem>
 							<Stack>
@@ -314,17 +315,17 @@ export default function TankOverviewCard({
 											? 'green'
 											: 'red'
 									}
-									value={(310 / 400) * 100}
+									value={
+										((data.tank.alkalinity as any) / 400) *
+										100
+									}
 									isIndeterminate={editing}
 								/>
 							</Stack>
 						</GridItem>
 					</Grid>
 				</>
-			) : (
-				<Text color="white">No stats 😢</Text>
 			)}
-
 			<Text fontSize="18px" color="white">
 				Suggestions
 			</Text>

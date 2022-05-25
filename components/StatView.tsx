@@ -1,7 +1,6 @@
 import { Tank } from '@prisma/client';
 import { Text, NumberInput, NumberInputField } from '@chakra-ui/react';
-import { Decimal } from '@prisma/client/runtime';
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 
 export function StatView({
 	editing,
@@ -26,7 +25,7 @@ export function StatView({
 	setUpdatedTank: (tank: Partial<Tank>) => void;
 	precision?: number;
 }): JSX.Element {
-	const [value, setValue] = useState(tank[tankKey]);
+	const [value, setValue] = useState(tank[tankKey] ?? defaultValue);
 	return (
 		<>
 			{editing ? (
@@ -50,7 +49,9 @@ export function StatView({
 					<NumberInputField color="white" textAlign="center" />
 				</NumberInput>
 			) : (
-				<Text color="gray.400">{tank[tankKey] as any}</Text>
+				<Text color="gray.400">
+					{(tank[tankKey] as ReactNode) ?? '??'}
+				</Text>
 			)}
 		</>
 	);
