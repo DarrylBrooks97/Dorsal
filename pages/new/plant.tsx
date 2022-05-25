@@ -1,9 +1,8 @@
 import Image from 'next/image';
-import PlantView from '@components/PlantView';
 import { Plant } from '@prisma/client';
 import { trpc } from '@utils/trpc';
+import { motion } from 'framer-motion';
 import { BaseSyntheticEvent, useEffect, useState } from 'react';
-import { GrNext } from 'react-icons/gr';
 import {
 	Button,
 	Center,
@@ -31,12 +30,16 @@ import {
 	Grid,
 	GridItem,
 } from '@chakra-ui/react';
-import { motion } from 'framer-motion';
 
 const MotionCenter = motion<CenterProps>(Center);
 
 export default function AddPlant() {
 	const { data } = trpc.useQuery(['general.plants']);
+	const { data: userTanks } = trpc.useQuery(['user.tanks']);
+	const adder = trpc.useMutation(['user.updateTank'], {
+		onSuccess: () => {},
+		onError: (error) => {},
+	});
 	const [viewedPlant, setViewedPlant] = useState<Plant>();
 	const [selectedPlants, setSelectedPlants] = useState<Plant[]>(
 		[] as Plant[]
@@ -148,6 +151,13 @@ export default function AddPlant() {
 					<DrawerCloseButton />
 					<DrawerHeader>{viewedPlant?.name}</DrawerHeader>
 					<DrawerBody>
+						<Select placeholder="Select Tanks" mb="3">
+							{userTanks?.tanks.map((tank) => (
+								<option key={tank.id} value={tank.id}>
+									{tank.name}
+								</option>
+							))}
+						</Select>
 						<Stack mb="1em">
 							<Box
 								w="full"
