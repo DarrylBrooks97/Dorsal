@@ -6,7 +6,7 @@
 		"paths": {
 			"@clients/*": ["clients/*"],
 			"@components/*": ["components/*"],
-			"@constants/*": ["constants"],
+			"@constants": ["./constants"],
 			"@utils/*": ["utils/*"]
 		},
 		"allowJs": true,

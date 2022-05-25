@@ -21,3 +21,18 @@ export const headerOptions = [
 		subHeading: 'Find out what other users are doing',
 	},
 ];
+
+export const TankTabOptions: { label: string }[] = [
+	{
+		label: 'Overview',
+	},
+	{
+		label: 'Reminders',
+	},
+	{
+		label: 'Fish',
+	},
+	{
+		label: 'Plants',
+	},
+];
