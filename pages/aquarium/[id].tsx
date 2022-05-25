@@ -1,15 +1,14 @@
 import Image from 'next/image';
-import Spinner from '@components/Spinner';
+import { Loader } from '@components/atoms';
 import Compressor from 'compressorjs';
 import TankRemindersCard from '@components/TankReminders';
 import TankOverviewCard from '@components/TankOverviewCard';
 import { trpc } from '@utils/trpc';
-import { UserFish, UserPlant } from '@prisma/client';
-import { motion } from 'framer-motion';
+import { filterProps, motion } from 'framer-motion';
 import { useRouter } from 'next/router';
+import { FishList, PlantList } from '@components/organisms';
 import { AiOutlineCamera } from 'react-icons/ai';
 import { useEffect, useState } from 'react';
-import { addDays, formatDistance } from 'date-fns';
 import { CheckIcon, Cross1Icon, Pencil1Icon } from '@radix-ui/react-icons';
 import {
 	Box,
@@ -42,151 +41,13 @@ const TankOptions: { label: string }[] = [
 	},
 ];
 
-interface FishList extends UserFish {
-	species: string;
-	image_url: string;
-}
-
-function FishList({ fish }: { fish: FishList[] }) {
-	const [filteredFish, setFilteredFish] = useState(fish);
-
-	return (
-		<Stack spacing={3} w="calc(100vw - 3rem)">
-			<Input
-				placeholder="Search Plants"
-				bg="white"
-				onChange={(e) => {
-					setFilteredFish(
-						fish.filter((f) =>
-							f.name
-								.toLowerCase()
-								.includes(e.target.value.toLocaleLowerCase())
-						)
-					);
-				}}
-			/>
-			{filteredFish.map((f) => (
-				<HStack
-					key={f.id}
-					w="full"
-					h="200px"
-					spacing={3}
-					pos="relative"
-					bg="rgba(255,255,255,0.4)"
-					rounded="15px"
-				>
-					<Box
-						overflow="hidden"
-						position="relative"
-						w="full"
-						h="200px"
-						bg="blue"
-						rounded="15px"
-					>
-						<Image layout="fill" alt={f.name} src={f.image_url} />
-					</Box>
-					<Stack spacing={3} textAlign="center" w="full" h="full">
-						<Heading color="white" textAlign="center">
-							{f.name}
-						</Heading>
-						<Text color="gray.400">{f.species}</Text>
-						<Text color="white" fontSize="sm">
-							Next reminder in{' '}
-							{formatDistance(
-								addDays(
-									new Date(
-										f.maintained_at as unknown as string
-									),
-									3
-								),
-								new Date()
-							)}
-						</Text>
-					</Stack>
-				</HStack>
-			))}
-		</Stack>
-	);
-}
-
-interface PlantList extends UserPlant {
-	species: string;
-	image_url: string;
-}
-
-function PlantList({ plants }: { plants: PlantList[] }) {
-	const [filteredPlants, setFilteredPlants] = useState(plants);
-
-	return (
-		<Stack spacing={3} w="calc(100vw - 3rem)">
-			<Input
-				placeholder="Search Plants"
-				bg="white"
-				onChange={(e) => {
-					setFilteredPlants(
-						plants.filter((p) =>
-							p.name
-								.toLowerCase()
-								.includes(e.target.value.toLocaleLowerCase())
-						)
-					);
-				}}
-			/>
-			{filteredPlants.map((p) => (
-				<HStack
-					key={p.id}
-					w="full"
-					h="200px"
-					spacing={3}
-					pos="relative"
-					bg="rgba(255,255,255,0.4)"
-					rounded="15px"
-				>
-					<Box
-						overflow="hidden"
-						position="relative"
-						w="full"
-						h="200px"
-						bg="blue"
-						rounded="15px"
-					>
-						<Image
-							layout="fill"
-							alt={p.name}
-							src={p.image_url as string}
-						/>
-					</Box>
-					<Stack spacing={3} textAlign="center" w="full" h="full">
-						<Heading color="white" textAlign="center">
-							{p.name}
-						</Heading>
-						<Text color="gray.400">{p.species}</Text>
-						<Text color="white" fontSize="sm">
-							Next reminder in{' '}
-							{formatDistance(
-								addDays(
-									new Date(
-										p.maintained_at as unknown as string
-									),
-									3
-								),
-								new Date()
-							)}
-						</Text>
-					</Stack>
-				</HStack>
-			))}
-		</Stack>
-	);
-}
-
 const tankCards = [TankOverviewCard, TankRemindersCard, FishList, PlantList];
 
 export default function Aquarium(): JSX.Element {
 	const toast = useToast();
 	const invalidate = trpc.useContext();
 	const { id } = useRouter().query;
-	const { data, isLoading, isError } = trpc.useQuery([
+	const { data, isLoading } = trpc.useQuery([
 		'user.tanks.byId',
 		{ id: id as string },
 	]);
@@ -276,12 +137,9 @@ export default function Aquarium(): JSX.Element {
 		adder.mutate(updatedTank);
 	};
 
-	if (isLoading)
-		return (
-			<Center w="100vw" h="100vh">
-				<Spinner />
-			</Center>
-		);
+	if (isLoading) {
+		return <Loader />;
+	}
 
 	return (
 		<Box w="100vw" p="3" h="full">
