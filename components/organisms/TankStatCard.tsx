@@ -2,7 +2,7 @@ import { trpc } from '@utils/trpc';
 import { Tank } from '@prisma/client';
 import { motion } from 'framer-motion';
 import { FaWater } from 'react-icons/fa';
-import { StatView } from './StatView';
+import { StatView } from '../StatView';
 import { RiPlantFill } from 'react-icons/ri';
 import { GiDoubleFish } from 'react-icons/gi';
 import {
@@ -28,7 +28,7 @@ const hasANullStat = (tank: Tank): boolean => {
 	return Object.values(tank).some((value) => value === null);
 };
 
-export default function TankOverviewCard({
+export function TankStatCard({
 	id,
 	editing,
 	updatedTank,

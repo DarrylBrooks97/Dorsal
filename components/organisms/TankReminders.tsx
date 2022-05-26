@@ -16,7 +16,7 @@ import {
 const MotionBox = motion<BoxProps>(Box);
 const MotionStack = motion<StackProps>(Stack);
 
-export default function Remainders({ id }: { id: string }): JSX.Element {
+export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 	const { data, isLoading } = trpc.useQuery([
 		'user.tanks.byId',
 		{ id: id as string },

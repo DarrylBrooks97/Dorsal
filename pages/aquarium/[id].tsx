@@ -1,18 +1,15 @@
 import Image from 'next/image';
 import { Loader } from '@components/atoms';
 import Compressor from 'compressorjs';
-import TankRemindersCard from '@components/TankReminders';
-import TankOverviewCard from '@components/TankOverviewCard';
 import { TankTabs } from '@components/molecules';
 import { trpc } from '@utils/trpc';
 import { useRouter } from 'next/router';
-import { FishList, PlantList } from '@components/organisms';
 import { AiOutlineCamera } from 'react-icons/ai';
+import { inferQueryResponse } from 'pages/api/trpc/[trpc]';
 import { useEffect, useState } from 'react';
 import { CheckIcon, Cross1Icon, Pencil1Icon } from '@radix-ui/react-icons';
 import {
 	Box,
-	Center,
 	Heading,
 	HStack,
 	Input,
@@ -22,7 +19,7 @@ import {
 	useToast,
 } from '@chakra-ui/react';
 
-const tankCards = [TankOverviewCard, TankRemindersCard, FishList, PlantList];
+type FetchedTankData = inferQueryResponse<'user.tanks.byId'>;
 
 export default function Aquarium(): JSX.Element {
 	const toast = useToast();
@@ -259,28 +256,17 @@ export default function Aquarium(): JSX.Element {
 						</InputGroup>
 					)}
 				</HStack>
-				<TankTabs {...{ activeTab, setActiveTab }} />
-				<Center h="full" w="calc(100vw - 3rem)">
-					<HStack overflowX="scroll" spacing={6}>
-						{tankCards.map((Card, index) => (
-							<>
-								{index === activeTab ? (
-									<Card
-										{...{
-											key: index,
-											id: id as string,
-											editing,
-											updatedTank,
-											setUpdatedTank,
-											plants: data?.plants as unknown as PlantList[],
-											fish: data?.fish as unknown as FishList[],
-										}}
-									/>
-								) : null}
-							</>
-						))}
-					</HStack>
-				</Center>
+				<TankTabs
+					{...{
+						id: id as string,
+						data: data as FetchedTankData,
+						editing,
+						activeTab,
+						setActiveTab,
+						updatedTank,
+						setUpdatedTank,
+					}}
+				/>
 			</Stack>
 		</Box>
 	);
