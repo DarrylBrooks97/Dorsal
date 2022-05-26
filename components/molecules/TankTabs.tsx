@@ -1,15 +1,14 @@
+import type { FetchedTankData } from '@utils/index';
 import { motion } from 'framer-motion';
 import { TankTabOptions } from '@constants';
 import { FishList, PlantList } from '@components/organisms';
 import { TankStatCard, TankRemindersCard } from '@components/organisms';
 import { HStack, Text, Box, BoxProps, Center, Stack } from '@chakra-ui/react';
 import { Tank } from '@prisma/client';
-import { inferQueryResponse } from 'pages/api/trpc/[trpc]';
 
 const tankCards = [TankStatCard, TankRemindersCard, FishList, PlantList];
 const MotionBox = motion<BoxProps>(Box);
 
-type FetchedTankData = inferQueryResponse<'user.tanks.byId'>;
 interface TankTabProps {
 	id: string;
 	editing: boolean;

@@ -1,8 +1,7 @@
 import Image from 'next/image';
 import { useState } from 'react';
-import { addDays, formatDistance } from 'date-fns';
-import { Box, Heading, HStack, Input, Stack, Text } from '@chakra-ui/react';
 import { UserPlant } from '@prisma/client';
+import { Box, Heading, HStack, Input, Stack, Text } from '@chakra-ui/react';
 
 export interface PlantList extends UserPlant {
 	species: string;
