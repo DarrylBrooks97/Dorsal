@@ -55,18 +55,6 @@ export function PlantList({ plants }: { plants: PlantList[] }) {
 							{p.name}
 						</Heading>
 						<Text color="gray.400">{p.species}</Text>
-						<Text color="white" fontSize="sm">
-							Next reminder in{' '}
-							{formatDistance(
-								addDays(
-									new Date(
-										p.maintained_at as unknown as string
-									),
-									3
-								),
-								new Date()
-							)}
-						</Text>
 					</Stack>
 				</HStack>
 			))}

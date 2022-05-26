@@ -26,6 +26,8 @@ export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 			return {
 				id: fish.id,
 				fish_id: fish.fish_id,
+				name: fish.name,
+				image_url: fish.image_url,
 				maintained_at: fish.maintained_at as Date,
 			};
 		});
@@ -44,11 +46,10 @@ export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 		return <Loader />;
 	}
 
-	// todo: Replace with actual remainder stuff
 	return (
 		<MotionStack textAlign="left" spacing={3} shouldWrapChildren>
 			{data?.fish.length !== 0 ? (
-				[1, 2, 3].map((i, idx) => (
+				reminders?.map((remainder, idx) => (
 					<MotionBox
 						key={idx}
 						bg="rgba(255,255,255,0.4)"
@@ -77,10 +78,14 @@ export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 								w="50%"
 								h="full"
 								pos="relative"
-								borderRadius="15px 0 0 15px"
+								rounded="15px"
+								overflow="hidden"
 							>
 								<Image
-									src="https://images.unsplash.com/photo-1628172730539-692b42b863de?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1472&q=80"
+									src={
+										remainder.image_url ??
+										'https://images.unsplash.com/photo-1628172730539-692b42b863de?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1472&q=80'
+									}
 									alt="cute fish"
 									layout="fill"
 									loading="lazy"
@@ -93,18 +98,17 @@ export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 								textAlign="center"
 							>
 								<Text fontSize="xl" color="white">
-									Ares
+									{remainder.name}
 								</Text>
 								<HStack>
 									<BsCalendar3 color="white" />
 									<Text color="white" isTruncated>
-										Feed{' '}
+										Feed in{' '}
 										{formatDistance(
 											new Date(),
 											addDays(
 												new Date(
-													data?.fish[0]
-														.maintained_at as unknown as string
+													remainder.maintained_at as unknown as string
 												),
 												3
 											),
