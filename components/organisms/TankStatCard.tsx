@@ -81,10 +81,6 @@ export function TankStatCard({
 					</Stack>
 				</GridItem>
 			</Grid>
-			// Stats
-			<Text color="white" fontSize="18px">
-				Stats
-			</Text>
 			{data?.tank && (
 				<>
 					<Grid templateColumns="repeat(2, 1fr)" gap={3}>
