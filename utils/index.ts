@@ -33,7 +33,7 @@ export const getReminders = (fetchedData: FetchedTankData | undefined) => {
 	});
 
 	let upcomingReminders = fishFeeding?.filter((fish) => {
-		return new Date(fish.maintained_at) > new Date();
+		return !todayReminders?.includes(fish);
 	});
 
 	upcomingReminders = upcomingReminders?.sort((a: any, b: any) => {
