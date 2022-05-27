@@ -49,16 +49,17 @@ export const userRouter = createRouter()
 	.mutation('updateFish', {
 		input: z.object({
 			id: z.string().cuid(),
-			name: z.string().min(1).max(255),
+			name: z.string().min(1).max(255).optional(),
+			maintained_at: z.string(),
 		}),
 		async resolve({ input }) {
-			await prisma.fish.update({
+			await prisma.userFish.update({
 				where: {
 					id: input.id,
 				},
 				data: {
-					name: input.name,
-					maintained_at: new Date(),
+					name: input?.name,
+					maintained_at: input.maintained_at,
 				},
 			});
 

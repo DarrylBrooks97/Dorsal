@@ -2,7 +2,7 @@ import Image from 'next/image';
 import { trpc } from '@utils/trpc';
 import { Loader } from '@components/atoms';
 import { motion } from 'framer-motion';
-import { getReminders } from '@utils/index';
+import { FetchedTankData, getReminders } from '@utils/index';
 import { BsCalendar3 } from 'react-icons/bs';
 import { addDays, formatDistance } from 'date-fns';
 import {
@@ -14,33 +14,88 @@ import {
 	Text,
 	Button,
 	Heading,
+	useToast,
 } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
 
 const MotionBox = motion<BoxProps>(Box);
 const MotionStack = motion<StackProps>(Stack);
 
 export function TankRemindersCard({ id }: { id: string }): JSX.Element {
+	const toast = useToast();
+	const invalidate = trpc.useContext();
+	const [todayReminders, setTodayReminders] = useState<
+		FetchedTankData['fish']
+	>([]);
+	const [upcomingReminders, setUpcomingReminders] = useState<
+		FetchedTankData['fish']
+	>([]);
 	const { data, isLoading } = trpc.useQuery([
 		'user.tanks.byId',
 		{ id: id as string },
 	]);
 
+	// update the fish maintained_at field
+	const updater = trpc.useMutation(['user.updateFish'], {
+		onMutate: (updatedFish: any) => {
+			invalidate.cancelQuery(['user.tanks.byId', { id }]);
+
+			let freshReminder = data?.fish.find(
+				(v) => v.fish_id === updatedFish.id
+			);
+
+			if (!freshReminder) return;
+
+			freshReminder.maintained_at = updatedFish.maintained_at;
+
+			invalidate.setQueryData(['user.tanks.byId', { id }], {
+				tank: data?.tank as any,
+				fish: [
+					...(data?.fish as any),
+					{ ...freshReminder, ...updatedFish },
+				],
+				plants: [...(data?.plants as any)],
+			});
+
+			return {
+				updatedFish,
+			};
+		},
+		onSettled: (_newData, error, _variables, _context: any) => {
+			if (error) {
+				toast({
+					title: 'Error',
+					description: error.message,
+					status: 'error',
+					duration: 5000,
+					isClosable: true,
+				});
+				return;
+			}
+
+			invalidate.invalidateQueries(['user.tanks.byId', { id }]);
+		},
+	});
+
 	if (isLoading || typeof id !== 'string') {
 		return <Loader />;
 	}
 
-	const {
-		reminders: { today, upcoming },
-	} = getReminders(data);
+	useEffect(() => {
+		const { today, upcoming } = getReminders(data);
+
+		setTodayReminders(today);
+		setUpcomingReminders(upcoming);
+	}, [data]);
 
 	return (
 		<MotionStack textAlign="left" spacing={3} shouldWrapChildren>
 			{data?.fish.length !== 0 ? (
 				<Stack textAlign="center">
-					{today && today?.length !== 0 && (
+					{todayReminders && todayReminders?.length !== 0 && (
 						<>
 							<Heading color="white">Today</Heading>
-							{today.map((reminder, idx) => {
+							{todayReminders.map((fish, idx) => {
 								<MotionBox
 									key={idx}
 									bg="rgba(255,255,255,0.4)"
@@ -74,7 +129,7 @@ export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 										>
 											<Image
 												src={
-													reminder.image_url ??
+													fish.image_url ??
 													'https://images.unsplash.com/photo-1628172730539-692b42b863de?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1472&q=80'
 												}
 												alt="cute fish"
@@ -90,7 +145,7 @@ export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 											shouldWrapChildren
 										>
 											<Text fontSize="xl" color="white">
-												{reminder.name}
+												{fish.name}
 											</Text>
 											<Box>
 												<HStack>
@@ -105,7 +160,13 @@ export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 												<Button
 													size="sm"
 													colorScheme="green"
-													onClick={() => {}}
+													onClick={() => {
+														updater.mutate({
+															id: fish.id,
+															maintained_at:
+																new Date().toISOString(),
+														});
+													}}
 												>
 													Complete
 												</Button>
@@ -116,10 +177,10 @@ export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 							})}
 						</>
 					)}
-					{upcoming && upcoming?.length !== 0 && (
+					{upcomingReminders && upcomingReminders?.length !== 0 && (
 						<Stack>
 							<Heading color="white">Upcoming</Heading>
-							{upcoming.map((reminder, idx) => (
+							{upcomingReminders.map((fish, idx) => (
 								<MotionBox
 									key={idx}
 									bg="rgba(255,255,255,0.4)"
@@ -153,7 +214,7 @@ export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 										>
 											<Image
 												src={
-													reminder.image_url ??
+													fish.image_url ??
 													'https://images.unsplash.com/photo-1628172730539-692b42b863de?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1472&q=80'
 												}
 												alt="cute fish"
@@ -169,7 +230,7 @@ export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 											shouldWrapChildren
 										>
 											<Text fontSize="xl" color="white">
-												{reminder.name}
+												{fish.name}
 											</Text>
 											<Box>
 												<HStack>
@@ -182,7 +243,7 @@ export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 														{formatDistance(
 															addDays(
 																new Date(
-																	reminder.maintained_at as unknown as string
+																	fish.maintained_at as unknown as string
 																),
 																3
 															),
@@ -194,7 +255,13 @@ export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 												<Button
 													size="sm"
 													colorScheme="green"
-													onClick={() => {}}
+													onClick={() => {
+														updater.mutate({
+															id: fish.id,
+															maintained_at:
+																new Date().toISOString(),
+														});
+													}}
 												>
 													Complete
 												</Button>
