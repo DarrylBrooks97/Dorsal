@@ -2,7 +2,7 @@ import Image from 'next/image';
 import { trpc } from '@utils/trpc';
 import { TrashIcon } from '@radix-ui/react-icons';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FetchedTankData } from '@utils/index';
 import {
 	Box,
@@ -33,14 +33,12 @@ export function FishList({ tank_id }: FishListProps) {
 				({ id }) => id !== deletedFish.id
 			);
 
-			invalidate.setQueryData(
-				['user.tanks.byId', { id: deletedFish.tank_id }],
-				{
-					tank: data?.tank as any,
-					fish: [...(freshFish as FetchedTankData['fish'])],
-					plants: [...(data?.plants as any)],
-				}
-			);
+			invalidate.setQueryData(['user.tanks.byId', { id: tank_id }], {
+				tank: data?.tank as any,
+				fish: [...(freshFish as FetchedTankData['fish'])],
+				plants: [...(data?.plants as any)],
+			});
+
 			return {
 				id: deletedFish.id,
 				tank_id: deletedFish.tank_id,
@@ -62,6 +60,10 @@ export function FishList({ tank_id }: FishListProps) {
 			]);
 		},
 	});
+
+	useEffect(() => {
+		setFilteredFish(data?.fish);
+	}, [data]);
 	return (
 		<Stack spacing={3} w="calc(100vw - 3rem)">
 			<Input
