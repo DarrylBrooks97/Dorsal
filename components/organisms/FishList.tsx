@@ -2,8 +2,19 @@ import Image from 'next/image';
 import { UserFish } from '@prisma/client';
 import { useState } from 'react';
 import { addDays, formatDistance } from 'date-fns';
-import { Box, Heading, HStack, Input, Stack, Text } from '@chakra-ui/react';
+import {
+	Box,
+	Heading,
+	HStack,
+	Input,
+	Stack,
+	StackProps,
+	Text,
+} from '@chakra-ui/react';
+import { TrashIcon } from '@radix-ui/react-icons';
+import { motion } from 'framer-motion';
 
+const MotionHStack = motion<StackProps>(HStack);
 export interface FishList extends UserFish {
 	species: string;
 	image_url: string;
@@ -26,8 +37,8 @@ export function FishList({ fish }: { fish: FishList[] }) {
 					);
 				}}
 			/>
-			{filteredFish.map((f) => (
-				<HStack
+			{filteredFish.map((f, idx) => (
+				<MotionHStack
 					key={f.id}
 					w="full"
 					h="200px"
@@ -35,6 +46,21 @@ export function FishList({ fish }: { fish: FishList[] }) {
 					pos="relative"
 					bg="rgba(255,255,255,0.4)"
 					rounded="15px"
+					initial="initial"
+					animate="open"
+					variants={{
+						initial: {
+							y: -5,
+							opacity: 0,
+						},
+						open: {
+							y: 0,
+							opacity: 1,
+							transition: {
+								delay: idx * 0.2,
+							},
+						},
+					}}
 				>
 					<Box
 						overflow="hidden"
@@ -51,20 +77,11 @@ export function FishList({ fish }: { fish: FishList[] }) {
 							{f.name}
 						</Heading>
 						<Text color="gray.400">{f.species}</Text>
-						<Text color="white" fontSize="sm">
-							Next reminder in{' '}
-							{formatDistance(
-								addDays(
-									new Date(
-										f.maintained_at as unknown as string
-									),
-									3
-								),
-								new Date()
-							)}
-						</Text>
+						<Box pos="absolute" rounded="15px" bottom="5" right="5">
+							<TrashIcon color="red" width="30px" height="30px" />
+						</Box>
 					</Stack>
-				</HStack>
+				</MotionHStack>
 			))}
 		</Stack>
 	);
