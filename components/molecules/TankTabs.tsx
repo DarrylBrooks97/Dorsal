@@ -72,11 +72,11 @@ export function TankTabs({
 									{...{
 										key: index,
 										id: id as string,
+										tank_id: id as string,
 										editing,
 										updatedTank,
 										setUpdatedTank,
 										plants: data?.plants as unknown as PlantList[],
-										fish: data?.fish as unknown as FishList[],
 									}}
 								/>
 							) : null}

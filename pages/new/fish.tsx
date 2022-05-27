@@ -37,7 +37,7 @@ const MotionCenter = motion<CenterProps>(Center);
 
 export default function AddFish() {
 	const toast = useToast();
-	const { data: fishData } = trpc.useQuery(['user.fish']);
+	const { data: fishData } = trpc.useQuery(['general.fish']);
 	const { data: userTanks } = trpc.useQuery(['user.tanks']);
 	const { data: sessionData }: any = useSession();
 	const [tankId, setTankId] = useState('');
@@ -441,6 +441,7 @@ export default function AddFish() {
 											tank_id: tankId,
 											user_id: sessionData.userInfo.id,
 											fish_id: viewedFish?.id,
+											maintained_at: new Date(),
 										},
 									]);
 								}}

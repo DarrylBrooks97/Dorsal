@@ -6,7 +6,7 @@ import { UserFish, UserPlant } from '@prisma/client';
 export const userRouter = createRouter()
 	.query('fish', {
 		async resolve() {
-			const fish = await prisma.fish.findMany();
+			const fish = await prisma.userFish.findMany();
 			return {
 				fish,
 			};
@@ -20,6 +20,7 @@ export const userRouter = createRouter()
 					user_id: z.string().cuid().optional(),
 					tank_id: z.string().cuid().optional(),
 					name: z.string().min(1).max(255),
+					maintained_at: z.string(),
 				})
 			),
 		}),

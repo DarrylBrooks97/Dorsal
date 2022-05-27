@@ -1,7 +1,9 @@
 import Image from 'next/image';
-import { UserFish } from '@prisma/client';
+import { trpc } from '@utils/trpc';
+import { TrashIcon } from '@radix-ui/react-icons';
+import { motion } from 'framer-motion';
 import { useState } from 'react';
-import { addDays, formatDistance } from 'date-fns';
+import { FetchedTankData } from '@utils/index';
 import {
 	Box,
 	Heading,
@@ -10,18 +12,56 @@ import {
 	Stack,
 	StackProps,
 	Text,
+	useToast,
 } from '@chakra-ui/react';
-import { TrashIcon } from '@radix-ui/react-icons';
-import { motion } from 'framer-motion';
 
 const MotionHStack = motion<StackProps>(HStack);
-export interface FishList extends UserFish {
-	species: string;
-	image_url: string;
+interface FishListProps {
+	tank_id: string;
 }
-export function FishList({ fish }: { fish: FishList[] }) {
-	const [filteredFish, setFilteredFish] = useState(fish);
 
+export function FishList({ tank_id }: FishListProps) {
+	const toast = useToast();
+	const { data } = trpc.useQuery(['user.tanks.byId', { id: tank_id }]);
+	const [filteredFish, setFilteredFish] = useState(data?.fish);
+	const invalidate = trpc.useContext();
+	const updater = trpc.useMutation(['user.deleteFish'], {
+		onMutate: async (deletedFish: any) => {
+			await invalidate.cancelQuery(['user.tanks.byId', { id: tank_id }]);
+
+			const freshFish = data?.fish.filter(
+				({ id }) => id !== deletedFish.id
+			);
+
+			invalidate.setQueryData(
+				['user.tanks.byId', { id: deletedFish.tank_id }],
+				{
+					tank: data?.tank as any,
+					fish: [...(freshFish as FetchedTankData['fish'])],
+					plants: [...(data?.plants as any)],
+				}
+			);
+			return {
+				id: deletedFish.id,
+				tank_id: deletedFish.tank_id,
+			};
+		},
+		onSettled(_newData, error, _variables, context: any) {
+			if (error) {
+				toast({
+					title: 'Error',
+					description: error.message,
+					status: 'error',
+					duration: 5000,
+					isClosable: true,
+				});
+			}
+			invalidate.invalidateQueries([
+				'user.tanks.byId',
+				{ id: context.tank_id },
+			]);
+		},
+	});
 	return (
 		<Stack spacing={3} w="calc(100vw - 3rem)">
 			<Input
@@ -29,7 +69,7 @@ export function FishList({ fish }: { fish: FishList[] }) {
 				bg="white"
 				onChange={(e) => {
 					setFilteredFish(
-						fish.filter((f) =>
+						data?.fish.filter((f) =>
 							f.name
 								.toLowerCase()
 								.includes(e.target.value.toLocaleLowerCase())
@@ -37,7 +77,7 @@ export function FishList({ fish }: { fish: FishList[] }) {
 					);
 				}}
 			/>
-			{filteredFish.map((f, idx) => (
+			{filteredFish?.map((f, idx) => (
 				<MotionHStack
 					key={f.id}
 					w="full"
@@ -70,14 +110,31 @@ export function FishList({ fish }: { fish: FishList[] }) {
 						bg="blue"
 						rounded="15px"
 					>
-						<Image layout="fill" alt={f.name} src={f.image_url} />
+						<Image
+							layout="fill"
+							alt={f.name}
+							src={
+								f.image_url ??
+								'https://images.unsplash.com/photo-1619611384968-e45fbd60bc5c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1074&q=80'
+							}
+						/>
 					</Box>
 					<Stack spacing={3} textAlign="center" w="full" h="full">
 						<Heading color="white" textAlign="center">
 							{f.name}
 						</Heading>
 						<Text color="gray.400">{f.species}</Text>
-						<Box pos="absolute" rounded="15px" bottom="5" right="5">
+						<Box
+							pos="absolute"
+							rounded="15px"
+							bottom="5"
+							right="5"
+							onClick={() => {
+								updater.mutate({
+									id: f.id,
+								});
+							}}
+						>
 							<TrashIcon color="red" width="30px" height="30px" />
 						</Box>
 					</Stack>
