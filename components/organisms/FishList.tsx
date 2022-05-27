@@ -8,11 +8,20 @@ import {
 	Box,
 	Heading,
 	HStack,
+	Modal,
+	ModalHeader,
+	ModalBody,
+	ModalContent,
+	ModalOverlay,
+	ModalCloseButton,
+	ModalFooter,
 	Input,
 	Stack,
 	StackProps,
 	Text,
+	useDisclosure,
 	useToast,
+	Button,
 } from '@chakra-ui/react';
 
 const MotionHStack = motion<StackProps>(HStack);
@@ -22,9 +31,12 @@ interface FishListProps {
 
 export function FishList({ tank_id }: FishListProps) {
 	const toast = useToast();
+	const invalidate = trpc.useContext();
 	const { data } = trpc.useQuery(['user.tanks.byId', { id: tank_id }]);
 	const [filteredFish, setFilteredFish] = useState(data?.fish);
-	const invalidate = trpc.useContext();
+	const [selectedFishId, setSelectedFishId] = useState<string>('');
+	const { isOpen: deleteIsOpen, onToggle: deleteOnToggle } = useDisclosure();
+
 	const updater = trpc.useMutation(['user.deleteFish'], {
 		onMutate: async (deletedFish: any) => {
 			await invalidate.cancelQuery(['user.tanks.byId', { id: tank_id }]);
@@ -64,6 +76,7 @@ export function FishList({ tank_id }: FishListProps) {
 	useEffect(() => {
 		setFilteredFish(data?.fish);
 	}, [data]);
+
 	return (
 		<Stack spacing={3} w="calc(100vw - 3rem)">
 			<Input
@@ -132,9 +145,8 @@ export function FishList({ tank_id }: FishListProps) {
 							bottom="5"
 							right="5"
 							onClick={() => {
-								updater.mutate({
-									id: f.id,
-								});
+								setSelectedFishId(f.id as string);
+								deleteOnToggle();
 							}}
 						>
 							<TrashIcon color="red" width="30px" height="30px" />
@@ -142,6 +154,36 @@ export function FishList({ tank_id }: FishListProps) {
 					</Stack>
 				</MotionHStack>
 			))}
+			<Modal isOpen={deleteIsOpen} onClose={deleteOnToggle}>
+				<ModalOverlay />
+				<ModalContent>
+					<ModalHeader>Delete Fish</ModalHeader>
+					<ModalCloseButton />
+					<ModalBody>
+						<Text>Are you sure you want to delete this fish?</Text>
+					</ModalBody>
+					<ModalFooter>
+						<Button
+							colorScheme="blue"
+							mr={3}
+							onClick={() => deleteOnToggle()}
+						>
+							Cancel
+						</Button>
+						<Button
+							colorScheme="red"
+							onClick={() => {
+								updater.mutate({
+									id: selectedFishId,
+								});
+								deleteOnToggle();
+							}}
+						>
+							Delete
+						</Button>
+					</ModalFooter>
+				</ModalContent>
+			</Modal>
 		</Stack>
 	);
 }
