@@ -24,7 +24,10 @@ export const getReminders = (
 	});
 
 	todayReminders = todayReminders?.sort((a: any, b: any) => {
-		return a.maintained_at - b.maintained_at;
+		const sort =
+			new Date(b.maintained_at as Date) <
+			new Date(a.maintained_at as Date);
+		return sort ? 1 : -1;
 	});
 
 	let upcomingReminders = fetchedData?.fish.filter((fish) => {
@@ -32,7 +35,10 @@ export const getReminders = (
 	});
 
 	upcomingReminders = upcomingReminders?.sort((a: any, b: any) => {
-		return a.maintained_at - b.maintained_at;
+		const sort =
+			new Date(b.maintained_at as Date) <
+			new Date(a.maintained_at as Date);
+		return sort ? 1 : -1;
 	});
 
 	return {
