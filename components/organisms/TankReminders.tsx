@@ -77,16 +77,16 @@ export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 		},
 	});
 
-	if (isLoading || typeof id !== 'string') {
-		return <Loader />;
-	}
-
 	useEffect(() => {
 		const { today, upcoming } = getReminders(data);
 
 		setTodayReminders(today);
 		setUpcomingReminders(upcoming);
 	}, [data]);
+
+	if (isLoading || typeof id !== 'string') {
+		return <Loader />;
+	}
 
 	return (
 		<MotionStack textAlign="left" spacing={3} shouldWrapChildren>

@@ -93,9 +93,9 @@ export default function Aquarium(): JSX.Element {
 		if (data?.tank) {
 			setTankImage(data.tank.image);
 			setTankName(data.tank.name);
-			setUpdatedTank({ ...updatedTank, id });
+			setUpdatedTank((prev: any) => ({ ...prev, id }));
 		}
-	}, [data]);
+	}, [data, id]);
 
 	const updateTank = async () => {
 		if (!data?.tank?.name) {
