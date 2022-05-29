@@ -20,7 +20,12 @@ export const getReminders = (
 	upcoming: FetchedTankData['fish'];
 } => {
 	let todayReminders = fetchedData?.fish?.filter((fish) => {
-		return new Date(fish.maintained_at as Date) === new Date();
+		return (
+			new Date(fish.maintained_at as Date).getDate() ===
+				new Date().getDate() ||
+			new Date(fish.maintained_at as Date).getDate() <
+				new Date().getDate()
+		);
 	});
 
 	todayReminders = todayReminders?.sort((a: any, b: any) => {
