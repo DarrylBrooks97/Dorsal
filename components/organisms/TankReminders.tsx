@@ -3,7 +3,7 @@ import { trpc } from '@utils/trpc';
 import { Loader } from '@components/atoms';
 import { motion } from 'framer-motion';
 import { BsCalendar3 } from 'react-icons/bs';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { addDays, formatDistance } from 'date-fns';
 import { FetchedTankData, getReminders } from '@utils/index';
 import {
@@ -16,13 +16,18 @@ import {
 	Button,
 	Heading,
 	useToast,
+	Grid,
+	GridItemProps,
+	GridItem,
 } from '@chakra-ui/react';
 
 const MotionBox = motion<BoxProps>(Box);
 const MotionStack = motion<StackProps>(Stack);
+const MotionGridItem = motion<GridItemProps>(GridItem);
 
 export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 	const toast = useToast();
+	const timeLineRef = useRef(null);
 	const invalidate = trpc.useContext();
 	const [todayReminders, setTodayReminders] =
 		useState<FetchedTankData['fish']>();
@@ -88,20 +93,217 @@ export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 	return (
 		<MotionStack textAlign="left" spacing={3} shouldWrapChildren>
 			{data?.fish.length !== 0 ? (
-				<Stack textAlign="center">
-					{todayReminders && todayReminders?.length !== 0 && (
-						<Stack spacing={5}>
-							<Heading color="white">Today</Heading>
-							{todayReminders.map((fish, idx) => (
-								<MotionBox
-									key={idx}
-									bg="rgba(255,255,255,0.4)"
-									rounded="15px"
-									w="calc(100vw - 3rem)"
-									mb="3"
-									overflow="hidden"
+				// <Stack textAlign="center">
+				// 	{todayReminders && todayReminders?.length !== 0 && (
+				// 		<Stack spacing={5}>
+				// 			<Heading color="white">Today</Heading>
+				// 			{todayReminders.map((fish, idx) => (
+				// 				<MotionBox
+				// 					key={idx}
+				// 					bg="rgba(255,255,255,0.4)"
+				// 					rounded="15px"
+				// 					w="calc(100vw - 3rem)"
+				// 					mb="3"
+				// 					overflow="hidden"
+				// 					initial="initial"
+				// 					animate="open"
+				// 					variants={{
+				// 						initial: {
+				// 							y: -5,
+				// 							opacity: 0,
+				// 						},
+				// 						open: {
+				// 							y: 0,
+				// 							opacity: 1,
+				// 							transition: {
+				// 								delay: idx * 0.2,
+				// 							},
+				// 						},
+				// 					}}
+				// 				>
+				// 					<HStack h="200px" w="full">
+				// 						<Box
+				// 							w="50%"
+				// 							h="full"
+				// 							pos="relative"
+				// 							rounded="15px"
+				// 							overflow="hidden"
+				// 						>
+				// 							<Image
+				// 								src={
+				// 									fish.image_url ??
+				// 									'https://images.unsplash.com/photo-1628172730539-692b42b863de?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1472&q=80'
+				// 								}
+				// 								alt="cute fish"
+				// 								layout="fill"
+				// 								loading="lazy"
+				// 							/>
+				// 						</Box>
+				// 						<Stack
+				// 							p="1"
+				// 							h="full"
+				// 							textAlign="center"
+				// 							justify="space-between"
+				// 							shouldWrapChildren
+				// 						>
+				// 							<Text fontSize="xl" color="white">
+				// 								{fish.name}
+				// 							</Text>
+				// 							<Box>
+				// 								<HStack>
+				// 									<BsCalendar3 color="white" />
+				// 									<Text
+				// 										color="white"
+				// 										isTruncated
+				// 									>
+				// 										Feed 29 days adfasdf ago
+				// 										{/* {formatDistance(
+				// 											addDays(
+				// 												new Date(
+				// 													fish.maintained_at as unknown as string
+				// 												),
+				// 												0
+				// 											),
+				// 											new Date(),
+				// 											{ addSuffix: true }
+				// 										)} */}
+				// 									</Text>
+				// 								</HStack>
+				// 								<Button
+				// 									size="sm"
+				// 									colorScheme="green"
+				// 									onClick={() => {
+				// 										updater.mutate({
+				// 											id: fish.id,
+				// 											maintained_at:
+				// 												new Date().toISOString(),
+				// 										});
+				// 									}}
+				// 								>
+				// 									Complete
+				// 								</Button>
+				// 							</Box>
+				// 						</Stack>
+				// 					</HStack>
+				// 				</MotionBox>
+				// 			))}
+				// 		</Stack>
+				// 	)}
+				// 	{upcomingReminders && upcomingReminders?.length !== 0 && (
+				// 		<Stack>
+				// 			<Heading color="white">Upcoming</Heading>
+				// 			{upcomingReminders.map((fish, idx) => (
+				// 				<MotionBox
+				// 					key={idx}
+				// 					bg="rgba(255,255,255,0.4)"
+				// 					rounded="15px"
+				// 					w="calc(100vw - 3rem)"
+				// 					mb="3"
+				// 					overflow="hidden"
+				// 					initial="initial"
+				// 					animate="open"
+				// 					variants={{
+				// 						initial: {
+				// 							y: -5,
+				// 							opacity: 0,
+				// 						},
+				// 						open: {
+				// 							y: 0,
+				// 							opacity: 1,
+				// 							transition: {
+				// 								delay: idx * 0.2,
+				// 							},
+				// 						},
+				// 					}}
+				// 				>
+				// 					<HStack h="200px" w="full">
+				// 						<Box
+				// 							w="50%"
+				// 							h="full"
+				// 							pos="relative"
+				// 							rounded="15px"
+				// 							overflow="hidden"
+				// 						>
+				// 							<Image
+				// 								src={
+				// 									fish.image_url ??
+				// 									'https://images.unsplash.com/photo-1628172730539-692b42b863de?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1472&q=80'
+				// 								}
+				// 								alt="cute fish"
+				// 								layout="fill"
+				// 								loading="lazy"
+				// 							/>
+				// 						</Box>
+				// 						<Stack
+				// 							p="1"
+				// 							h="full"
+				// 							textAlign="center"
+				// 							justify="space-between"
+				// 							shouldWrapChildren
+				// 						>
+				// 							<Text fontSize="xl" color="white">
+				// 								{fish.name}
+				// 							</Text>
+				// 							<Box>
+				// 								<HStack>
+				// 									<BsCalendar3 color="white" />
+				// 									<Text
+				// 										color="white"
+				// 										isTruncated
+				// 										flexWrap="wrap"
+				// 									>
+				// 										Feed in{' '}
+				// 										{formatDistance(
+				// 											addDays(
+				// 												new Date(
+				// 													fish.maintained_at as unknown as string
+				// 												),
+				// 												3
+				// 											),
+				// 											new Date(),
+				// 											{ addSuffix: true }
+				// 										)}
+				// 									</Text>
+				// 								</HStack>
+				// 								<Button
+				// 									size="sm"
+				// 									colorScheme="green"
+				// 									onClick={() => {
+				// 										updater.mutate({
+				// 											id: fish.id,
+				// 											maintained_at:
+				// 												new Date().toISOString(),
+				// 										});
+				// 									}}
+				// 								>
+				// 									Complete
+				// 								</Button>
+				// 							</Box>
+				// 						</Stack>
+				// 					</HStack>
+				// 				</MotionBox>
+				// 			))}
+				// 		</Stack>
+				// 	)}
+				// </Stack>
+				<Box pos="relative" h="100vh" w="calc(100vw - 3rem)">
+					<Heading color="white">Today</Heading>
+					<Box
+						h="full"
+						w="1px"
+						bg="white"
+						pos="absolute"
+						left="10px"
+					/>
+					<Grid gap={5} pos="absolute">
+						{todayReminders &&
+							todayReminders.length > 0 &&
+							todayReminders.map((reminder, index) => (
+								<MotionGridItem
+									zIndex={2}
 									initial="initial"
 									animate="open"
+									key={index}
 									variants={{
 										initial: {
 											y: -5,
@@ -111,166 +313,30 @@ export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 											y: 0,
 											opacity: 1,
 											transition: {
-												delay: idx * 0.2,
+												delay: index * 0.2,
 											},
 										},
 									}}
 								>
-									<HStack h="200px" w="full">
-										<Box
-											w="50%"
-											h="full"
-											pos="relative"
-											rounded="15px"
-											overflow="hidden"
-										>
-											<Image
-												src={
-													fish.image_url ??
-													'https://images.unsplash.com/photo-1628172730539-692b42b863de?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1472&q=80'
-												}
-												alt="cute fish"
-												layout="fill"
-												loading="lazy"
-											/>
-										</Box>
-										<Stack
-											p="1"
-											h="full"
-											textAlign="center"
-											justify="space-between"
-											shouldWrapChildren
-										>
-											<Text fontSize="xl" color="white">
-												{fish.name}
-											</Text>
-											<Box>
-												<HStack>
-													<BsCalendar3 color="white" />
-													<Text
-														color="white"
-														isTruncated
-													>
-														Feed today
-													</Text>
-												</HStack>
-												<Button
-													size="sm"
-													colorScheme="green"
-													onClick={() => {
-														updater.mutate({
-															id: fish.id,
-															maintained_at:
-																new Date().toISOString(),
-														});
-													}}
-												>
-													Complete
-												</Button>
-											</Box>
-										</Stack>
-									</HStack>
-								</MotionBox>
+									<Box
+										pos="relative"
+										rounded="full"
+										overflow="hidden"
+										boxSize="60px"
+										transformOrigin="center"
+									>
+										<Image
+											layout="fill"
+											src={
+												reminder.image_url ??
+												'https://images.unsplash.com/photo-1628172730539-692b42b863de?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1472&q=80'
+											}
+										/>
+									</Box>
+								</MotionGridItem>
 							))}
-						</Stack>
-					)}
-					{upcomingReminders && upcomingReminders?.length !== 0 && (
-						<Stack>
-							<Heading color="white">Upcoming</Heading>
-							{upcomingReminders.map((fish, idx) => (
-								<MotionBox
-									key={idx}
-									bg="rgba(255,255,255,0.4)"
-									rounded="15px"
-									w="calc(100vw - 3rem)"
-									mb="3"
-									overflow="hidden"
-									initial="initial"
-									animate="open"
-									variants={{
-										initial: {
-											y: -5,
-											opacity: 0,
-										},
-										open: {
-											y: 0,
-											opacity: 1,
-											transition: {
-												delay: idx * 0.2,
-											},
-										},
-									}}
-								>
-									<HStack h="200px" w="full">
-										<Box
-											w="50%"
-											h="full"
-											pos="relative"
-											rounded="15px"
-											overflow="hidden"
-										>
-											<Image
-												src={
-													fish.image_url ??
-													'https://images.unsplash.com/photo-1628172730539-692b42b863de?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1472&q=80'
-												}
-												alt="cute fish"
-												layout="fill"
-												loading="lazy"
-											/>
-										</Box>
-										<Stack
-											p="1"
-											h="full"
-											textAlign="center"
-											justify="space-between"
-											shouldWrapChildren
-										>
-											<Text fontSize="xl" color="white">
-												{fish.name}
-											</Text>
-											<Box>
-												<HStack>
-													<BsCalendar3 color="white" />
-													<Text
-														color="white"
-														isTruncated
-														flexWrap="wrap"
-													>
-														Feed in{' '}
-														{formatDistance(
-															addDays(
-																new Date(
-																	fish.maintained_at as unknown as string
-																),
-																3
-															),
-															new Date(),
-															{ addSuffix: true }
-														)}
-													</Text>
-												</HStack>
-												<Button
-													size="sm"
-													colorScheme="green"
-													onClick={() => {
-														updater.mutate({
-															id: fish.id,
-															maintained_at:
-																new Date().toISOString(),
-														});
-													}}
-												>
-													Complete
-												</Button>
-											</Box>
-										</Stack>
-									</HStack>
-								</MotionBox>
-							))}
-						</Stack>
-					)}
-				</Stack>
+					</Grid>
+				</Box>
 			) : (
 				<Text color="white">No Fish 🤷🏾 go add some fish!</Text>
 			)}
