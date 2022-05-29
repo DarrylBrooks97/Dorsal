@@ -2,9 +2,10 @@ import Image from 'next/image';
 import { trpc } from '@utils/trpc';
 import { Loader } from '@components/atoms';
 import { motion } from 'framer-motion';
-import { FetchedTankData, getReminders } from '@utils/index';
 import { BsCalendar3 } from 'react-icons/bs';
+import { useEffect, useState } from 'react';
 import { addDays, formatDistance } from 'date-fns';
+import { FetchedTankData, getReminders } from '@utils/index';
 import {
 	Box,
 	BoxProps,
@@ -16,7 +17,6 @@ import {
 	Heading,
 	useToast,
 } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
 
 const MotionBox = motion<BoxProps>(Box);
 const MotionStack = motion<StackProps>(Stack);
@@ -24,18 +24,15 @@ const MotionStack = motion<StackProps>(Stack);
 export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 	const toast = useToast();
 	const invalidate = trpc.useContext();
-	const [todayReminders, setTodayReminders] = useState<
-		FetchedTankData['fish']
-	>([]);
-	const [upcomingReminders, setUpcomingReminders] = useState<
-		FetchedTankData['fish']
-	>([]);
+	const [todayReminders, setTodayReminders] =
+		useState<FetchedTankData['fish']>();
+	const [upcomingReminders, setUpcomingReminders] =
+		useState<FetchedTankData['fish']>();
 	const { data, isLoading } = trpc.useQuery([
 		'user.tanks.byId',
 		{ id: id as string },
 	]);
 
-	// update the fish maintained_at field
 	const updater = trpc.useMutation(['user.updateFish'], {
 		onMutate: (updatedFish: any) => {
 			invalidate.cancelQuery(['user.tanks.byId', { id }]);
@@ -93,9 +90,9 @@ export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 			{data?.fish.length !== 0 ? (
 				<Stack textAlign="center">
 					{todayReminders && todayReminders?.length !== 0 && (
-						<>
+						<Stack spacing={5}>
 							<Heading color="white">Today</Heading>
-							{todayReminders.map((fish, idx) => {
+							{todayReminders.map((fish, idx) => (
 								<MotionBox
 									key={idx}
 									bg="rgba(255,255,255,0.4)"
@@ -173,9 +170,9 @@ export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 											</Box>
 										</Stack>
 									</HStack>
-								</MotionBox>;
-							})}
-						</>
+								</MotionBox>
+							))}
+						</Stack>
 					)}
 					{upcomingReminders && upcomingReminders?.length !== 0 && (
 						<Stack>
@@ -238,6 +235,7 @@ export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 													<Text
 														color="white"
 														isTruncated
+														flexWrap="wrap"
 													>
 														Feed in{' '}
 														{formatDistance(
