@@ -3,7 +3,7 @@ import { trpc } from '@utils/trpc';
 import { Loader } from '@components/atoms';
 import { motion } from 'framer-motion';
 import { BsCalendar3 } from 'react-icons/bs';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { addDays, formatDistance } from 'date-fns';
 import { FetchedTankData, getReminders } from '@utils/index';
 import {
@@ -154,9 +154,7 @@ export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 														Feed 29 days adfasdf ago
 														{formatDistance(
 															addDays(
-																new Date(
-																	fish.maintained_at as unknown as string
-																),
+																fish.maintained_at as Date,
 																0
 															),
 															new Date(),
@@ -250,9 +248,7 @@ export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 														Feed in{' '}
 														{formatDistance(
 															addDays(
-																new Date(
-																	fish.maintained_at as unknown as string
-																),
+																fish.maintained_at as Date,
 																3
 															),
 															new Date(),
