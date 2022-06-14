@@ -1,3 +1,4 @@
+import superjson from 'superjson';
 import { theme } from '../theme';
 import { withTRPC } from '@trpc/next';
 import { AppRouter } from 'server/routers';
@@ -24,6 +25,7 @@ export default withTRPC<AppRouter>({
 
 		return {
 			url,
+			transformer: superjson,
 			queryClientConfig: {
 				defaultOptions: {
 					queries: {
