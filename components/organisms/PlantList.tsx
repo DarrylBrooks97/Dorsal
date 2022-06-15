@@ -1,25 +1,70 @@
+import { motion } from 'framer-motion';
+import { TrashIcon } from '@radix-ui/react-icons';
 import { useState } from 'react';
 import { NextImage } from '@components/atoms';
-import { UserPlant } from '@prisma/client';
+import { trpc } from '@utils/trpc';
+import { inferQueryResponse } from 'pages/api/trpc/[trpc]';
 import {
 	Box,
+	Button,
 	Heading,
 	HStack,
 	StackProps,
 	Input,
 	Stack,
 	Text,
+	Modal,
+	ModalHeader,
+	ModalBody,
+	ModalContent,
+	ModalOverlay,
+	ModalCloseButton,
+	ModalFooter,
+	useDisclosure,
 } from '@chakra-ui/react';
-import { TrashIcon } from '@radix-ui/react-icons';
-import { motion } from 'framer-motion';
 
+export type FetchedPlantData = inferQueryResponse<'user.tanks.byId'>['plants'];
 const MotionHStack = motion<StackProps>(HStack);
-export interface PlantList extends UserPlant {
-	species: string;
-	image_url: string;
-}
-export function PlantList({ plants }: { plants: PlantList[] }) {
+
+export function PlantList({ plants }: { plants: FetchedPlantData }) {
+	const invalidate = trpc.useContext();
 	const [filteredPlants, setFilteredPlants] = useState(plants);
+	const { isOpen: deleteIsOpen, onToggle: deleteOnToggle } = useDisclosure();
+	// const updater = trpc.useMutation(['user.deleteFish'], {
+	// 	onMutate: async (deletedFish: any) => {
+	// 		await invalidate.cancelQuery(['user.tanks.byId', { id: tank_id }]);
+
+	// 		const freshFish = data?.fish.filter(
+	// 			({ id }) => id !== deletedFish.id
+	// 		);
+
+	// 		invalidate.setQueryData(['user.tanks.byId', { id: tank_id }], {
+	// 			tank: data?.tank as any,
+	// 			fish: [...(freshFish as FetchedTankData['fish'])],
+	// 			plants: [...(data?.plants as any)],
+	// 		});
+
+	// 		return {
+	// 			id: deletedFish.id,
+	// 			tank_id: deletedFish.tank_id,
+	// 		};
+	// 	},
+	// 	onSettled(_newData, error, _variables, context: any) {
+	// 		if (error) {
+	// 			toast({
+	// 				title: 'Error',
+	// 				description: error.message,
+	// 				status: 'error',
+	// 				duration: 5000,
+	// 				isClosable: true,
+	// 			});
+	// 		}
+	// 		invalidate.invalidateQueries([
+	// 			'user.tanks.byId',
+	// 			{ id: context.tank_id },
+	// 		]);
+	// 	},
+	// });
 
 	return (
 		<Stack spacing={3} w="calc(100vw - 3rem)">
@@ -86,6 +131,37 @@ export function PlantList({ plants }: { plants: PlantList[] }) {
 					</Box>
 				</MotionHStack>
 			))}
+			{/* <Modal isOpen={deleteIsOpen} onClose={deleteOnToggle}>
+				<ModalOverlay />
+				<ModalContent>
+					<ModalHeader>Delete Fish</ModalHeader>
+					<ModalCloseButton />
+					<ModalBody>
+						<Text>Are you sure you want to delete this fish?</Text>
+					</ModalBody>
+					<ModalFooter>
+						<Button
+							colorScheme="blue"
+							variant="outline"
+							mr={3}
+							onClick={() => deleteOnToggle()}
+						>
+							Cancel
+						</Button>
+						<Button
+							colorScheme="red"
+							onClick={() => {
+								updater.mutate({
+									id: selectedFishId,
+								});
+								deleteOnToggle();
+							}}
+						>
+							Delete
+						</Button>
+					</ModalFooter>
+				</ModalContent>
+			</Modal> */}
 		</Stack>
 	);
 }

@@ -26,30 +26,35 @@ import {
 
 const MotionHStack = motion<StackProps>(HStack);
 interface FishListProps {
-	tank_id: string;
+	fish: FetchedTankData['fish'];
+	tank: FetchedTankData['tank'];
+	plants: FetchedTankData['plants'];
 }
 
-export function FishList({ tank_id }: FishListProps) {
+export function FishList({ fish, tank, plants }: FishListProps) {
 	const toast = useToast();
 	const invalidate = trpc.useContext();
-	const { data } = trpc.useQuery(['user.tanks.byId', { id: tank_id }]);
-	const [filteredFish, setFilteredFish] = useState(data?.fish);
+	const [filteredFish, setFilteredFish] = useState(fish);
 	const [selectedFishId, setSelectedFishId] = useState<string>('');
 	const { isOpen: deleteIsOpen, onToggle: deleteOnToggle } = useDisclosure();
 
 	const updater = trpc.useMutation(['user.deleteFish'], {
 		onMutate: async (deletedFish: any) => {
-			await invalidate.cancelQuery(['user.tanks.byId', { id: tank_id }]);
+			await invalidate.cancelQuery([
+				'user.tanks.byId',
+				{ id: deletedFish.tank_id },
+			]);
 
-			const freshFish = data?.fish.filter(
-				({ id }) => id !== deletedFish.id
+			const freshFish = fish.filter(({ id }) => id !== deletedFish.id);
+
+			invalidate.setQueryData(
+				['user.tanks.byId', { id: deletedFish.tank_id }],
+				{
+					tank,
+					plants,
+					fish: [...(freshFish as FetchedTankData['fish'])],
+				}
 			);
-
-			invalidate.setQueryData(['user.tanks.byId', { id: tank_id }], {
-				tank: data?.tank as any,
-				fish: [...(freshFish as FetchedTankData['fish'])],
-				plants: [...(data?.plants as any)],
-			});
 
 			return {
 				id: deletedFish.id,
@@ -74,8 +79,8 @@ export function FishList({ tank_id }: FishListProps) {
 	});
 
 	useEffect(() => {
-		setFilteredFish(data?.fish);
-	}, [data]);
+		setFilteredFish(fish);
+	}, [fish]);
 
 	return (
 		<Stack spacing={3} w="calc(100vw - 3rem)">
@@ -84,7 +89,7 @@ export function FishList({ tank_id }: FishListProps) {
 				bg="white"
 				onChange={(e) => {
 					setFilteredFish(
-						data?.fish.filter((f) =>
+						fish.filter((f) =>
 							f.name
 								.toLowerCase()
 								.includes(e.target.value.toLocaleLowerCase())
@@ -165,6 +170,7 @@ export function FishList({ tank_id }: FishListProps) {
 					<ModalFooter>
 						<Button
 							colorScheme="blue"
+							variant="outline"
 							mr={3}
 							onClick={() => deleteOnToggle()}
 						>
