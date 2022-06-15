@@ -1,4 +1,5 @@
 import cuid from 'cuid';
+import { InfoCircledIcon } from '@radix-ui/react-icons';
 import { NextImage } from '@components/atoms';
 import { trpc } from '@utils/trpc';
 import { useRouter } from 'next/router';
@@ -24,7 +25,6 @@ import {
 	Text,
 	Tooltip,
 } from '@chakra-ui/react';
-import { InfoCircledIcon } from '@radix-ui/react-icons';
 
 export default function NewTank() {
 	const route = useRouter();

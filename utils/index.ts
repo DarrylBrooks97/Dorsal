@@ -21,10 +21,9 @@ export const getReminders = (
 } => {
 	let todayReminders = fetchedData?.fish?.filter((fish) => {
 		return (
-			new Date(fish.maintained_at as Date).getDate() ===
+			new Date(fish.next_update as Date).getDate() ===
 				new Date().getDate() ||
-			new Date(fish.maintained_at as Date).getDate() <
-				new Date().getDate()
+			new Date(fish.next_update as Date).getDate() < new Date().getDate()
 		);
 	});
 

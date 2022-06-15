@@ -17,6 +17,7 @@ import {
 	Heading,
 	useToast,
 } from '@chakra-ui/react';
+import { UserFish } from '@prisma/client';
 
 const MotionBox = motion<BoxProps>(Box);
 const MotionStack = motion<StackProps>(Stack);
@@ -43,7 +44,7 @@ export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 
 			if (!freshReminder) return;
 
-			freshReminder.maintained_at = updatedFish.maintained_at;
+			freshReminder.next_update = updatedFish.next_update;
 
 			invalidate.setQueryData(['user.tanks.byId', { id }], {
 				tank: data?.tank as any,
@@ -80,6 +81,18 @@ export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 		setTodayReminders(today);
 		setUpcomingReminders(upcoming);
 	}, [data]);
+
+	const updateFish = (fish: UserFish, next_update?: Date) => {
+		const newUpdate = new Date();
+		newUpdate.setDate(
+			next_update ? next_update.getDate() + 3 : newUpdate.getDate() + 3
+		);
+
+		updater.mutate({
+			id: fish.id,
+			next_update: newUpdate.toISOString(),
+		});
+	};
 
 	if (isLoading || typeof id !== 'string') {
 		return <Loader />;
@@ -151,10 +164,9 @@ export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 														color="white"
 														isTruncated
 													>
-														Feed 29 days adfasdf ago
 														{formatDistance(
 															addDays(
-																fish.maintained_at as Date,
+																fish.next_update as Date,
 																0
 															),
 															new Date(),
@@ -165,13 +177,12 @@ export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 												<Button
 													size="sm"
 													colorScheme="green"
-													onClick={() => {
-														updater.mutate({
-															id: fish.id,
-															maintained_at:
-																new Date().toISOString(),
-														});
-													}}
+													onClick={() =>
+														updateFish(
+															fish,
+															undefined
+														)
+													}
 												>
 													Complete
 												</Button>
@@ -247,10 +258,7 @@ export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 													>
 														Feed in{' '}
 														{formatDistance(
-															addDays(
-																fish.maintained_at as Date,
-																3
-															),
+															fish.next_update as Date,
 															new Date(),
 															{ addSuffix: true }
 														)}
@@ -259,13 +267,12 @@ export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 												<Button
 													size="sm"
 													colorScheme="green"
-													onClick={() => {
-														updater.mutate({
-															id: fish.id,
-															maintained_at:
-																new Date().toISOString(),
-														});
-													}}
+													onClick={() =>
+														updateFish(
+															fish,
+															fish.next_update as Date
+														)
+													}
 												>
 													Complete
 												</Button>

@@ -441,7 +441,7 @@ export default function AddFish() {
 											tank_id: tankId,
 											user_id: sessionData.userInfo.id,
 											fish_id: viewedFish?.id,
-											maintained_at: new Date(),
+											next_update: new Date(),
 										},
 									]);
 								}}

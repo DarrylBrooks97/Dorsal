@@ -20,7 +20,7 @@ export const userRouter = createRouter()
 					user_id: z.string().cuid().optional(),
 					tank_id: z.string().cuid().optional(),
 					name: z.string().min(1).max(255),
-					maintained_at: z.string(),
+					next_update: z.string(),
 				})
 			),
 		}),
@@ -50,7 +50,7 @@ export const userRouter = createRouter()
 		input: z.object({
 			id: z.string().cuid(),
 			name: z.string().min(1).max(255).optional(),
-			maintained_at: z.string(),
+			next_update: z.string(),
 		}),
 		async resolve({ input }) {
 			await prisma.userFish.update({
@@ -59,7 +59,7 @@ export const userRouter = createRouter()
 				},
 				data: {
 					name: input?.name,
-					maintained_at: input.maintained_at,
+					next_update: input.next_update,
 				},
 			});
 
@@ -361,7 +361,7 @@ export const userRouter = createRouter()
 				},
 				data: {
 					...input,
-					maintained_at: new Date(),
+					next_update: new Date(),
 				},
 			});
 
