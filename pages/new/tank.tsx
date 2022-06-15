@@ -1,5 +1,5 @@
 import cuid from 'cuid';
-import Image from 'next/image';
+import { NextImage } from '@components/atoms';
 import { trpc } from '@utils/trpc';
 import { useRouter } from 'next/router';
 import { FormEvent } from 'react';
@@ -65,7 +65,7 @@ export default function NewTank() {
 					overflow="hidden"
 					borderRadius="10px"
 				>
-					<Image
+					<NextImage
 						src="https://images.unsplash.com/photo-1617994679330-2883951d0073?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80"
 						width="320px"
 						height="300px"

@@ -1,7 +1,7 @@
-import Image from 'next/image';
 import { trpc } from '@utils/trpc';
-import { TrashIcon } from '@radix-ui/react-icons';
 import { motion } from 'framer-motion';
+import { NextImage } from '@components/atoms';
+import { TrashIcon } from '@radix-ui/react-icons';
 import { useEffect, useState } from 'react';
 import { FetchedTankData } from '@utils/index';
 import {
@@ -125,7 +125,7 @@ export function FishList({ tank_id }: FishListProps) {
 						bg="blue"
 						rounded="15px"
 					>
-						<Image
+						<NextImage
 							layout="fill"
 							alt={f.name}
 							src={

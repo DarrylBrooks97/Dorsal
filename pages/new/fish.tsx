@@ -1,5 +1,5 @@
-import Image from 'next/image';
 import { trpc } from '@utils/trpc';
+import { NextImage } from '@components/atoms';
 import { Fish } from '@prisma/client';
 import { motion } from 'framer-motion';
 import { useSession } from 'next-auth/react';
@@ -135,7 +135,7 @@ export default function AddFish() {
 							setViewedFish(fish);
 						}}
 					>
-						<Image
+						<NextImage
 							layout="fill"
 							priority
 							src={fish.image_url}
@@ -191,7 +191,7 @@ export default function AddFish() {
 								overflow="hidden"
 								boxShadow="md"
 							>
-								<Image
+								<NextImage
 									src={
 										viewedFish?.image_url ??
 										'https://images.unsplash.com/photo-1617994679330-2883951d0073?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80'

@@ -1,5 +1,5 @@
-import Image from 'next/image';
 import { trpc } from '@utils/trpc';
+import { NextImage } from '@components/atoms';
 import { Loader } from '@components/atoms';
 import { motion } from 'framer-motion';
 import { BsCalendar3 } from 'react-icons/bs';
@@ -124,7 +124,7 @@ export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 											rounded="15px"
 											overflow="hidden"
 										>
-											<Image
+											<NextImage
 												src={
 													fish.image_url ??
 													'https://images.unsplash.com/photo-1628172730539-692b42b863de?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1472&q=80'
@@ -217,7 +217,7 @@ export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 											rounded="15px"
 											overflow="hidden"
 										>
-											<Image
+											<NextImage
 												src={
 													fish.image_url ??
 													'https://images.unsplash.com/photo-1628172730539-692b42b863de?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1472&q=80'

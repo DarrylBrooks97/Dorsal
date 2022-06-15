@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import { NextImage } from '@components/atoms';
 import { Loader } from '@components/atoms';
 import Compressor from 'compressorjs';
 import { TankTabs } from '@components/molecules';
@@ -135,7 +135,7 @@ export default function Aquarium(): JSX.Element {
 					overflow="hidden"
 					borderRadius="15px"
 				>
-					<Image src={tankImage} layout="fill" alt="tank image" />
+					<NextImage src={tankImage} layout="fill" alt="tank image" />
 					{editing ? (
 						<Box
 							as="label"

@@ -1,5 +1,5 @@
-import Image from 'next/image';
 import { useState } from 'react';
+import { NextImage } from '@components/atoms';
 import { UserPlant } from '@prisma/client';
 import {
 	Box,
@@ -69,7 +69,7 @@ export function PlantList({ plants }: { plants: PlantList[] }) {
 						bg="blue"
 						rounded="15px"
 					>
-						<Image
+						<NextImage
 							layout="fill"
 							alt={p.name}
 							src={p.image_url as string}

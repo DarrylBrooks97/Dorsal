@@ -1,7 +1,8 @@
 import cuid from 'cuid';
-import Image from 'next/image';
 import { trpc } from '@utils/trpc';
 import { Plant } from '@prisma/client';
+import { NextImage } from './atoms';
+import { useSession } from 'next-auth/react';
 import { deepArrayFilter } from '@utils/index';
 import { Dispatch, SetStateAction, useState } from 'react';
 import { Cross1Icon } from '@radix-ui/react-icons';
@@ -26,7 +27,6 @@ import {
 	ButtonGroup,
 	useToast,
 } from '@chakra-ui/react';
-import { useSession } from 'next-auth/react';
 
 export interface PlantViewProps {
 	viewedPlant: Plant;
@@ -81,7 +81,7 @@ export default function PlantView({
 				borderRadius="15px"
 				overflow="hidden"
 			>
-				<Image
+				<NextImage
 					src={
 						viewedPlant?.image_url ??
 						'https://images.unsplash.com/photo-1567331711402-509c12c41959?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=773&q=80'
@@ -177,7 +177,7 @@ export default function PlantView({
 												pos="relative"
 												borderRadius="15px"
 											>
-												<Image
+												<NextImage
 													priority
 													layout="fill"
 													alt="selectedPlantImage"
