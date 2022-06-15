@@ -90,29 +90,29 @@ model Plant {
 }
 
 model UserFish {
-  id            String    @id @default(cuid())
-  user_id       String    @default(cuid())
-  tank_id       String    @default(cuid())
-  fish_id       String    @default(cuid())
-  name          String    @db.VarChar(255)
-  maintained_at DateTime? @db.Timestamp(0)
-  user          User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  tank          Tank      @relation(fields: [tank_id], references: [id], onDelete: Cascade)
-  fish          Fish      @relation(fields: [fish_id], references: [id], onDelete: Cascade)
+  id          String    @id @default(cuid())
+  user_id     String    @default(cuid())
+  tank_id     String    @default(cuid())
+  fish_id     String    @default(cuid())
+  name        String    @db.VarChar(255)
+  next_update DateTime? @db.Timestamp(0)
+  user        User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  tank        Tank      @relation(fields: [tank_id], references: [id], onDelete: Cascade)
+  fish        Fish      @relation(fields: [fish_id], references: [id], onDelete: Cascade)
 
   @@index([user_id])
 }
 
 model UserPlant {
-  id            String    @id @default(cuid())
-  user_id       String    @default(cuid())
-  tank_id       String    @default(cuid())
-  plant_id      String    @default(cuid())
-  name          String    @db.VarChar(255)
-  maintained_at DateTime? @db.Timestamp(0)
-  user          User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  tank          Tank      @relation(fields: [tank_id], references: [id], onDelete: Cascade)
-  plant         Plant     @relation(fields: [plant_id], references: [id], onDelete: Cascade)
+  id          String    @id @default(cuid())
+  user_id     String    @default(cuid())
+  tank_id     String    @default(cuid())
+  plant_id    String    @default(cuid())
+  name        String    @db.VarChar(255)
+  next_update DateTime? @db.Timestamp(0)
+  user        User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  tank        Tank      @relation(fields: [tank_id], references: [id], onDelete: Cascade)
+  plant       Plant     @relation(fields: [plant_id], references: [id], onDelete: Cascade)
 
   @@index([user_id])
 }
