@@ -49,7 +49,7 @@ export default function Home() {
 	}, [pos]);
 
 	return (
-		<Stack w="full" h="100vh" p="6" spacing={5} shouldWrapChildren>
+		<Stack w="full" h="full" px="6" spacing={5} shouldWrapChildren>
 			<AddButton />
 			<Stack w="full" mb="3">
 				<HStack
