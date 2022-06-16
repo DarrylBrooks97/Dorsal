@@ -162,7 +162,7 @@ export function FishList({ fish, tank, plants }: FishListProps) {
 			<Modal isOpen={deleteIsOpen} onClose={deleteOnToggle}>
 				<ModalOverlay />
 				<ModalContent>
-					<ModalHeader>Delete Fish</ModalHeader>
+					<ModalHeader>Delete Fish ?</ModalHeader>
 					<ModalCloseButton />
 					<ModalBody>
 						<Text>Are you sure you want to delete this fish?</Text>

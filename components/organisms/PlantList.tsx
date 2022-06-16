@@ -21,50 +21,64 @@ import {
 	ModalCloseButton,
 	ModalFooter,
 	useDisclosure,
+	useToast,
 } from '@chakra-ui/react';
+import { UserPlant } from '@prisma/client';
 
-export type FetchedPlantData = inferQueryResponse<'user.tanks.byId'>['plants'];
+export type FetchedTankData = inferQueryResponse<'user.tanks.byId'>;
 const MotionHStack = motion<StackProps>(HStack);
 
-export function PlantList({ plants }: { plants: FetchedPlantData }) {
+interface FishListProps {
+	fish: FetchedTankData['fish'];
+	tank: FetchedTankData['tank'];
+	plants: FetchedTankData['plants'];
+}
+
+export function PlantList({ fish, tank, plants }: FishListProps) {
+	const toast = useToast();
 	const invalidate = trpc.useContext();
+	const [selectedPlant, setSelectedPlant] = useState<UserPlant>();
 	const [filteredPlants, setFilteredPlants] = useState(plants);
 	const { isOpen: deleteIsOpen, onToggle: deleteOnToggle } = useDisclosure();
-	// const updater = trpc.useMutation(['user.deleteFish'], {
-	// 	onMutate: async (deletedFish: any) => {
-	// 		await invalidate.cancelQuery(['user.tanks.byId', { id: tank_id }]);
+	const updater = trpc.useMutation(['user.deletePlant'], {
+		onMutate: async ({ id: deletedId }) => {
+			await invalidate.cancelQuery([
+				'user.tanks.byId',
+				{ id: selectedPlant?.tank_id as string },
+			]);
 
-	// 		const freshFish = data?.fish.filter(
-	// 			({ id }) => id !== deletedFish.id
-	// 		);
+			const freshPlants = plants.filter(({ id }) => id !== deletedId);
 
-	// 		invalidate.setQueryData(['user.tanks.byId', { id: tank_id }], {
-	// 			tank: data?.tank as any,
-	// 			fish: [...(freshFish as FetchedTankData['fish'])],
-	// 			plants: [...(data?.plants as any)],
-	// 		});
+			invalidate.setQueryData(
+				['user.tanks.byId', { id: selectedPlant?.tank_id as string }],
+				{
+					tank,
+					plants: [...(freshPlants as FetchedTankData['plants'])],
+					fish,
+				}
+			);
 
-	// 		return {
-	// 			id: deletedFish.id,
-	// 			tank_id: deletedFish.tank_id,
-	// 		};
-	// 	},
-	// 	onSettled(_newData, error, _variables, context: any) {
-	// 		if (error) {
-	// 			toast({
-	// 				title: 'Error',
-	// 				description: error.message,
-	// 				status: 'error',
-	// 				duration: 5000,
-	// 				isClosable: true,
-	// 			});
-	// 		}
-	// 		invalidate.invalidateQueries([
-	// 			'user.tanks.byId',
-	// 			{ id: context.tank_id },
-	// 		]);
-	// 	},
-	// });
+			return {
+				id: deletedId,
+				tank_id: selectedPlant?.tank_id as string,
+			};
+		},
+		onSettled(_newData, error, _variables, context: any) {
+			if (error) {
+				toast({
+					title: 'Error',
+					description: error.message,
+					status: 'error',
+					duration: 5000,
+					isClosable: true,
+				});
+			}
+			invalidate.invalidateQueries([
+				'user.tanks.byId',
+				{ id: context.tank_id },
+			]);
+		},
+	});
 
 	return (
 		<Stack spacing={3} w="calc(100vw - 3rem)">
@@ -127,17 +141,25 @@ export function PlantList({ plants }: { plants: FetchedPlantData }) {
 						<Text color="gray.400">{p.species}</Text>
 					</Stack>
 					<Box pos="absolute" rounded="15px" bottom="5" right="5">
-						<TrashIcon color="red" width="30px" height="30px" />
+						<TrashIcon
+							color="red"
+							width="30px"
+							height="30px"
+							onClick={() => {
+								setSelectedPlant(p);
+								deleteOnToggle();
+							}}
+						/>
 					</Box>
 				</MotionHStack>
 			))}
-			{/* <Modal isOpen={deleteIsOpen} onClose={deleteOnToggle}>
+			<Modal isOpen={deleteIsOpen} onClose={deleteOnToggle}>
 				<ModalOverlay />
 				<ModalContent>
-					<ModalHeader>Delete Fish</ModalHeader>
+					<ModalHeader>Delete Plant ?</ModalHeader>
 					<ModalCloseButton />
 					<ModalBody>
-						<Text>Are you sure you want to delete this fish?</Text>
+						<Text>Are you sure you want to delete this plant?</Text>
 					</ModalBody>
 					<ModalFooter>
 						<Button
@@ -152,7 +174,7 @@ export function PlantList({ plants }: { plants: FetchedPlantData }) {
 							colorScheme="red"
 							onClick={() => {
 								updater.mutate({
-									id: selectedFishId,
+									id: selectedPlant?.id as string,
 								});
 								deleteOnToggle();
 							}}
@@ -161,7 +183,7 @@ export function PlantList({ plants }: { plants: FetchedPlantData }) {
 						</Button>
 					</ModalFooter>
 				</ModalContent>
-			</Modal> */}
+			</Modal>
 		</Stack>
 	);
 }
