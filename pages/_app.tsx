@@ -29,7 +29,7 @@ export default withTRPC<AppRouter>({
 			queryClientConfig: {
 				defaultOptions: {
 					queries: {
-						refetchOnWindowFocus: true,
+						refetchOnWindowFocus: false,
 					},
 				},
 			},
