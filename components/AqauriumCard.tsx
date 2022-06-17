@@ -1,5 +1,5 @@
-import Link from 'next/link';
 import Spinner from './Spinner';
+import NextLink from './atoms/NextLink';
 import handleViewport from 'react-in-viewport';
 import { Tank } from '@prisma/client';
 import { Card } from '@components/Card';
@@ -37,7 +37,7 @@ function AquariumCard(props: {
 			{data ? (
 				<Stack w="full">
 					{data.tanks.map(({ id, name }: Tank) => (
-						<Link key={id} href={`/aquarium/${id}`} passHref>
+						<NextLink key={id} href={`/aquarium/${id}`}>
 							<HStack
 								w="full"
 								justify="center"
@@ -63,7 +63,7 @@ function AquariumCard(props: {
 									/>
 								</Box>
 							</HStack>
-						</Link>
+						</NextLink>
 					))}
 				</Stack>
 			) : (

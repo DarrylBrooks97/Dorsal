@@ -1,5 +1,6 @@
 import { Avatar, Box, HStack, Stack, Text } from '@chakra-ui/react';
 import React from 'react';
+import NextLink from './NextLink';
 
 export const Header = ({ children }: { children: React.ReactNode }) => {
 	return (
@@ -15,9 +16,11 @@ export const Header = ({ children }: { children: React.ReactNode }) => {
 				backdropFilter="blur(10px)"
 				p="1rem"
 			>
-				<Text color="white" fontSize="3xl">
-					Dorsal
-				</Text>
+				<NextLink href="/">
+					<Text color="white" fontSize="3xl">
+						Dorsal
+					</Text>
+				</NextLink>
 				<Avatar
 					size="md"
 					src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGF2YXRhcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60"
