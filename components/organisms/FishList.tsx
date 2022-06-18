@@ -101,7 +101,6 @@ export function FishList({ fish, tank, plants }: FishListProps) {
 				<MotionHStack
 					key={f.id}
 					w="full"
-					h="200px"
 					spacing={3}
 					pos="relative"
 					bg="rgba(255,255,255,0.4)"
@@ -126,9 +125,10 @@ export function FishList({ fish, tank, plants }: FishListProps) {
 						overflow="hidden"
 						position="relative"
 						w="full"
-						h="200px"
+						p="calc(100vw / 3)"
 						bg="blue"
 						rounded="15px"
+						textAlign="center"
 					>
 						<NextImage
 							layout="fill"
@@ -138,12 +138,9 @@ export function FishList({ fish, tank, plants }: FishListProps) {
 								'https://images.unsplash.com/photo-1619611384968-e45fbd60bc5c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1074&q=80'
 							}
 						/>
-					</Box>
-					<Stack spacing={3} textAlign="center" w="full" h="full">
-						<Heading color="white" textAlign="center">
+						<Heading pos="absolute" bottom="5px">
 							{f.name}
 						</Heading>
-						<Text color="gray.400">{f.species}</Text>
 						<Box
 							pos="absolute"
 							rounded="15px"
@@ -156,7 +153,7 @@ export function FishList({ fish, tank, plants }: FishListProps) {
 						>
 							<TrashIcon color="red" width="30px" height="30px" />
 						</Box>
-					</Stack>
+					</Box>
 				</MotionHStack>
 			))}
 			<Modal isOpen={deleteIsOpen} onClose={deleteOnToggle}>

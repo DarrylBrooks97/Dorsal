@@ -99,7 +99,6 @@ export function PlantList({ fish, tank, plants }: FishListProps) {
 				<MotionHStack
 					key={p.id}
 					w="full"
-					h="200px"
 					spacing={3}
 					pos="relative"
 					bg="rgba(255,255,255,0.4)"
@@ -124,8 +123,7 @@ export function PlantList({ fish, tank, plants }: FishListProps) {
 						overflow="hidden"
 						position="relative"
 						w="full"
-						h="200px"
-						bg="blue"
+						p="calc(100vw / 3)"
 						rounded="15px"
 					>
 						<NextImage
@@ -133,8 +131,22 @@ export function PlantList({ fish, tank, plants }: FishListProps) {
 							alt={p.name}
 							src={p.image_url as string}
 						/>
+						<Heading pos="absolute" bottom="5px">
+							{p.name}
+						</Heading>
+						<Box pos="absolute" rounded="15px" bottom="5" right="5">
+							<TrashIcon
+								color="red"
+								width="30px"
+								height="30px"
+								onClick={() => {
+									setSelectedPlant(p);
+									deleteOnToggle();
+								}}
+							/>
+						</Box>
 					</Box>
-					<Stack spacing={3} textAlign="center" w="full" h="full">
+					{/* <Stack spacing={3} textAlign="center" w="full" h="full">
 						<Heading color="white" textAlign="center">
 							{p.name}
 						</Heading>
@@ -150,7 +162,7 @@ export function PlantList({ fish, tank, plants }: FishListProps) {
 								deleteOnToggle();
 							}}
 						/>
-					</Box>
+					</Box> */}
 				</MotionHStack>
 			))}
 			<Modal isOpen={deleteIsOpen} onClose={deleteOnToggle}>
