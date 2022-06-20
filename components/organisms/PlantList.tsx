@@ -131,10 +131,19 @@ export function PlantList({ fish, tank, plants }: FishListProps) {
 							alt={p.name}
 							src={p.image_url as string}
 						/>
-						<Heading pos="absolute" bottom="5px">
-							{p.name}
-						</Heading>
-						<Box pos="absolute" rounded="15px" bottom="5" right="5">
+						<Stack
+							w="full"
+							pos="absolute"
+							left="0"
+							bottom="2"
+							flexDir="row"
+							justify="center"
+						>
+							<Box>
+								<Heading>{p.name}</Heading>
+							</Box>
+						</Stack>
+						<Box pos="absolute" rounded="15px" bottom="2" right="2">
 							<TrashIcon
 								color="red"
 								width="30px"
@@ -146,23 +155,6 @@ export function PlantList({ fish, tank, plants }: FishListProps) {
 							/>
 						</Box>
 					</Box>
-					{/* <Stack spacing={3} textAlign="center" w="full" h="full">
-						<Heading color="white" textAlign="center">
-							{p.name}
-						</Heading>
-						<Text color="gray.400">{p.species}</Text>
-					</Stack>
-					<Box pos="absolute" rounded="15px" bottom="5" right="5">
-						<TrashIcon
-							color="red"
-							width="30px"
-							height="30px"
-							onClick={() => {
-								setSelectedPlant(p);
-								deleteOnToggle();
-							}}
-						/>
-					</Box> */}
 				</MotionHStack>
 			))}
 			<Modal isOpen={deleteIsOpen} onClose={deleteOnToggle}>

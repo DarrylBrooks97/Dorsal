@@ -128,7 +128,6 @@ export function FishList({ fish, tank, plants }: FishListProps) {
 						p="calc(100vw / 3)"
 						bg="blue"
 						rounded="15px"
-						textAlign="center"
 					>
 						<NextImage
 							layout="fill"
@@ -138,20 +137,28 @@ export function FishList({ fish, tank, plants }: FishListProps) {
 								'https://images.unsplash.com/photo-1619611384968-e45fbd60bc5c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1074&q=80'
 							}
 						/>
-						<Heading pos="absolute" bottom="5px">
-							{f.name}
-						</Heading>
-						<Box
+						<Stack
+							w="full"
 							pos="absolute"
-							rounded="15px"
-							bottom="5"
-							right="5"
-							onClick={() => {
-								setSelectedFishId(f.id as string);
-								deleteOnToggle();
-							}}
+							left="0"
+							bottom="2"
+							flexDir="row"
+							justify="center"
 						>
-							<TrashIcon color="red" width="30px" height="30px" />
+							<Box>
+								<Heading>{f.name}</Heading>
+							</Box>
+						</Stack>
+						<Box pos="absolute" rounded="15px" bottom="2" right="2">
+							<TrashIcon
+								color="red"
+								width="30px"
+								height="30px"
+								onClick={() => {
+									setSelectedFishId(f.id);
+									deleteOnToggle();
+								}}
+							/>
 						</Box>
 					</Box>
 				</MotionHStack>
