@@ -2,11 +2,19 @@ import { z } from 'zod';
 import { prisma } from '@clients/prisma';
 import { createRouter } from '../../createRouter';
 import { UserFish, UserPlant } from '@prisma/client';
+import { Input } from '@chakra-ui/react';
 
 export const userRouter = createRouter()
 	.query('fish', {
-		async resolve() {
-			const fish = await prisma.userFish.findMany();
+		input: z.object({
+			id: z.string().cuid(),
+		}),
+		async resolve({ input }) {
+			const fish = await prisma.userFish.findMany({
+				where: {
+					user_id: input.id,
+				},
+			});
 			return {
 				fish,
 			};
@@ -20,6 +28,7 @@ export const userRouter = createRouter()
 					user_id: z.string().cuid().optional(),
 					tank_id: z.string().cuid().optional(),
 					name: z.string().min(1).max(255),
+					image_url: z.string(),
 					next_update: z.string(),
 				})
 			),
@@ -103,7 +112,6 @@ export const userRouter = createRouter()
 
 					return {
 						...f,
-						image_url: parentFish?.image_url,
 						species: parentFish?.species,
 					};
 				})
@@ -125,7 +133,6 @@ export const userRouter = createRouter()
 
 					return {
 						...p,
-						image_url: parentPlant?.image_url,
 						species: parentPlant?.species,
 					};
 				})
@@ -312,13 +319,10 @@ export const userRouter = createRouter()
 			id: z.string().cuid(),
 		}),
 		async resolve({ input }) {
-			const plants = await prisma.user.findUnique({
+			const plants = await prisma.userPlant.findMany({
 				where: {
-					id: input.id,
+					user_id: input.id,
 				},
-				// select: {
-				// 	plants: true,
-				// },
 			});
 			return {
 				plants,
@@ -333,6 +337,7 @@ export const userRouter = createRouter()
 					plant_id: z.string().cuid(),
 					user_id: z.string().cuid(),
 					tank_id: z.string().cuid(),
+					image_url: z.string(),
 				})
 			),
 		}),

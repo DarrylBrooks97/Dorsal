@@ -328,6 +328,7 @@ export default function PlantView({
 											id: cuid(),
 											name: p.name,
 											plant_id: p.id,
+											image_url: p.image_url,
 											user_id: sessionData.userInfo.id,
 											tank_id: tankId,
 										};

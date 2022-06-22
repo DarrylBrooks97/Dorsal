@@ -5,7 +5,8 @@ import { motion } from 'framer-motion';
 import { BsCalendar3 } from 'react-icons/bs';
 import { useEffect, useState } from 'react';
 import { addDays, formatDistance } from 'date-fns';
-import { FetchedTankData, getReminders } from '@utils/index';
+import { getReminders } from '@utils/index';
+import { UserFish } from '@prisma/client';
 import {
 	Box,
 	BoxProps,
@@ -17,7 +18,6 @@ import {
 	Heading,
 	useToast,
 } from '@chakra-ui/react';
-import { UserFish } from '@prisma/client';
 
 const MotionBox = motion<BoxProps>(Box);
 const MotionStack = motion<StackProps>(Stack);
@@ -25,10 +25,8 @@ const MotionStack = motion<StackProps>(Stack);
 export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 	const toast = useToast();
 	const invalidate = trpc.useContext();
-	const [todayReminders, setTodayReminders] =
-		useState<FetchedTankData['fish']>();
-	const [upcomingReminders, setUpcomingReminders] =
-		useState<FetchedTankData['fish']>();
+	const [todayReminders, setTodayReminders] = useState<UserFish[]>();
+	const [upcomingReminders, setUpcomingReminders] = useState<UserFish[]>();
 	const { data, isLoading } = trpc.useQuery([
 		'user.tanks.byId',
 		{ id: id as string },
@@ -76,7 +74,7 @@ export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 	});
 
 	useEffect(() => {
-		const { today, upcoming } = getReminders(data);
+		const { today, upcoming } = getReminders(data?.fish);
 
 		setTodayReminders(today);
 		setUpcomingReminders(upcoming);
@@ -179,7 +177,7 @@ export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 													colorScheme="green"
 													onClick={() =>
 														updateFish(
-															fish,
+															fish as UserFish,
 															undefined
 														)
 													}
@@ -269,7 +267,7 @@ export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 													colorScheme="green"
 													onClick={() =>
 														updateFish(
-															fish,
+															fish as UserFish,
 															fish.next_update as Date
 														)
 													}

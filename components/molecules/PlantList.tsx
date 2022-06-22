@@ -3,6 +3,7 @@ import { TrashIcon } from '@radix-ui/react-icons';
 import { useState } from 'react';
 import { NextImage } from '@components/atoms';
 import { trpc } from '@utils/trpc';
+import { UserPlant } from '@prisma/client';
 import { inferQueryResponse } from 'pages/api/trpc/[trpc]';
 import {
 	Box,
@@ -23,22 +24,26 @@ import {
 	useDisclosure,
 	useToast,
 } from '@chakra-ui/react';
-import { UserPlant } from '@prisma/client';
 
 export type FetchedTankData = inferQueryResponse<'user.tanks.byId'>;
 const MotionHStack = motion<StackProps>(HStack);
 
 interface FishListProps {
+	id: string;
 	fish: FetchedTankData['fish'];
 	tank: FetchedTankData['tank'];
-	plants: FetchedTankData['plants'];
 }
 
-export function PlantList({ fish, tank, plants }: FishListProps) {
+export function PlantList({ id, fish, tank }: FishListProps) {
 	const toast = useToast();
+	const { data } = trpc.useQuery(['user.plants', { id }]);
 	const invalidate = trpc.useContext();
-	const [selectedPlant, setSelectedPlant] = useState<UserPlant>();
-	const [filteredPlants, setFilteredPlants] = useState(plants);
+	const [selectedPlant, setSelectedPlant] = useState<UserPlant>(
+		{} as UserPlant
+	);
+	const [filteredPlants, setFilteredPlants] = useState<UserPlant[]>([
+		{} as UserPlant,
+	]);
 	const { isOpen: deleteIsOpen, onToggle: deleteOnToggle } = useDisclosure();
 	const updater = trpc.useMutation(['user.deletePlant'], {
 		onMutate: async ({ id: deletedId }) => {
@@ -47,7 +52,9 @@ export function PlantList({ fish, tank, plants }: FishListProps) {
 				{ id: selectedPlant?.tank_id as string },
 			]);
 
-			const freshPlants = plants.filter(({ id }) => id !== deletedId);
+			const freshPlants = data?.plants.filter(
+				({ id }) => id !== deletedId
+			);
 
 			invalidate.setQueryData(
 				['user.tanks.byId', { id: selectedPlant?.tank_id as string }],
@@ -87,7 +94,7 @@ export function PlantList({ fish, tank, plants }: FishListProps) {
 				bg="white"
 				onChange={(e) => {
 					setFilteredPlants(
-						plants.filter((p) =>
+						data!.plants.filter((p) =>
 							p.name
 								.toLowerCase()
 								.includes(e.target.value.toLocaleLowerCase())

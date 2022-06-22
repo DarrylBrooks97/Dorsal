@@ -1,3 +1,4 @@
+import { UserFish } from '@prisma/client';
 import { inferQueryResponse } from 'pages/api/trpc/[trpc]';
 
 export const deepArrayFilter = <T>(obj: T[]): T[] => {
@@ -14,12 +15,12 @@ export const deepArrayFilter = <T>(obj: T[]): T[] => {
 export type FetchedTankData = inferQueryResponse<'user.tanks.byId'>;
 
 export const getReminders = (
-	fetchedData: FetchedTankData | undefined
+	fetchedData: FetchedTankData['fish'] | undefined
 ): {
-	today: FetchedTankData['fish'];
-	upcoming: FetchedTankData['fish'];
+	today: UserFish[];
+	upcoming: UserFish[];
 } => {
-	let todayReminders = fetchedData?.fish?.filter((fish) => {
+	let todayReminders = fetchedData?.filter((fish) => {
 		return (
 			new Date(fish.next_update as Date).getDate() ===
 				new Date().getDate() ||
@@ -34,7 +35,7 @@ export const getReminders = (
 		return sort ? 1 : -1;
 	});
 
-	let upcomingReminders = fetchedData?.fish.filter((fish) => {
+	let upcomingReminders = fetchedData?.filter((fish) => {
 		return !todayReminders?.includes(fish);
 	});
 
