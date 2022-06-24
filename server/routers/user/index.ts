@@ -324,6 +324,7 @@ export const userRouter = createRouter()
 					user_id: input.id,
 				},
 			});
+
 			return {
 				plants,
 			};

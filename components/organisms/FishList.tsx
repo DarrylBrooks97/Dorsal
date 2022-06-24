@@ -173,7 +173,7 @@ export function FishList({ id, tank, plants }: FishListProps) {
 	return (
 		<Stack spacing={3} w="calc(100vw - 3rem)">
 			<Input
-				placeholder="Search Plants"
+				placeholder="Search Fish"
 				bg="white"
 				onChange={(e) => {
 					setFilteredFish(

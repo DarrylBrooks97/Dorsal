@@ -41,9 +41,7 @@ export function PlantList({ id, fish, tank }: FishListProps) {
 	const [selectedPlant, setSelectedPlant] = useState<UserPlant>(
 		{} as UserPlant
 	);
-	const [filteredPlants, setFilteredPlants] = useState<UserPlant[]>([
-		{} as UserPlant,
-	]);
+	const [filteredPlants, setFilteredPlants] = useState<UserPlant[]>([]);
 	const { isOpen: deleteIsOpen, onToggle: deleteOnToggle } = useDisclosure();
 	const updater = trpc.useMutation(['user.deletePlant'], {
 		onMutate: async ({ id: deletedId }) => {
@@ -86,6 +84,7 @@ export function PlantList({ id, fish, tank }: FishListProps) {
 			]);
 		},
 	});
+	console.log({ filteredPlants });
 
 	return (
 		<Stack spacing={3} w="calc(100vw - 3rem)">
@@ -136,7 +135,10 @@ export function PlantList({ id, fish, tank }: FishListProps) {
 						<NextImage
 							layout="fill"
 							alt={p.name}
-							src={p.image_url as string}
+							src={
+								p.image_url ??
+								'https://images.unsplash.com/photo-1619611384968-e45fbd60bc5c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1074&q=80as'
+							}
 						/>
 						<Stack
 							w="full"

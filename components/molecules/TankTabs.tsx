@@ -1,8 +1,12 @@
 import type { FetchedTankData } from '@utils/index';
 import { motion } from 'framer-motion';
 import { TankTabOptions } from '@constants';
-import { FishList, PlantList } from '@components/molecules';
-import { TankStatCard, TankRemindersCard } from '@components/organisms';
+import {
+	TankStatCard,
+	TankRemindersCard,
+	FishList,
+	PlantList,
+} from '@components/organisms';
 import { HStack, Text, Box, BoxProps, Center, Stack } from '@chakra-ui/react';
 import { Tank } from '@prisma/client';
 
