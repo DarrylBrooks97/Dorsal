@@ -24,6 +24,7 @@ import {
 	useDisclosure,
 	useToast,
 } from '@chakra-ui/react';
+import { useSession } from 'next-auth/react';
 
 export type FetchedTankData = inferQueryResponse<'user.tanks.byId'>;
 const MotionHStack = motion<StackProps>(HStack);
@@ -34,9 +35,14 @@ interface FishListProps {
 	tank: FetchedTankData['tank'];
 }
 
-export function PlantList({ id, fish, tank }: FishListProps) {
+export function PlantList({ fish, tank }: FishListProps) {
 	const toast = useToast();
-	const { data } = trpc.useQuery(['user.plants', { id }]);
+	const { data: userData } = useSession();
+	const { data } = trpc.useQuery([
+		'user.plants',
+		//@ts-ignore
+		{ id: userData?.userInfo.id as string },
+	]);
 	const invalidate = trpc.useContext();
 	const [selectedPlant, setSelectedPlant] = useState<UserPlant>(
 		{} as UserPlant
@@ -84,7 +90,6 @@ export function PlantList({ id, fish, tank }: FishListProps) {
 			]);
 		},
 	});
-	console.log({ filteredPlants });
 
 	return (
 		<Stack spacing={3} w="calc(100vw - 3rem)">

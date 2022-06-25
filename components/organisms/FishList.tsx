@@ -1,5 +1,6 @@
 import { trpc } from '@utils/trpc';
 import { motion } from 'framer-motion';
+import { useSession } from 'next-auth/react';
 import { NextImage } from '@components/atoms';
 import { TrashIcon } from '@radix-ui/react-icons';
 import { FetchedTankData } from '@utils/index';
@@ -28,7 +29,6 @@ import {
 const MotionHStack = motion<StackProps>(HStack);
 
 interface FishListProps {
-	id: string;
 	tank: FetchedTankData['tank'];
 	plants: FetchedTankData['plants'];
 }
@@ -114,9 +114,14 @@ const LiveStockCard = <T extends DisplayLiveStockData>({
 	);
 };
 
-export function FishList({ id, tank, plants }: FishListProps) {
+export function FishList({ tank, plants }: FishListProps) {
 	const toast = useToast();
-	const { data } = trpc.useQuery(['user.fish', { id }]);
+	const { data: userData } = useSession();
+	const { data } = trpc.useQuery([
+		'user.fish',
+		//@ts-ignore
+		{ id: userData?.userInfo.id as string },
+	]);
 	const invalidate = trpc.useContext();
 	const [filteredFish, setFilteredFish] = useState<UserFish[] | undefined>(
 		data?.fish

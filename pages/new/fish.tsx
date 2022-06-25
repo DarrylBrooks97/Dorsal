@@ -67,11 +67,7 @@ export default function AddFish() {
 			});
 		},
 	});
-	const {
-		isOpen: isFishOpen,
-		onClose: onFishClose,
-		onToggle: fishToggle,
-	} = useDisclosure();
+	const { isOpen: isFishOpen, onToggle: fishToggle } = useDisclosure();
 
 	useEffect(() => {
 		setFilteredFish(fishData?.fish);
@@ -441,6 +437,7 @@ export default function AddFish() {
 											tank_id: tankId,
 											user_id: sessionData.userInfo.id,
 											fish_id: viewedFish?.id,
+											image_url: viewedFish?.image_url,
 											next_update:
 												new Date().toISOString(),
 										},
