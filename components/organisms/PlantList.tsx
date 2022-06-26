@@ -1,16 +1,11 @@
-import { motion } from 'framer-motion';
-import { TrashIcon } from '@radix-ui/react-icons';
-import { useState } from 'react';
-import { NextImage } from '@components/atoms';
 import { trpc } from '@utils/trpc';
+import { useEffect, useState } from 'react';
+import { useSession } from 'next-auth/react';
+import { LiveStockCard } from '@components/molecules';
 import { UserPlant } from '@prisma/client';
 import { inferQueryResponse } from 'pages/api/trpc/[trpc]';
 import {
-	Box,
 	Button,
-	Heading,
-	HStack,
-	StackProps,
 	Input,
 	Stack,
 	Text,
@@ -24,11 +19,8 @@ import {
 	useDisclosure,
 	useToast,
 } from '@chakra-ui/react';
-import { useSession } from 'next-auth/react';
 
 export type FetchedTankData = inferQueryResponse<'user.tanks.byId'>;
-const MotionHStack = motion<StackProps>(HStack);
-
 interface FishListProps {
 	id: string;
 	fish: FetchedTankData['fish'];
@@ -47,7 +39,9 @@ export function PlantList({ fish, tank }: FishListProps) {
 	const [selectedPlant, setSelectedPlant] = useState<UserPlant>(
 		{} as UserPlant
 	);
-	const [filteredPlants, setFilteredPlants] = useState<UserPlant[]>([]);
+	const [filteredPlants, setFilteredPlants] = useState<
+		UserPlant[] | undefined
+	>([]);
 	const { isOpen: deleteIsOpen, onToggle: deleteOnToggle } = useDisclosure();
 	const updater = trpc.useMutation(['user.deletePlant'], {
 		onMutate: async ({ id: deletedId }) => {
@@ -91,6 +85,10 @@ export function PlantList({ fish, tank }: FishListProps) {
 		},
 	});
 
+	useEffect(() => {
+		setFilteredPlants(data?.plants);
+	}, [data]);
+
 	return (
 		<Stack spacing={3} w="calc(100vw - 3rem)">
 			<Input
@@ -106,70 +104,14 @@ export function PlantList({ fish, tank }: FishListProps) {
 					);
 				}}
 			/>
-			{filteredPlants.map((p, idx) => (
-				<MotionHStack
-					key={p.id}
-					w="full"
-					spacing={3}
-					pos="relative"
-					bg="rgba(255,255,255,0.4)"
-					rounded="15px"
-					initial="initial"
-					animate="open"
-					variants={{
-						initial: {
-							y: -5,
-							opacity: 0,
-						},
-						open: {
-							y: 0,
-							opacity: 1,
-							transition: {
-								delay: idx * 0.2,
-							},
-						},
-					}}
-				>
-					<Box
-						overflow="hidden"
-						position="relative"
-						w="full"
-						p="calc(100vw / 3)"
-						rounded="15px"
-					>
-						<NextImage
-							layout="fill"
-							alt={p.name}
-							src={
-								p.image_url ??
-								'https://images.unsplash.com/photo-1619611384968-e45fbd60bc5c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1074&q=80as'
-							}
-						/>
-						<Stack
-							w="full"
-							pos="absolute"
-							left="0"
-							bottom="2"
-							flexDir="row"
-							justify="center"
-						>
-							<Box>
-								<Heading>{p.name}</Heading>
-							</Box>
-						</Stack>
-						<Box pos="absolute" rounded="15px" bottom="2" right="2">
-							<TrashIcon
-								color="red"
-								width="30px"
-								height="30px"
-								onClick={() => {
-									setSelectedPlant(p);
-									deleteOnToggle();
-								}}
-							/>
-						</Box>
-					</Box>
-				</MotionHStack>
+			{filteredPlants?.map((plant, idx) => (
+				<LiveStockCard<UserPlant>
+					data={plant}
+					idx={idx}
+					key={plant.id}
+					deleteToggle={deleteOnToggle}
+					setState={setSelectedPlant}
+				/>
 			))}
 			<Modal isOpen={deleteIsOpen} onClose={deleteOnToggle}>
 				<ModalOverlay />
