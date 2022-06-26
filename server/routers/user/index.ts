@@ -24,19 +24,25 @@ export const userRouter = createRouter()
 		input: z.object({
 			fish: z.array(
 				z.object({
-					fish_id: z.string().cuid(),
-					user_id: z.string().cuid().optional(),
-					tank_id: z.string().cuid().optional(),
 					name: z.string().min(1).max(255),
+					fish_id: z.string().cuid(),
+					user_id: z.string().cuid(),
+					tank_id: z.string().cuid(),
 					image_url: z.string(),
-					next_update: z.string(),
 				})
 			),
 		}),
 		async resolve({ input }) {
+			const readyFish = input.fish.map((fish) => {
+				return {
+					...fish,
+					next_update: new Date().toISOString(),
+				};
+			});
+
 			return {
 				fish: await prisma.userFish.createMany({
-					data: input.fish,
+					data: readyFish,
 				}),
 			};
 		},
@@ -343,8 +349,14 @@ export const userRouter = createRouter()
 			),
 		}),
 		async resolve({ input }) {
+			const readyPlants = input.plants.map((plant) => {
+				return {
+					...plant,
+					next_update: new Date().toISOString(),
+				};
+			});
 			await prisma.userPlant.createMany({
-				data: input.plants,
+				data: readyPlants,
 			});
 
 			return {

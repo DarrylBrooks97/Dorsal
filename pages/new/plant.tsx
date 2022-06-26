@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import { useSession } from 'next-auth/react';
 import { Plant } from '@prisma/client';
 import { trpc } from '@utils/trpc';
@@ -32,6 +31,7 @@ import {
 	GridItem,
 	useToast,
 } from '@chakra-ui/react';
+import { NextImage } from '@components/atoms';
 
 const MotionCenter = motion<CenterProps>(Center);
 
@@ -137,7 +137,7 @@ export default function AddPlant() {
 							setViewedPlant(plant);
 						}}
 					>
-						<Image
+						<NextImage
 							layout="fill"
 							priority
 							src={plant.image_url}
@@ -192,7 +192,7 @@ export default function AddPlant() {
 								overflow="hidden"
 								boxShadow="md"
 							>
-								<Image
+								<NextImage
 									src={
 										viewedPlant?.image_url ??
 										'https://images.unsplash.com/photo-1617994679330-2883951d0073?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80'
@@ -411,6 +411,7 @@ export default function AddPlant() {
 											plant_id: viewedPlant?.id,
 											user_id: sessionData.userInfo.id,
 											tank_id: tankId,
+											image_url: viewedPlant?.image_url,
 										},
 									]);
 								}}

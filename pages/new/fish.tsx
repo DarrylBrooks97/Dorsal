@@ -438,8 +438,6 @@ export default function AddFish() {
 											user_id: sessionData.userInfo.id,
 											fish_id: viewedFish?.id,
 											image_url: viewedFish?.image_url,
-											next_update:
-												new Date().toISOString(),
 										},
 									]);
 								}}
