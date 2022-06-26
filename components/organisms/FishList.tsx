@@ -1,12 +1,10 @@
 import { trpc } from '@utils/trpc';
-import { motion } from 'framer-motion';
 import { useSession } from 'next-auth/react';
 import { LiveStockCard } from '@components/molecules';
 import { FetchedTankData } from '@utils/index';
-import { UserFish } from '@prisma/client';
+import { Tank, UserFish } from '@prisma/client';
 import { useEffect, useState } from 'react';
 import {
-	HStack,
 	Modal,
 	ModalHeader,
 	ModalBody,
@@ -16,7 +14,6 @@ import {
 	ModalFooter,
 	Input,
 	Stack,
-	StackProps,
 	Text,
 	useDisclosure,
 	useToast,
@@ -24,48 +21,31 @@ import {
 } from '@chakra-ui/react';
 
 interface FishListProps {
-	tank: FetchedTankData['tank'];
-	plants: FetchedTankData['plants'];
+	id: string;
 }
 
-export function FishList({ tank, plants }: FishListProps) {
+export function FishList({ id }: FishListProps) {
 	const toast = useToast();
-	const { data: userData } = useSession();
-	const { data } = trpc.useQuery([
-		'user.fish',
-		//@ts-ignore
-		{ id: userData?.userInfo.id as string },
-	]);
+	const { data: tankData } = trpc.useQuery(['user.tanks.byId', { id }]);
 	const invalidate = trpc.useContext();
-	const [filteredFish, setFilteredFish] = useState<UserFish[] | undefined>(
-		data?.fish
-	);
+	const [filteredFish, setFilteredFish] = useState<UserFish[] | undefined>(tankData?.fish);
 	const [selectedFish, setSelectedFish] = useState<UserFish>({} as UserFish);
 	const { isOpen: deleteIsOpen, onToggle: deleteOnToggle } = useDisclosure();
 
 	const updater = trpc.useMutation(['user.deleteFish'], {
 		onMutate: async (deletedFish: any) => {
-			await invalidate.cancelQuery([
-				'user.tanks.byId',
-				{ id: deletedFish.tank_id },
-			]);
+			await invalidate.cancelQuery(['user.tanks.byId', { id }]);
 
-			const freshFish = data?.fish.filter(
-				({ id }) => id !== deletedFish.id
-			);
+			const freshFish = tankData?.fish.filter(({ id }) => id !== deletedFish.id);
 
-			invalidate.setQueryData(
-				['user.tanks.byId', { id: deletedFish.tank_id }],
-				{
-					tank,
-					plants,
-					fish: [...(freshFish as FetchedTankData['fish'])],
-				}
-			);
+			invalidate.setQueryData(['user.tanks.byId', { id }], {
+				tank: tankData?.tank as Tank,
+				plants: tankData?.plants as FetchedTankData['plants'],
+				fish: freshFish as FetchedTankData['fish'],
+			});
 
 			return {
-				id: deletedFish.id,
-				tank_id: deletedFish.tank_id,
+				deletedFish,
 			};
 		},
 		onSettled(_newData, error, _variables, context: any) {
@@ -78,29 +58,24 @@ export function FishList({ tank, plants }: FishListProps) {
 					isClosable: true,
 				});
 			}
-			invalidate.invalidateQueries([
-				'user.tanks.byId',
-				{ id: context.tank_id },
-			]);
+			invalidate.invalidateQueries(['user.tanks.byId', { id: context.deletedFish.tank_id }]);
 		},
 	});
 
 	useEffect(() => {
-		setFilteredFish(data?.fish);
-	}, [data]);
+		setFilteredFish(tankData?.fish);
+	}, [tankData]);
 
 	return (
 		<Stack spacing={3} w="calc(100vw - 3rem)">
 			<Input
 				placeholder="Search Fish"
 				bg="white"
-				onChange={(e) => {
+				onChange={e => {
 					setFilteredFish(
-						data?.fish.filter((f) =>
-							f.name
-								.toLowerCase()
-								.includes(e.target.value.toLocaleLowerCase())
-						)
+						tankData?.fish.filter(f =>
+							f.name.toLowerCase().includes(e.target.value.toLocaleLowerCase()),
+						),
 					);
 				}}
 			/>
@@ -122,12 +97,7 @@ export function FishList({ tank, plants }: FishListProps) {
 						<Text>Are you sure you want to delete this fish?</Text>
 					</ModalBody>
 					<ModalFooter>
-						<Button
-							colorScheme="blue"
-							variant="outline"
-							mr={3}
-							onClick={() => deleteOnToggle()}
-						>
+						<Button colorScheme="blue" variant="outline" mr={3} onClick={() => deleteOnToggle()}>
 							Cancel
 						</Button>
 						<Button
