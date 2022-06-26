@@ -27,18 +27,13 @@ export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 	const invalidate = trpc.useContext();
 	const [todayReminders, setTodayReminders] = useState<UserFish[]>();
 	const [upcomingReminders, setUpcomingReminders] = useState<UserFish[]>();
-	const { data, isLoading } = trpc.useQuery([
-		'user.tanks.byId',
-		{ id: id as string },
-	]);
+	const { data, isLoading } = trpc.useQuery(['user.tanks.byId', { id: id as string }]);
 
 	const updater = trpc.useMutation(['user.updateFish'], {
 		onMutate: (updatedFish: any) => {
 			invalidate.cancelQuery(['user.tanks.byId', { id }]);
 
-			let freshReminder = data?.fish.find(
-				(v) => v.fish_id === updatedFish.id
-			);
+			let freshReminder = data?.fish.find(v => v.fish_id === updatedFish.id);
 
 			if (!freshReminder) return;
 
@@ -46,10 +41,7 @@ export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 
 			invalidate.setQueryData(['user.tanks.byId', { id }], {
 				tank: data?.tank as any,
-				fish: [
-					...(data?.fish as any),
-					{ ...freshReminder, ...updatedFish },
-				],
+				fish: [{ ...freshReminder, ...updatedFish }],
 				plants: [...(data?.plants as any)],
 			});
 
@@ -82,9 +74,7 @@ export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 
 	const updateFish = (fish: UserFish, next_update?: Date) => {
 		const newUpdate = new Date();
-		newUpdate.setDate(
-			next_update ? next_update.getDate() + 3 : newUpdate.getDate() + 3
-		);
+		newUpdate.setDate(next_update ? next_update.getDate() + 3 : newUpdate.getDate() + 3);
 
 		updater.mutate({
 			id: fish.id,
@@ -128,13 +118,7 @@ export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 									}}
 								>
 									<HStack h="200px" w="full">
-										<Box
-											w="50%"
-											h="full"
-											pos="relative"
-											rounded="15px"
-											overflow="hidden"
-										>
+										<Box w="50%" h="full" pos="relative" rounded="15px" overflow="hidden">
 											<NextImage
 												src={
 													fish.image_url ??
@@ -158,29 +142,16 @@ export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 											<Box>
 												<HStack>
 													<BsCalendar3 color="white" />
-													<Text
-														color="white"
-														isTruncated
-													>
-														{formatDistance(
-															addDays(
-																fish.next_update as Date,
-																0
-															),
-															new Date(),
-															{ addSuffix: true }
-														)}
+													<Text color="white" isTruncated>
+														{formatDistance(addDays(fish.next_update as Date, 0), new Date(), {
+															addSuffix: true,
+														})}
 													</Text>
 												</HStack>
 												<Button
 													size="sm"
 													colorScheme="green"
-													onClick={() =>
-														updateFish(
-															fish as UserFish,
-															undefined
-														)
-													}
+													onClick={() => updateFish(fish as UserFish, undefined)}
 												>
 													Complete
 												</Button>
@@ -219,13 +190,7 @@ export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 									}}
 								>
 									<HStack h="200px" w="full">
-										<Box
-											w="50%"
-											h="full"
-											pos="relative"
-											rounded="15px"
-											overflow="hidden"
-										>
+										<Box w="50%" h="full" pos="relative" rounded="15px" overflow="hidden">
 											<NextImage
 												src={
 													fish.image_url ??
@@ -249,28 +214,17 @@ export function TankRemindersCard({ id }: { id: string }): JSX.Element {
 											<Box>
 												<HStack>
 													<BsCalendar3 color="white" />
-													<Text
-														color="white"
-														isTruncated
-														flexWrap="wrap"
-													>
+													<Text color="white" isTruncated flexWrap="wrap">
 														Feed in{' '}
-														{formatDistance(
-															fish.next_update as Date,
-															new Date(),
-															{ addSuffix: true }
-														)}
+														{formatDistance(fish.next_update as Date, new Date(), {
+															addSuffix: true,
+														})}
 													</Text>
 												</HStack>
 												<Button
 													size="sm"
 													colorScheme="green"
-													onClick={() =>
-														updateFish(
-															fish as UserFish,
-															fish.next_update as Date
-														)
-													}
+													onClick={() => updateFish(fish as UserFish, fish.next_update as Date)}
 												>
 													Complete
 												</Button>

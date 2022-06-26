@@ -23,52 +23,32 @@ import {
 export type FetchedTankData = inferQueryResponse<'user.tanks.byId'>;
 interface FishListProps {
 	id: string;
-	fish: FetchedTankData['fish'];
-	tank: FetchedTankData['tank'];
 }
 
-export function PlantList({ fish, tank }: FishListProps) {
+export function PlantList({ id }: FishListProps) {
 	const toast = useToast();
-	const { data: userData } = useSession();
-	const { data } = trpc.useQuery([
-		'user.plants',
-		//@ts-ignore
-		{ id: userData?.userInfo.id as string },
-	]);
+	const { data: tankData } = trpc.useQuery(['user.tanks.byId', { id }]);
 	const invalidate = trpc.useContext();
-	const [selectedPlant, setSelectedPlant] = useState<UserPlant>(
-		{} as UserPlant
-	);
-	const [filteredPlants, setFilteredPlants] = useState<
-		UserPlant[] | undefined
-	>([]);
+	const [selectedPlant, setSelectedPlant] = useState<UserPlant>({} as UserPlant);
+	const [filteredPlants, setFilteredPlants] = useState<UserPlant[] | undefined>([]);
 	const { isOpen: deleteIsOpen, onToggle: deleteOnToggle } = useDisclosure();
 	const updater = trpc.useMutation(['user.deletePlant'], {
-		onMutate: async ({ id: deletedId }) => {
-			await invalidate.cancelQuery([
-				'user.tanks.byId',
-				{ id: selectedPlant?.tank_id as string },
-			]);
+		onMutate: async (deletedPlant: any) => {
+			await invalidate.cancelQuery(['user.tanks.byId', { id }]);
 
-			const freshPlants = data?.plants.filter(
-				({ id }) => id !== deletedId
-			);
+			const freshPlants = tankData?.plants.filter(({ id }) => id !== deletedPlant.id);
 
-			invalidate.setQueryData(
-				['user.tanks.byId', { id: selectedPlant?.tank_id as string }],
-				{
-					tank,
-					plants: [...(freshPlants as FetchedTankData['plants'])],
-					fish,
-				}
-			);
+			invalidate.setQueryData(['user.tanks.byId', { id }], {
+				tank: tankData?.tank as FetchedTankData['tank'],
+				plants: [...(freshPlants as FetchedTankData['plants'])],
+				fish: tankData?.fish as FetchedTankData['fish'],
+			});
 
 			return {
-				id: deletedId,
-				tank_id: selectedPlant?.tank_id as string,
+				deletedPlant,
 			};
 		},
-		onSettled(_newData, error, _variables, context: any) {
+		onSettled(_newData, error) {
 			if (error) {
 				toast({
 					title: 'Error',
@@ -78,29 +58,24 @@ export function PlantList({ fish, tank }: FishListProps) {
 					isClosable: true,
 				});
 			}
-			invalidate.invalidateQueries([
-				'user.tanks.byId',
-				{ id: context.tank_id },
-			]);
+			invalidate.invalidateQueries(['user.tanks.byId', { id }]);
 		},
 	});
 
 	useEffect(() => {
-		setFilteredPlants(data?.plants);
-	}, [data]);
+		setFilteredPlants(tankData?.plants);
+	}, [tankData]);
 
 	return (
 		<Stack spacing={3} w="calc(100vw - 3rem)">
 			<Input
 				placeholder="Search Plants"
 				bg="white"
-				onChange={(e) => {
+				onChange={e => {
 					setFilteredPlants(
-						data!.plants.filter((p) =>
-							p.name
-								.toLowerCase()
-								.includes(e.target.value.toLocaleLowerCase())
-						)
+						tankData!.plants.filter(p =>
+							p.name.toLowerCase().includes(e.target.value.toLocaleLowerCase()),
+						),
 					);
 				}}
 			/>
@@ -122,12 +97,7 @@ export function PlantList({ fish, tank }: FishListProps) {
 						<Text>Are you sure you want to delete this plant?</Text>
 					</ModalBody>
 					<ModalFooter>
-						<Button
-							colorScheme="blue"
-							variant="outline"
-							mr={3}
-							onClick={() => deleteOnToggle()}
-						>
+						<Button colorScheme="blue" variant="outline" mr={3} onClick={() => deleteOnToggle()}>
 							Cancel
 						</Button>
 						<Button
