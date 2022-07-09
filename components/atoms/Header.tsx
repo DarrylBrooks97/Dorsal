@@ -1,8 +1,13 @@
-import { Avatar, Box, HStack, Stack, Text } from '@chakra-ui/react';
-import React from 'react';
+import { Avatar, Box, SkeletonCircle, HStack, Stack, Text } from '@chakra-ui/react';
 import NextLink from './NextLink';
+import { useSession } from 'next-auth/react';
+import React, { useEffect } from 'react';
 
 export const Header = ({ children }: { children: React.ReactNode }) => {
+	const { data } = useSession();
+
+	useEffect(() => {}, [data]);
+
 	return (
 		<Stack h="full" minH="100vh" w="100vw">
 			<HStack
@@ -21,10 +26,7 @@ export const Header = ({ children }: { children: React.ReactNode }) => {
 						Dorsal
 					</Text>
 				</NextLink>
-				<Avatar
-					size="md"
-					src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGF2YXRhcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60"
-				/>
+				<Avatar size="md" src={data?.user?.image as string} />
 			</HStack>
 			<Box w="full" maxW="80rem" flexGrow={1}>
 				{children}
