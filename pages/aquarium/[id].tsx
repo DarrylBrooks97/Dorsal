@@ -9,7 +9,6 @@ import { useEffect, useState } from 'react';
 import { CheckIcon, Cross1Icon, Pencil1Icon } from '@radix-ui/react-icons';
 import {
 	Box,
-	Center,
 	Heading,
 	HStack,
 	Input,

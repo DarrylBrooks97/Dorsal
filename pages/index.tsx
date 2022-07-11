@@ -1,26 +1,10 @@
 import Link from 'next/link';
-import {
-	Box,
-	Button,
-	Center,
-	Heading,
-	HStack,
-	Input,
-	Stack,
-	Text,
-} from '@chakra-ui/react';
+import { Box, Button, Center, Heading, HStack, Input, Stack, Text } from '@chakra-ui/react';
 import { GetServerSidePropsContext } from 'next';
 import { getSession } from 'next-auth/react';
-import {
-	GitHubLogoIcon,
-	InstagramLogoIcon,
-	TwitterLogoIcon,
-} from '@radix-ui/react-icons';
+import { GitHubLogoIcon, InstagramLogoIcon, TwitterLogoIcon } from '@radix-ui/react-icons';
 
-export const getServerSideProps = async ({
-	req,
-	res,
-}: GetServerSidePropsContext) => {
+export const getServerSideProps = async ({ req, res }: GetServerSidePropsContext) => {
 	const session = await getSession({ req });
 
 	if (session) {
@@ -43,13 +27,7 @@ const JoinInput = () => {
 			p="2"
 			w="full"
 		>
-			<Input
-				placeholder="Email"
-				type="email"
-				color="gray.200"
-				variant="unstyled"
-				rounded="26px"
-			/>
+			<Input placeholder="Email" type="email" color="gray.200" variant="unstyled" rounded="26px" />
 			<Button pos="absolute" right="5px" rounded="26px">
 				Join
 			</Button>
@@ -59,11 +37,7 @@ const JoinInput = () => {
 export default function Home() {
 	return (
 		<Center w="100vw" h="100vh" overflow="hidden" p="3">
-			<Stack
-				w="calc(100vw - 3rem)"
-				alignItems="center"
-				textAlign="center"
-			>
+			<Stack w="calc(100vw - 3rem)" alignItems="center" textAlign="center">
 				<Heading color="white" fontSize="72px">
 					Dorsal
 				</Heading>
@@ -72,24 +46,14 @@ export default function Home() {
 						Aquariums are complex
 					</Text>
 					<Text color="gray.400" fontWeight="500">
-						Mollit magna sint incididunt exercitation sint do anim
-						magna{' '}
+						Mollit magna sint incididunt exercitation sint do anim magna{' '}
 					</Text>
 				</Stack>
 				<JoinInput />
 				<HStack>
-					<TwitterLogoIcon
-						color="white"
-						style={{ width: '30px', height: '30px' }}
-					/>
-					<GitHubLogoIcon
-						color="white"
-						style={{ width: '30px', height: '30px' }}
-					/>
-					<InstagramLogoIcon
-						color="white"
-						style={{ width: '30px', height: '30px' }}
-					/>
+					<TwitterLogoIcon color="white" style={{ width: '30px', height: '30px' }} />
+					<GitHubLogoIcon color="white" style={{ width: '30px', height: '30px' }} />
+					<InstagramLogoIcon color="white" style={{ width: '30px', height: '30px' }} />
 				</HStack>
 			</Stack>
 		</Center>
