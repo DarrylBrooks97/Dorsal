@@ -1,10 +1,13 @@
-import { Avatar, Box, SkeletonCircle, HStack, Stack, Text } from '@chakra-ui/react';
 import NextLink from './NextLink';
-import { useSession } from 'next-auth/react';
+import { useState } from 'react';
+import { Menu } from '@components/atoms/Menu';
 import React, { useEffect } from 'react';
+import { Avatar, Box, HStack, Stack, Text } from '@chakra-ui/react';
+import { useSession } from 'next-auth/react';
 
 export const Header = ({ children }: { children: React.ReactNode }) => {
 	const { data } = useSession();
+	const [isOpen, setIsOpen] = useState(false);
 
 	useEffect(() => {}, [data]);
 
@@ -26,7 +29,12 @@ export const Header = ({ children }: { children: React.ReactNode }) => {
 						Dorsal
 					</Text>
 				</NextLink>
-				<Avatar size="md" src={data?.user?.image as string} />
+				<Avatar
+					size="md"
+					src={data?.user?.image as string}
+					onClick={() => setIsOpen(prev => !prev)}
+				/>
+				<Menu isOpen={isOpen} setIsOpen={setIsOpen} />
 			</HStack>
 			<Box w="full" maxW="80rem" flexGrow={1}>
 				{children}
