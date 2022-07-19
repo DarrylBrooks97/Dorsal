@@ -8,7 +8,7 @@ export default function New(): JSX.Element {
 	return (
 		<Center w="100vw" p="3">
 			<Stack spacing={8} flexDirection="column" w="80%">
-				<Link href="/new/tank">
+				<Link href="/new/aquarium">
 					<VStack spacing={4} minH="200px" bgColor="gray.800" rounded="15px" overflow="hidden">
 						<Stack
 							h="100px"
@@ -27,7 +27,7 @@ export default function New(): JSX.Element {
 						</Stack>
 						<VStack justifyContent="center">
 							<Heading color="white" fontSize="3xl">
-								Tank
+								Aquarium
 							</Heading>
 							<Text color="gray.300">Add a new Aquarium</Text>
 						</VStack>

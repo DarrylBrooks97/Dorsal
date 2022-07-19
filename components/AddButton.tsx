@@ -59,7 +59,7 @@ export default function AddButton() {
 					<RiPlantFill />
 				</Center>
 			</Link>
-			<Link href="/new/tank" passHref>
+			<Link href="/new/aquarium" passHref>
 				<Center
 					position="absolute"
 					boxSize={50}
