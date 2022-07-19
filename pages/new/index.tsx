@@ -83,16 +83,6 @@ export default function New(): JSX.Element {
 						</VStack>
 					</VStack>
 				</Link>
-				{/* <Link href="/new/fish">
-					<VStack spacing={8}>
-						<Heading color="white">Fish</Heading>
-					</VStack>
-				</Link>
-				<Link href="/new/plant">
-					<VStack spacing={8}>
-						<Heading color="white">Plant</Heading>
-					</VStack>
-				</Link> */}
 			</Stack>
 		</Center>
 	);
