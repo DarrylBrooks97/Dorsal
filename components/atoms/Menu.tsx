@@ -15,20 +15,8 @@ const Options: OptionType[] = [
 		colorScheme: 'blue',
 	},
 	{
-		text: 'Add Fish',
-		to: '/new/fish',
-		icon: 'fish',
-		colorScheme: 'blue',
-	},
-	{
-		text: 'Add Plant',
-		to: '/new/plant',
-		icon: 'plant',
-		colorScheme: 'blue',
-	},
-	{
-		text: 'Add Aquarium',
-		to: '/new/tank',
+		text: 'New',
+		to: '/new',
 		icon: 'aquarium',
 		colorScheme: 'blue',
 	},
