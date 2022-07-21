@@ -1,5 +1,5 @@
 import { Stack, VStack, Text, Heading, Center } from '@chakra-ui/react';
-import Link from 'next/link';
+import NextLink from '@components/atoms/NextLink';
 import { FaFish } from 'react-icons/fa';
 import { GiChemicalTank } from 'react-icons/gi';
 import { RiPlantFill } from 'react-icons/ri';
@@ -8,7 +8,7 @@ export default function New(): JSX.Element {
 	return (
 		<Center w="100vw" p="3">
 			<Stack spacing={8} flexDirection="column" w="80%">
-				<Link href="/new/aquarium">
+				<NextLink href="/new/aquarium">
 					<VStack spacing={4} minH="200px" bgColor="gray.800" rounded="15px" overflow="hidden">
 						<Stack
 							h="100px"
@@ -32,8 +32,8 @@ export default function New(): JSX.Element {
 							<Text color="gray.300">Add a new Aquarium</Text>
 						</VStack>
 					</VStack>
-				</Link>
-				<Link href="/new/fish">
+				</NextLink>
+				<NextLink href="/new/fish">
 					<VStack spacing={4} minH="200px" bgColor="gray.800" rounded="15px" overflow="hidden">
 						<Stack
 							h="100px"
@@ -57,8 +57,8 @@ export default function New(): JSX.Element {
 							<Text color="white">Add a new Fish to your Aquarium</Text>
 						</VStack>
 					</VStack>
-				</Link>
-				<Link href="/new/plant">
+				</NextLink>
+				<NextLink href="/new/plant">
 					<VStack spacing={4} minH="200px" bgColor="gray.800" rounded="15px" overflow="hidden">
 						<Stack
 							h="100px"
@@ -82,7 +82,7 @@ export default function New(): JSX.Element {
 							<Text color="gray.300">Add a new Plant to your Aquarium</Text>
 						</VStack>
 					</VStack>
-				</Link>
+				</NextLink>
 			</Stack>
 		</Center>
 	);
