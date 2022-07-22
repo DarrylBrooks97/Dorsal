@@ -24,10 +24,12 @@ import {
 	AccordionPanel,
 	Text,
 	Tooltip,
+	useToast,
 } from '@chakra-ui/react';
 
 export default function NewTank() {
 	const route = useRouter();
+	const toast = useToast();
 	const { data }: any = useSession();
 
 	const addTank = trpc.useMutation(['user.addTank'], {
@@ -43,14 +45,27 @@ export default function NewTank() {
 		e.preventDefault();
 		const formData = new FormData(e.target as HTMLFormElement);
 		const tankcuid: string = cuid();
+		const type = formData.get('type');
+		const name = formData.get('name');
 
-		console.log({ alkalinity: Number(formData.get('alkalinity')) });
+		if (!type || !name) {
+			toast({
+				title: 'Error',
+				description: 'Please fill in all fields',
+				status: 'error',
+				duration: 9000,
+				isClosable: true,
+			});
+			return;
+		}
+
 		addTank.mutate({
 			id: tankcuid,
 			user_id: data?.userInfo.id as string,
 			type: formData.get('type') as string,
 			name: formData.get('name') as string,
-			image: 'https://images.unsplash.com/photo-1617994679330-2883951d0073?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80',
+			image:
+				'https://images.unsplash.com/photo-1617994679330-2883951d0073?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80',
 		});
 
 		route.push('/aquarium/[id]', `/aquarium/${tankcuid}`);
@@ -59,12 +74,7 @@ export default function NewTank() {
 	return (
 		<Box w="100vw" h="100vh" p="6">
 			<Stack p="3" shouldWrapChildren>
-				<Center
-					w="full"
-					h="300px"
-					overflow="hidden"
-					borderRadius="10px"
-				>
+				<Center w="full" h="300px" overflow="hidden" borderRadius="10px">
 					<NextImage
 						src="https://images.unsplash.com/photo-1617994679330-2883951d0073?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80"
 						width="320px"
@@ -86,12 +96,7 @@ export default function NewTank() {
 									w="80%"
 								/>
 							</Center>
-							<Select
-								placeholder="Select Type"
-								variant="flushed"
-								color="white"
-								name="type"
-							>
+							<Select placeholder="Select Type" variant="flushed" color="white" name="type">
 								<option value="Freshwater">Freshwater</option>
 								<option value="Saltwater">Saltwater</option>
 								<option value="Brackish">Brackish</option>
@@ -101,16 +106,11 @@ export default function NewTank() {
 								<AccordionItem>
 									<AccordionButton>
 										<Box flex="1" textAlign="center">
-											<Text color="white">
-												Know your tank&#39;s parameters?
-											</Text>
+											<Text color="white">Know your tank&#39;s parameters?</Text>
 										</Box>
 										<AccordionIcon color="white" />
 									</AccordionButton>
-									<AccordionPanel
-										pos="relative"
-										overflowY="scroll"
-									>
+									<AccordionPanel pos="relative" overflowY="scroll">
 										<Box>
 											<FormLabel
 												htmlFor="pH"
@@ -128,10 +128,7 @@ export default function NewTank() {
 												</Tooltip>
 											</FormLabel>
 											<NumberInput min={6} max={14}>
-												<NumberInputField
-													color="white"
-													name="pH"
-												/>
+												<NumberInputField color="white" name="pH" />
 											</NumberInput>
 										</Box>
 										<Box>
@@ -151,10 +148,7 @@ export default function NewTank() {
 												</Tooltip>
 											</FormLabel>
 											<NumberInput min={0} max={6}>
-												<NumberInputField
-													color="white"
-													name="ammonia"
-												/>
+												<NumberInputField color="white" name="ammonia" />
 											</NumberInput>
 										</Box>
 										<Box>
@@ -174,10 +168,7 @@ export default function NewTank() {
 												</Tooltip>
 											</FormLabel>
 											<NumberInput min={0} max={300}>
-												<NumberInputField
-													color="white"
-													name="nirate"
-												/>
+												<NumberInputField color="white" name="nirate" />
 											</NumberInput>
 										</Box>
 										<Box>
@@ -197,10 +188,7 @@ export default function NewTank() {
 												</Tooltip>
 											</FormLabel>
 											<NumberInput min={0} max={100}>
-												<NumberInputField
-													color="white"
-													name="nirite"
-												/>
+												<NumberInputField color="white" name="nirite" />
 											</NumberInput>
 										</Box>
 										<Box>
@@ -220,10 +208,7 @@ export default function NewTank() {
 												</Tooltip>
 											</FormLabel>
 											<NumberInput min={0} max={400}>
-												<NumberInputField
-													color="white"
-													name="hardness"
-												/>
+												<NumberInputField color="white" name="hardness" />
 											</NumberInput>
 										</Box>
 										<Box>
@@ -235,18 +220,12 @@ export default function NewTank() {
 												alignItems="center"
 											>
 												<Text mr="2">Chlorine</Text>
-												<Tooltip
-													label="Any level is dangerous for fish"
-													placement="right"
-												>
+												<Tooltip label="Any level is dangerous for fish" placement="right">
 													<InfoCircledIcon color="white" />
 												</Tooltip>
 											</FormLabel>
 											<NumberInput min={0} max={20}>
-												<NumberInputField
-													color="white"
-													name="chlorine"
-												/>
+												<NumberInputField color="white" name="chlorine" />
 											</NumberInput>
 										</Box>
 										<Box>
@@ -267,10 +246,7 @@ export default function NewTank() {
 												</Tooltip>
 											</FormLabel>
 											<NumberInput min={100} max={400}>
-												<NumberInputField
-													color="white"
-													name="alkalinity"
-												/>
+												<NumberInputField color="white" name="alkalinity" />
 											</NumberInput>
 										</Box>
 									</AccordionPanel>
@@ -280,11 +256,7 @@ export default function NewTank() {
 								<Button type="submit" colorScheme="green">
 									Add Tank
 								</Button>
-								<Button
-									colorScheme="red"
-									variant="outline"
-									onClick={() => route.push('/home')}
-								>
+								<Button colorScheme="red" variant="outline" onClick={() => route.push('/home')}>
 									Cancel
 								</Button>
 							</ButtonGroup>
