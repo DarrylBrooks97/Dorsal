@@ -5,7 +5,8 @@ import { Tank } from '@prisma/client';
 import { Card } from '@components/Card';
 import { trpc } from '@utils/trpc';
 import { BsArrowRight } from 'react-icons/bs';
-import { Box, Center, HStack, Stack, Text } from '@chakra-ui/react';
+import { Box, Center, Grid, GridItem, HStack, Stack, Text } from '@chakra-ui/react';
+import { NextImage } from './atoms';
 
 export interface CardProps {
 	text?: string;
@@ -27,6 +28,9 @@ function AquariumCard(props: {
 	children: React.ReactNode;
 }) {
 	const { data } = trpc.useQuery(['user.tanks']);
+	const displayedAquariums = data?.tanks.filter((tank: Tank, index) => {
+		return index < 4;
+	});
 
 	return (
 		<Card
@@ -38,26 +42,28 @@ function AquariumCard(props: {
 		>
 			{data ? (
 				<Stack w="full">
-					{data.tanks.map(({ id, name }: Tank) => (
-						<NextLink key={id} href={`/aquarium/${id}`}>
-							<HStack w="full" justify="center" spacing="10" shouldWrapChildren>
-								<Box>
-									<Text
-										color="white"
-										fontSize="24px"
-										fontWeight="semibold"
-										textAlign="center"
-										isTruncated
-									>
-										{name}
-									</Text>
-								</Box>
-								<Box boxSize="full" rounded="full">
-									<BsArrowRight color="white" width={30} height={30} />
-								</Box>
+					<Grid templateColumns="repeat(2, 1fr)" templateRows="repeat(2, 1fr)" gap={5} p="3">
+						{displayedAquariums?.map(({ id, name, image }: Tank) => (
+							<NextLink key={id} href={`/aquarium/${id}`}>
+								<GridItem display="flex" w="full" flexDir="column" textAlign="center">
+									<Box w="full" h="100px" pos="relative" overflow="hidden" rounded="md">
+										<NextImage src={image} layout="fill" />
+									</Box>
+									<Text color="white">{name}</Text>
+								</GridItem>
+							</NextLink>
+						))}
+					</Grid>
+					{data.tanks.length > 4 && (
+						<NextLink href="/aquarium">
+							<HStack float="right" p="3">
+								<Text color="white" fontSize="lg" fontWeight="semibold" textAlign="center">
+									See others
+								</Text>
+								<BsArrowRight size="24px" color="white" />
 							</HStack>
 						</NextLink>
-					))}
+					)}
 				</Stack>
 			) : (
 				<Center>
