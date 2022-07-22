@@ -19,10 +19,7 @@ const componentCards: JSX.Element[] = [
 	CardViewportBlock,
 ];
 
-export const getServerSideProps = async ({
-	req,
-	res,
-}: GetServerSidePropsContext) => {
+export const getServerSideProps = async ({ req, res }: GetServerSidePropsContext) => {
 	const session = await getSession({ req });
 
 	if (!session) {
@@ -78,19 +75,14 @@ export default function Home() {
 						</Text>
 					))}
 				</HStack>
-				<HStack
-					w="full"
-					spacing={2}
-					justify="center"
-					shouldWrapChildren
-				>
+				<HStack w="full" spacing={2} justify="center" shouldWrapChildren>
 					{headerOptions.map((options, idx) => (
 						<Box
 							rounded="full"
 							boxSize={2}
 							transition=".2s ease-in-out"
 							bg={pos === idx ? 'white' : 'gray.500'}
-							key={idx}
+							key={options.name}
 						/>
 					))}
 				</HStack>
@@ -118,6 +110,7 @@ export default function Home() {
 						key={idx}
 						heading={headerOptions[idx].name}
 						subHeading={headerOptions[idx].subHeading}
+						image={headerOptions[idx].image}
 					/>
 				))}
 			</HStack>

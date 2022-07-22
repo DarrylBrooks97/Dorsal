@@ -6,9 +6,10 @@ export const Card = (props: {
 	forwardedRef: any;
 	heading: string;
 	subHeading: string;
+	image: string;
 	children: React.ReactNode;
 }) => {
-	const { forwardedRef, children, heading, subHeading } = props;
+	const { forwardedRef, heading, subHeading, image, children } = props;
 	return (
 		<Stack
 			align="center"
@@ -22,13 +23,7 @@ export const Card = (props: {
 			ref={forwardedRef}
 		>
 			<Box bg="white" w="full" h="35%" pos="relative" overflow="hidden">
-				<NextImage
-					alt="random image"
-					layout="fill"
-					width="100%"
-					height="100%"
-					src="https://images.unsplash.com/photo-1512391806023-e43a4e65899f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80"
-				/>
+				<NextImage alt="random image" layout="fill" width="100%" height="100%" src={image} />
 			</Box>
 			<Heading fontSize="28px" color="white">
 				{heading}

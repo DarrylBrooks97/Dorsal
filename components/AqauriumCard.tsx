@@ -23,6 +23,7 @@ function AquariumCard(props: {
 	forwardedRef: any;
 	heading: string;
 	subHeading: string;
+	image: string;
 	children: React.ReactNode;
 }) {
 	const { data } = trpc.useQuery(['user.tanks']);
@@ -33,17 +34,13 @@ function AquariumCard(props: {
 			forwardedRef={props.forwardedRef}
 			heading={props.heading}
 			subHeading={props.subHeading}
+			image={props.image}
 		>
 			{data ? (
 				<Stack w="full">
 					{data.tanks.map(({ id, name }: Tank) => (
 						<NextLink key={id} href={`/aquarium/${id}`}>
-							<HStack
-								w="full"
-								justify="center"
-								spacing="10"
-								shouldWrapChildren
-							>
+							<HStack w="full" justify="center" spacing="10" shouldWrapChildren>
 								<Box>
 									<Text
 										color="white"
@@ -56,11 +53,7 @@ function AquariumCard(props: {
 									</Text>
 								</Box>
 								<Box boxSize="full" rounded="full">
-									<BsArrowRight
-										color="white"
-										width={30}
-										height={30}
-									/>
+									<BsArrowRight color="white" width={30} height={30} />
 								</Box>
 							</HStack>
 						</NextLink>
