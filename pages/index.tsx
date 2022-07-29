@@ -1,8 +1,7 @@
-import Link from 'next/link';
-import { Box, Button, Center, Heading, HStack, Input, Stack, Text } from '@chakra-ui/react';
+import { motion } from 'framer-motion';
+import { Button, Center, Heading, Stack, StackProps, Text } from '@chakra-ui/react';
 import { GetServerSidePropsContext } from 'next';
-import { getSession } from 'next-auth/react';
-import { GitHubLogoIcon, InstagramLogoIcon, TwitterLogoIcon } from '@radix-ui/react-icons';
+import { getSession, signIn } from 'next-auth/react';
 
 export const getServerSideProps = async ({ req, res }: GetServerSidePropsContext) => {
 	const session = await getSession({ req });
@@ -16,32 +15,30 @@ export const getServerSideProps = async ({ req, res }: GetServerSidePropsContext
 
 	return { props: { status: 'not logged in' } };
 };
-const JoinInput = () => {
-	return (
-		<HStack
-			pos="relative"
-			bg="rgba(217,217,217,0.5)"
-			backdropFilter={'blur(10px)'}
-			rounded="26px"
-			h="50px"
-			p="2"
-			w="full"
-		>
-			<Input placeholder="Email" type="email" color="gray.200" variant="unstyled" rounded="26px" />
-			<Button pos="absolute" right="5px" rounded="26px">
-				Join
-			</Button>
-		</HStack>
-	);
-};
+
+const MotionStack = motion<StackProps>(Stack);
+
 export default function Home() {
 	return (
-		<Center w="100vw" h="100vh" overflow="hidden" p="3">
-			<Stack w="calc(100vw - 3rem)" alignItems="center" textAlign="center">
-				<Heading color="white" fontSize="72px">
+		<Center w="full" h="calc(100vh - 6rem)" px="2" overflow="hidden">
+			<MotionStack
+				alignItems="center"
+				textAlign="center"
+				initial={{
+					opacity: 0,
+				}}
+				animate={{
+					opacity: 1,
+					transition: {
+						duration: 1,
+						ease: 'easeInOut',
+					},
+				}}
+			>
+				<Heading color="white" pb="4" fontSize="72px">
 					Dorsal
 				</Heading>
-				<Stack h="88px" w="294px" spacing={2}>
+				<Stack spacing={2}>
 					<Text color="white" fontWeight="600" fontSize="24px">
 						Aquariums are complex
 					</Text>
@@ -49,13 +46,12 @@ export default function Home() {
 						Mollit magna sint incididunt exercitation sint do anim magna{' '}
 					</Text>
 				</Stack>
-				<JoinInput />
-				<HStack>
-					<TwitterLogoIcon color="white" style={{ width: '30px', height: '30px' }} />
-					<GitHubLogoIcon color="white" style={{ width: '30px', height: '30px' }} />
-					<InstagramLogoIcon color="white" style={{ width: '30px', height: '30px' }} />
-				</HStack>
-			</Stack>
+				<Button onClick={() => signIn('google')}>
+					<Text fontWeight="600" fontSize="16px">
+						Login
+					</Text>
+				</Button>
+			</MotionStack>
 		</Center>
 	);
 }
