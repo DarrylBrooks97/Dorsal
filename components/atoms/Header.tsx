@@ -12,7 +12,7 @@ export const Header = ({ children }: { children: React.ReactNode }) => {
 	useEffect(() => {}, [data]);
 
 	return (
-		<Stack h="full" minH="100vh" w="100vw">
+		<Stack h="full" minH="100vh">
 			<HStack
 				pos="sticky"
 				top="0"
@@ -29,14 +29,18 @@ export const Header = ({ children }: { children: React.ReactNode }) => {
 						Dorsal
 					</Text>
 				</NextLink>
-				<Avatar
-					size="md"
-					src={data?.user?.image as string}
-					onClick={() => setIsOpen(prev => !prev)}
-				/>
+				{data?.user ? (
+					<Avatar
+						size="md"
+						src={data.user.image as string}
+						onClick={() => setIsOpen(prev => !prev)}
+					/>
+				) : (
+					<></>
+				)}
 				<Menu isOpen={isOpen} setIsOpen={setIsOpen} />
 			</HStack>
-			<Box w="full" maxW="80rem" flexGrow={1}>
+			<Box w="full" maxW="80rem" p="2" flexGrow={2}>
 				{children}
 			</Box>
 		</Stack>
