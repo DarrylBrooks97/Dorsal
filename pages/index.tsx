@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Button, Center, Heading, Stack, StackProps, Text } from '@chakra-ui/react';
+import { Button, Center, Heading, keyframes, Stack, StackProps, Text } from '@chakra-ui/react';
 import { GetServerSidePropsContext } from 'next';
 import { getSession, signIn } from 'next-auth/react';
 
@@ -17,6 +17,10 @@ export const getServerSideProps = async ({ req, res }: GetServerSidePropsContext
 };
 
 const MotionStack = motion<StackProps>(Stack);
+const slide = keyframes`
+  0% { background-position: 0% 0;}
+  100% { background-position: 100% 0;}
+`;
 
 export default function Home() {
 	return (
@@ -35,7 +39,16 @@ export default function Home() {
 					},
 				}}
 			>
-				<Heading color="white" pb="4" fontSize="72px">
+				<Heading
+					color="white"
+					pb="4"
+					fontSize="72px"
+					fontWeight="extrabold"
+					bgGradient="linear-gradient(to-r, red, blue);"
+					bgClip="text"
+					animation={`${slide} 3s linear infinite`}
+					backgroundSize="300% 100%"
+				>
 					Dorsal
 				</Heading>
 				<Stack spacing={2}>
