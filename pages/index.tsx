@@ -56,13 +56,11 @@ export default function Home() {
 						Aquariums are complex
 					</Text>
 					<Text color="gray.400" fontWeight="500">
-						Mollit magna sint incididunt exercitation sint do anim magna{' '}
+						Manage your aquariums from anywhere at your touch
 					</Text>
 				</Stack>
-				<Button onClick={() => signIn('google')}>
-					<Text fontWeight="600" fontSize="16px">
-						Login
-					</Text>
+				<Button onClick={() => signIn('google')} colorScheme="green">
+					Sign up
 				</Button>
 			</MotionStack>
 		</Center>

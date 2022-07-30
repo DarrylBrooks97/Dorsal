@@ -2,8 +2,8 @@ import NextLink from './NextLink';
 import { useState } from 'react';
 import { Menu } from '@components/atoms/Menu';
 import React, { useEffect } from 'react';
-import { Avatar, Box, HStack, Stack, Text } from '@chakra-ui/react';
-import { useSession } from 'next-auth/react';
+import { Avatar, Box, Button, HStack, Stack, Text } from '@chakra-ui/react';
+import { signIn, useSession } from 'next-auth/react';
 
 export const Header = ({ children }: { children: React.ReactNode }) => {
 	const { data } = useSession();
@@ -36,7 +36,9 @@ export const Header = ({ children }: { children: React.ReactNode }) => {
 						onClick={() => setIsOpen(prev => !prev)}
 					/>
 				) : (
-					<></>
+					<Button onClick={() => signIn('google')} variant="outline" color="white">
+						Login
+					</Button>
 				)}
 				<Menu isOpen={isOpen} setIsOpen={setIsOpen} />
 			</HStack>
