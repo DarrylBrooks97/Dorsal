@@ -12,7 +12,7 @@ export const Header = ({ children }: { children: React.ReactNode }) => {
 	useEffect(() => {}, [data]);
 
 	return (
-		<Stack h="full" minH="100vh">
+		<Stack h="full" minH="100vh" w="100vw">
 			<HStack
 				pos="sticky"
 				top="0"
@@ -42,7 +42,7 @@ export const Header = ({ children }: { children: React.ReactNode }) => {
 				)}
 				<Menu isOpen={isOpen} setIsOpen={setIsOpen} />
 			</HStack>
-			<Box w="full" maxW="80rem" p="2" flexGrow={2}>
+			<Box w="full" maxW="80rem" p="2">
 				{children}
 			</Box>
 		</Stack>

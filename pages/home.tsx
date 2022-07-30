@@ -24,7 +24,7 @@ export const getServerSideProps = async ({ req, res }: GetServerSidePropsContext
 
 	if (!session) {
 		res.writeHead(302, {
-			Location: '/login',
+			Location: '/',
 		});
 		res.end();
 	}
@@ -46,7 +46,7 @@ export default function Home() {
 	}, [pos]);
 
 	return (
-		<Stack w="full" h="full" px="6" spacing={5} shouldWrapChildren>
+		<Stack w="full" h="full" p="3" spacing={5} shouldWrapChildren>
 			<AddButton />
 			<Stack w="full" mb="3">
 				<HStack
