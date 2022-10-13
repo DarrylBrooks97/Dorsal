@@ -1,16 +1,12 @@
 import NextLink from './NextLink';
 import { useState } from 'react';
 import { Menu } from '@components/atoms/Menu';
-import React, { useEffect } from 'react';
+import { ReactNode } from 'react';
 import { Avatar, Box, Button, HStack, Stack, Text } from '@chakra-ui/react';
-import { signIn, useSession } from 'next-auth/react';
+import { signIn } from 'next-auth/react';
 
-export const Header = ({ children }: { children: React.ReactNode }) => {
-	const { data } = useSession();
+export const Header = ({ image, children }: { image?: string; children: ReactNode }) => {
 	const [isOpen, setIsOpen] = useState(false);
-
-	useEffect(() => {}, [data]);
-
 	return (
 		<Stack h="full" minH="100vh" w="100vw">
 			<HStack
@@ -29,12 +25,8 @@ export const Header = ({ children }: { children: React.ReactNode }) => {
 						Dorsal
 					</Text>
 				</NextLink>
-				{data?.user ? (
-					<Avatar
-						size="md"
-						src={data.user.image as string}
-						onClick={() => setIsOpen(prev => !prev)}
-					/>
+				{image ? (
+					<Avatar size="md" src={image as string} onClick={() => setIsOpen(prev => !prev)} />
 				) : (
 					<Button onClick={() => signIn('google')} variant="outline" color="white">
 						Login

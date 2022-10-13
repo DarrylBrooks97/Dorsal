@@ -5,15 +5,12 @@ import { AppRouter } from 'server/routers';
 import { ChakraProvider } from '@chakra-ui/react';
 import { SessionProvider } from 'next-auth/react';
 import type { AppProps } from 'next/app';
-import { Header } from '@components/atoms';
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
 	return (
 		<ChakraProvider theme={theme}>
 			<SessionProvider session={session}>
-				<Header>
-					<Component {...pageProps} />
-				</Header>
+				<Component {...pageProps} />
 			</SessionProvider>
 		</ChakraProvider>
 	);
