@@ -39,7 +39,7 @@ export default function AddFish() {
 	const toast = useToast();
 	const { data: sessionData }: any = useSession();
 	const { data: fishData } = trpc.useQuery(['general.fish']);
-	const { data: userTanks } = trpc.useQuery(['user.tanks', { id: sessionData.userInfo.id }]);
+	const { data: userTanks } = trpc.useQuery(['user.tanks', { id: sessionData?.userInfo?.id }]);
 	const [tankId, setTankId] = useState('');
 	const [filteredFish, setFilteredFish] = useState(fishData?.fish);
 	const [viewedFish, setViewedFish] = useState<Fish>();

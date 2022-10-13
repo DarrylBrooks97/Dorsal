@@ -39,7 +39,7 @@ export default function AddPlant() {
 	const toast = useToast();
 	const { data: sessionData }: any = useSession();
 	const { data } = trpc.useQuery(['general.plants']);
-	const { data: userTanks } = trpc.useQuery(['user.tanks', { id: sessionData.userInfo.id }]);
+	const { data: userTanks } = trpc.useQuery(['user.tanks', { id: sessionData?.userInfo?.id }]);
 	const adder = trpc.useMutation(['user.addPlant'], {
 		onSuccess: () => {
 			toast({
