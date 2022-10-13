@@ -37,9 +37,9 @@ const MotionCenter = motion<CenterProps>(Center);
 
 export default function AddFish() {
 	const toast = useToast();
-	const { data: fishData } = trpc.useQuery(['general.fish']);
-	const { data: userTanks } = trpc.useQuery(['user.tanks']);
 	const { data: sessionData }: any = useSession();
+	const { data: fishData } = trpc.useQuery(['general.fish']);
+	const { data: userTanks } = trpc.useQuery(['user.tanks', { id: sessionData.userInfo.id }]);
 	const [tankId, setTankId] = useState('');
 	const [filteredFish, setFilteredFish] = useState(fishData?.fish);
 	const [viewedFish, setViewedFish] = useState<Fish>();
@@ -57,7 +57,7 @@ export default function AddFish() {
 				isClosable: true,
 			});
 		},
-		onError: (error) => {
+		onError: error => {
 			toast({
 				title: 'Error',
 				description: `${error.message}`,
@@ -76,33 +76,20 @@ export default function AddFish() {
 	const handleFilter = (e: BaseSyntheticEvent) => {
 		const { value } = e.target as HTMLInputElement;
 		setFilteredFish(
-			fishData?.fish.filter((fish) =>
-				fish.name.toLowerCase().includes(value.toLowerCase())
-			)
+			fishData?.fish.filter(fish => fish.name.toLowerCase().includes(value.toLowerCase())),
 		);
 	};
 
 	return (
-		<Stack
-			shouldWrapChildren
-			bg="black"
-			width="full"
-			p="6"
-			w="100vw"
-			h="100vh"
-		>
+		<Stack shouldWrapChildren bg="black" width="full" p="6" w="100vw" h="100vh">
 			<HStack w="calc(100vw - 3rem)">
-				<Input
-					color="white"
-					onChange={handleFilter}
-					placeholder="Search for fish"
-				/>
+				<Input color="white" onChange={handleFilter} placeholder="Search for fish" />
 				<Button colorScheme="green" color="white">
 					Filter
 				</Button>
 			</HStack>
 			<Stack spacing={6} w="calc(100vw-3rem)">
-				{filteredFish?.map((fish) => (
+				{filteredFish?.map(fish => (
 					<MotionCenter
 						key={fish.id}
 						border="2px solid #444"
@@ -117,7 +104,7 @@ export default function AddFish() {
 								y: -10,
 								opacity: 0,
 							},
-							visible: (index) => ({
+							visible: index => ({
 								opacity: 1,
 								y: 0,
 								transition: {
@@ -131,12 +118,7 @@ export default function AddFish() {
 							setViewedFish(fish);
 						}}
 					>
-						<NextImage
-							layout="fill"
-							priority
-							src={fish.image_url}
-							alt={`${fish.name}`}
-						/>
+						<NextImage layout="fill" priority src={fish.image_url} alt={`${fish.name}`} />
 						<Stack
 							pos="absolute"
 							left="50%"
@@ -167,12 +149,8 @@ export default function AddFish() {
 					<DrawerCloseButton />
 					<DrawerHeader>{viewedFish?.name}</DrawerHeader>
 					<DrawerBody>
-						<Select
-							placeholder="Select Tanks"
-							mb="3"
-							onChange={(e) => setTankId(e.target.value)}
-						>
-							{userTanks?.tanks.map((tank) => (
+						<Select placeholder="Select Tanks" mb="3" onChange={e => setTankId(e.target.value)}>
+							{userTanks?.tanks.map(tank => (
 								<option key={tank.id} value={tank.id}>
 									{tank.name}
 								</option>
@@ -205,14 +183,8 @@ export default function AddFish() {
 									</Box>
 									<AccordionIcon color="green" />
 								</AccordionButton>
-								<AccordionPanel
-									pos="relative"
-									overflowY="scroll"
-								>
-									<Grid
-										gap={5}
-										templateColumns="repeat(2, 1fr)"
-									>
+								<AccordionPanel pos="relative" overflowY="scroll">
+									<Grid gap={5} templateColumns="repeat(2, 1fr)">
 										<GridItem
 											rounded="15px"
 											flexDirection="column"
@@ -222,9 +194,7 @@ export default function AddFish() {
 											<Heading fontSize="1.5rem">
 												{
 													//@ts-ignore
-													viewedFish?.water_params[
-														'pH'
-													]
+													viewedFish?.water_params['pH']
 												}
 											</Heading>
 											<Text>pH</Text>
@@ -238,9 +208,7 @@ export default function AddFish() {
 											<Heading fontSize="1.5rem">
 												{
 													//@ts-ignore
-													viewedFish?.water_params[
-														'ammonia'
-													]
+													viewedFish?.water_params['ammonia']
 												}
 											</Heading>
 											<Text>Ammonia</Text>
@@ -254,9 +222,7 @@ export default function AddFish() {
 											<Heading fontSize="1.5rem">
 												{
 													//@ts-ignore
-													viewedFish?.water_params[
-														'alkalinity'
-													]
+													viewedFish?.water_params['alkalinity']
 												}
 											</Heading>
 											<Text>Alkalinity</Text>
@@ -270,9 +236,7 @@ export default function AddFish() {
 											<Heading fontSize="1.5rem">
 												{
 													//@ts-ignore
-													viewedFish?.water_params[
-														'chlorine'
-													]
+													viewedFish?.water_params['chlorine']
 												}
 											</Heading>
 											<Text>Chlorine</Text>
@@ -286,9 +250,7 @@ export default function AddFish() {
 											<Heading fontSize="1.5rem">
 												{
 													//@ts-ignore
-													viewedFish?.water_params[
-														'nirate'
-													]
+													viewedFish?.water_params['nirate']
 												}
 											</Heading>
 											<Text>Nitrate</Text>
@@ -302,9 +264,7 @@ export default function AddFish() {
 											<Heading fontSize="1.5rem">
 												{
 													//@ts-ignore
-													viewedFish?.water_params[
-														'nirite'
-													]
+													viewedFish?.water_params['nirite']
 												}
 											</Heading>
 											<Text>Nitrite</Text>
@@ -318,9 +278,7 @@ export default function AddFish() {
 											<Heading fontSize="1.5rem">
 												{
 													//@ts-ignore
-													viewedFish?.water_params[
-														'hardness'
-													]
+													viewedFish?.water_params['hardness']
 												}
 											</Heading>
 											<Text>Hardness</Text>
@@ -330,65 +288,28 @@ export default function AddFish() {
 							</AccordionItem>
 						</Accordion>
 						<Grid gap={5} templateColumns="repeat(2, 1fr)">
-							<GridItem
-								rounded="15px"
-								flexDirection="column"
-								textAlign="center"
-								alignSelf="end"
-							>
-								<Heading fontSize="1.5rem">
-									{viewedFish?.max_size} in
-								</Heading>
+							<GridItem rounded="15px" flexDirection="column" textAlign="center" alignSelf="end">
+								<Heading fontSize="1.5rem">{viewedFish?.max_size} in</Heading>
 								<Text>Max Size</Text>
 							</GridItem>
-							<GridItem
-								flexDirection="column"
-								textAlign="center"
-								alignSelf="end"
-							>
-								<Heading fontSize="1.5rem">
-									{viewedFish?.min_tank_size} gal
-								</Heading>
+							<GridItem flexDirection="column" textAlign="center" alignSelf="end">
+								<Heading fontSize="1.5rem">{viewedFish?.min_tank_size} gal</Heading>
 								<Text>Tank Size</Text>
 							</GridItem>
-							<GridItem
-								flexDirection="column"
-								textAlign="center"
-								alignSelf="end"
-							>
-								<Heading fontSize="1.5rem">
-									{viewedFish?.habitat}
-								</Heading>
+							<GridItem flexDirection="column" textAlign="center" alignSelf="end">
+								<Heading fontSize="1.5rem">{viewedFish?.habitat}</Heading>
 								<Text>Habitat</Text>
 							</GridItem>
-							<GridItem
-								flexDirection="column"
-								textAlign="center"
-								alignSelf="end"
-							>
-								<Heading fontSize="1.5rem">
-									{viewedFish?.diet}
-								</Heading>
+							<GridItem flexDirection="column" textAlign="center" alignSelf="end">
+								<Heading fontSize="1.5rem">{viewedFish?.diet}</Heading>
 								<Text>Diet</Text>
 							</GridItem>
-							<GridItem
-								flexDirection="column"
-								textAlign="center"
-								alignSelf="end"
-							>
-								<Heading fontSize="1.5rem">
-									{viewedFish?.illnesses}
-								</Heading>
+							<GridItem flexDirection="column" textAlign="center" alignSelf="end">
+								<Heading fontSize="1.5rem">{viewedFish?.illnesses}</Heading>
 								<Text>Illnesses</Text>
 							</GridItem>
-							<GridItem
-								flexDirection="column"
-								textAlign="center"
-								alignSelf="end"
-							>
-								<Heading fontSize="1.5rem">
-									{viewedFish?.temperament}
-								</Heading>
+							<GridItem flexDirection="column" textAlign="center" alignSelf="end">
+								<Heading fontSize="1.5rem">{viewedFish?.temperament}</Heading>
 								<Text>Temperament</Text>
 							</GridItem>
 						</Grid>
@@ -404,17 +325,14 @@ export default function AddFish() {
 							</Button>
 							<Input
 								w="60px"
-								value={selectedFish.reduce(
-									(acc, { fish_id }: any) => {
-										if (fish_id === viewedFish?.id) {
-											return acc + 1;
-										}
-										return acc;
-									},
-									0
-								)}
+								value={selectedFish.reduce((acc, { fish_id }: any) => {
+									if (fish_id === viewedFish?.id) {
+										return acc + 1;
+									}
+									return acc;
+								}, 0)}
 								textAlign="center"
-								onChange={(e) => {}}
+								onChange={e => {}}
 							/>
 							<Button
 								colorScheme="green"
@@ -451,10 +369,7 @@ export default function AddFish() {
 							colorScheme="green"
 							mr={3}
 							onClick={() => {
-								if (
-									selectedFish.length === 0 ||
-									tankId.length === 0
-								) {
+								if (selectedFish.length === 0 || tankId.length === 0) {
 									toast({
 										title: 'Please select a tank and fish',
 										description: '',

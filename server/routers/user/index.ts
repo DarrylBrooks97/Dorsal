@@ -90,7 +90,6 @@ export const userRouter = createRouter()
 			const tanks = await prisma.tank.findMany({
 				where: { user_id: input.id },
 			});
-			console.log({ tanks });
 
 			return {
 				tanks,

@@ -26,6 +26,7 @@ export default NextAuth({
 				user: {
 					...session.user,
 				},
+				//@ts-ignore
 				userInfo: {
 					//@ts-ignore
 					id: token.user.id,

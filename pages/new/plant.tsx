@@ -39,7 +39,7 @@ export default function AddPlant() {
 	const toast = useToast();
 	const { data: sessionData }: any = useSession();
 	const { data } = trpc.useQuery(['general.plants']);
-	const { data: userTanks } = trpc.useQuery(['user.tanks']);
+	const { data: userTanks } = trpc.useQuery(['user.tanks', { id: sessionData.userInfo.id }]);
 	const adder = trpc.useMutation(['user.addPlant'], {
 		onSuccess: () => {
 			toast({
@@ -53,7 +53,7 @@ export default function AddPlant() {
 			setSelectedPlants([]);
 			plantToggle();
 		},
-		onError: (error) => {
+		onError: error => {
 			toast({
 				title: 'Error',
 				description: `${error.message}`,
@@ -65,22 +65,14 @@ export default function AddPlant() {
 	});
 	const [tankId, setTankId] = useState('');
 	const [viewedPlant, setViewedPlant] = useState<Plant>();
-	const [selectedPlants, setSelectedPlants] = useState<Plant[]>(
-		[] as Plant[]
-	);
+	const [selectedPlants, setSelectedPlants] = useState<Plant[]>([] as Plant[]);
 	const [filteredPlants, setFilteredPlants] = useState(data?.plants);
-	const {
-		isOpen: isPlantOpen,
-		onClose: onPlantClose,
-		onToggle: plantToggle,
-	} = useDisclosure();
+	const { isOpen: isPlantOpen, onClose: onPlantClose, onToggle: plantToggle } = useDisclosure();
 
 	const handleFilter = (e: BaseSyntheticEvent) => {
 		const { value } = e.target as HTMLInputElement;
 		setFilteredPlants(
-			data?.plants.filter((plant) =>
-				plant.name.toLowerCase().includes(value.toLowerCase())
-			)
+			data?.plants.filter(plant => plant.name.toLowerCase().includes(value.toLowerCase())),
 		);
 	};
 
@@ -89,26 +81,15 @@ export default function AddPlant() {
 	}, [data]);
 
 	return (
-		<Stack
-			shouldWrapChildren
-			bg="black"
-			width="full"
-			p="6"
-			w="100vw"
-			h="100vh"
-		>
+		<Stack shouldWrapChildren bg="black" width="full" p="6" w="100vw" h="100vh">
 			<HStack w="calc(100vw - 3rem)">
-				<Input
-					color="white"
-					onChange={handleFilter}
-					placeholder="Search for plants"
-				/>
+				<Input color="white" onChange={handleFilter} placeholder="Search for plants" />
 				<Button colorScheme="green" color="white">
 					Filter
 				</Button>
 			</HStack>
 			<Stack spacing={6} w="calc(100vw-3rem)">
-				{filteredPlants?.map((plant) => (
+				{filteredPlants?.map(plant => (
 					<MotionCenter
 						key={plant.id}
 						border="2px solid #444"
@@ -123,7 +104,7 @@ export default function AddPlant() {
 								y: -10,
 								opacity: 0,
 							},
-							visible: (index) => ({
+							visible: index => ({
 								opacity: 1,
 								y: 0,
 								transition: {
@@ -137,12 +118,7 @@ export default function AddPlant() {
 							setViewedPlant(plant);
 						}}
 					>
-						<NextImage
-							layout="fill"
-							priority
-							src={plant.image_url}
-							alt={`${plant.name}`}
-						/>
+						<NextImage layout="fill" priority src={plant.image_url} alt={`${plant.name}`} />
 						<Stack
 							pos="absolute"
 							left="50%"
@@ -172,12 +148,8 @@ export default function AddPlant() {
 					<DrawerCloseButton />
 					<DrawerHeader>{viewedPlant?.name}</DrawerHeader>
 					<DrawerBody>
-						<Select
-							placeholder="Select Tanks"
-							mb="3"
-							onChange={(e) => setTankId(e.target.value)}
-						>
-							{userTanks?.tanks.map((tank) => (
+						<Select placeholder="Select Tanks" mb="3" onChange={e => setTankId(e.target.value)}>
+							{userTanks?.tanks.map(tank => (
 								<option key={tank.id} value={tank.id}>
 									{tank.name}
 								</option>
@@ -210,14 +182,8 @@ export default function AddPlant() {
 									</Box>
 									<AccordionIcon color="green" />
 								</AccordionButton>
-								<AccordionPanel
-									pos="relative"
-									overflowY="scroll"
-								>
-									<Grid
-										gap={5}
-										templateColumns="repeat(2, 1fr)"
-									>
+								<AccordionPanel pos="relative" overflowY="scroll">
+									<Grid gap={5} templateColumns="repeat(2, 1fr)">
 										<GridItem
 											rounded="15px"
 											flexDirection="column"
@@ -227,9 +193,7 @@ export default function AddPlant() {
 											<Heading fontSize="1.5rem">
 												{
 													//@ts-ignore
-													viewedPlant?.water_params[
-														'pH'
-													]
+													viewedPlant?.water_params['pH']
 												}
 											</Heading>
 											<Text>pH</Text>
@@ -243,9 +207,7 @@ export default function AddPlant() {
 											<Heading fontSize="1.5rem">
 												{
 													//@ts-ignore
-													viewedPlant?.water_params[
-														'ammonia'
-													]
+													viewedPlant?.water_params['ammonia']
 												}
 											</Heading>
 											<Text>Ammonia</Text>
@@ -259,9 +221,7 @@ export default function AddPlant() {
 											<Heading fontSize="1.5rem">
 												{
 													//@ts-ignore
-													viewedPlant?.water_params[
-														'alkalinity'
-													]
+													viewedPlant?.water_params['alkalinity']
 												}
 											</Heading>
 											<Text>Alkalinity</Text>
@@ -275,9 +235,7 @@ export default function AddPlant() {
 											<Heading fontSize="1.5rem">
 												{
 													//@ts-ignore
-													viewedPlant?.water_params[
-														'chlorine'
-													]
+													viewedPlant?.water_params['chlorine']
 												}
 											</Heading>
 											<Text>Chlorine</Text>
@@ -291,9 +249,7 @@ export default function AddPlant() {
 											<Heading fontSize="1.5rem">
 												{
 													//@ts-ignore
-													viewedPlant?.water_params[
-														'nirate'
-													]
+													viewedPlant?.water_params['nirate']
 												}
 											</Heading>
 											<Text>Nitrate</Text>
@@ -307,9 +263,7 @@ export default function AddPlant() {
 											<Heading fontSize="1.5rem">
 												{
 													//@ts-ignore
-													viewedPlant?.water_params[
-														'nirite'
-													]
+													viewedPlant?.water_params['nirite']
 												}
 											</Heading>
 											<Text>Nitrite</Text>
@@ -323,9 +277,7 @@ export default function AddPlant() {
 											<Heading fontSize="1.5rem">
 												{
 													//@ts-ignore
-													viewedPlant?.water_params[
-														'hardness'
-													]
+													viewedPlant?.water_params['hardness']
 												}
 											</Heading>
 											<Text>Hardness</Text>
@@ -335,35 +287,16 @@ export default function AddPlant() {
 							</AccordionItem>
 						</Accordion>
 						<Grid gap={5} templateColumns="repeat(2, 1fr)">
-							<GridItem
-								rounded="15px"
-								flexDirection="column"
-								textAlign="center"
-								alignSelf="end"
-							>
-								<Heading fontSize="1.5rem">
-									{viewedPlant?.lighting} lum
-								</Heading>
+							<GridItem rounded="15px" flexDirection="column" textAlign="center" alignSelf="end">
+								<Heading fontSize="1.5rem">{viewedPlant?.lighting} lum</Heading>
 								<Text>Lighting</Text>
 							</GridItem>
-							<GridItem
-								flexDirection="column"
-								textAlign="center"
-								alignSelf="end"
-							>
-								<Heading fontSize="1.5rem">
-									{viewedPlant?.soil}
-								</Heading>
+							<GridItem flexDirection="column" textAlign="center" alignSelf="end">
+								<Heading fontSize="1.5rem">{viewedPlant?.soil}</Heading>
 								<Text>Soil</Text>
 							</GridItem>
-							<GridItem
-								flexDirection="column"
-								textAlign="center"
-								alignSelf="end"
-							>
-								<Heading fontSize="1.5rem">
-									{viewedPlant?.illnesses}
-								</Heading>
+							<GridItem flexDirection="column" textAlign="center" alignSelf="end">
+								<Heading fontSize="1.5rem">{viewedPlant?.illnesses}</Heading>
 								<Text>Illnesses</Text>
 							</GridItem>
 						</Grid>
@@ -379,16 +312,13 @@ export default function AddPlant() {
 							</Button>
 							<Input
 								w="60px"
-								value={selectedPlants.reduce(
-									(acc, { plant_id }: any) => {
-										if (plant_id === viewedPlant?.id) {
-											return acc + 1;
-										}
-										return acc;
-									},
-									0
-								)}
-								onChange={(e) => {}}
+								value={selectedPlants.reduce((acc, { plant_id }: any) => {
+									if (plant_id === viewedPlant?.id) {
+										return acc + 1;
+									}
+									return acc;
+								}, 0)}
+								onChange={e => {}}
 								textAlign="center"
 							/>
 							<Button
@@ -425,10 +355,7 @@ export default function AddPlant() {
 							colorScheme="green"
 							mr={3}
 							onClick={() => {
-								if (
-									selectedPlants.length === 0 ||
-									tankId.length === 0
-								) {
+								if (selectedPlants.length === 0 || tankId.length === 0) {
 									toast({
 										title: 'Please select a tank and fish',
 										description: '',

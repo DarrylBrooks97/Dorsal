@@ -48,12 +48,13 @@ export default function PlantView({
 	pickerOnClose,
 }: PlantViewProps) {
 	const toast = useToast();
-	const { data } = trpc.useQuery(['user.tanks']);
+	const { data: sessionData }: any = useSession();
+	const { data } = trpc.useQuery(['user.tanks', { id: sessionData.userInfo }]);
 	const mutate = trpc.useMutation(['user.addPlant'], {
 		onSuccess: () => {
 			window.location.href = `/aquarium/${tankId}`;
 		},
-		onError: (error) => {
+		onError: error => {
 			toast({
 				title: 'Error',
 				description: error.message,
@@ -64,23 +65,13 @@ export default function PlantView({
 		},
 	});
 	const [tankId, setTankId] = useState<string>('');
-	const { data: sessionData }: any = useSession();
 
 	return (
 		<Box h="100vh" w="full" p="6">
 			<Box w="full" p="3" onClick={() => toggleShowPlantSelection()}>
-				<BsArrowLeft
-					style={{ width: '25px', height: '25px' }}
-					color="white"
-				/>
+				<BsArrowLeft style={{ width: '25px', height: '25px' }} color="white" />
 			</Box>
-			<Box
-				pos="relative"
-				w="full"
-				h="300px"
-				borderRadius="15px"
-				overflow="hidden"
-			>
+			<Box pos="relative" w="full" h="300px" borderRadius="15px" overflow="hidden">
 				<NextImage
 					src={
 						viewedPlant?.image_url ??
@@ -134,16 +125,9 @@ export default function PlantView({
 					togglePicker();
 				}}
 			>
-				<Cross1Icon
-					color="white"
-					style={{ transform: 'rotate(-45deg)' }}
-				/>
+				<Cross1Icon color="white" style={{ transform: 'rotate(-45deg)' }} />
 			</Center>
-			<Drawer
-				isOpen={pickerIsOpen}
-				onClose={pickerOnClose}
-				placement="right"
-			>
+			<Drawer isOpen={pickerIsOpen} onClose={pickerOnClose} placement="right">
 				<DrawerOverlay />
 				<DrawerContent>
 					<DrawerCloseButton />
@@ -157,7 +141,7 @@ export default function PlantView({
 								<Select
 									required
 									placeholder="Select a tank"
-									onChange={(e) => setTankId(e.target.value)}
+									onChange={e => setTankId(e.target.value)}
 								>
 									{data?.tanks.map((tank, idx) => (
 										<option key={idx} value={tank.id}>
@@ -168,144 +152,91 @@ export default function PlantView({
 							</Stack>
 							<Stack>
 								<Text>Selected Plants</Text>
-								{deepArrayFilter<Plant>(selectedPlants)?.map(
-									(plant: Plant, idx) => (
-										<Box key={idx}>
-											<Box
-												w="100%"
-												h="250px"
-												pos="relative"
-												borderRadius="15px"
-											>
-												<NextImage
-													priority
-													layout="fill"
-													alt="selectedPlantImage"
-													src={plant.image_url ?? ''}
-													style={{
-														borderRadius: '15px',
-													}}
-												/>
-												<Box
-													pos="absolute"
-													right="4"
-													bottom="4"
-												>
-													<BsTrash
-														color="red"
-														onClick={() => {
-															setSelectedPlants(
-																selectedPlants.filter(
-																	(
-																		oldPlant: Plant
-																	) =>
-																		oldPlant.id !==
-																		plant.id
-																)
-															);
-														}}
-													/>
-												</Box>
-											</Box>
-											<Text textAlign="center">
-												{plant.name}
-											</Text>
-											<HStack w="full" justify="center">
-												<Button
-													colorScheme="red"
+								{deepArrayFilter<Plant>(selectedPlants)?.map((plant: Plant, idx) => (
+									<Box key={idx}>
+										<Box w="100%" h="250px" pos="relative" borderRadius="15px">
+											<NextImage
+												priority
+												layout="fill"
+												alt="selectedPlantImage"
+												src={plant.image_url ?? ''}
+												style={{
+													borderRadius: '15px',
+												}}
+											/>
+											<Box pos="absolute" right="4" bottom="4">
+												<BsTrash
+													color="red"
 													onClick={() => {
-														const quantity =
-															selectedPlants.reduce(
-																(
-																	acc,
-																	{ id }
-																) => {
-																	if (
-																		id ===
-																		plant.id
-																	) {
-																		return (
-																			acc +
-																			1
-																		);
-																	}
-																	return acc;
-																},
-																0
-															);
-														if (quantity === 1) {
-															setSelectedPlants(
-																selectedPlants.filter(
-																	(
-																		oldPlant: Plant
-																	) =>
-																		oldPlant.id !==
-																		plant.id
-																)
-															);
-															return;
-														}
-														selectedPlants.pop();
-													}}
-												>
-													-
-												</Button>
-												<Input
-													w="60px"
-													value={selectedPlants.reduce(
-														(acc, { id }) => {
-															if (
-																id === plant.id
-															) {
-																return acc + 1;
-															}
-															return acc;
-														},
-														0
-													)}
-													textAlign="center"
-													onChange={(e) => {
 														setSelectedPlants(
-															(p: any) =>
-																p.plant.id ===
-																plant.id
-																	? {
-																			...p,
-																			quantity:
-																				parseInt(
-																					e
-																						.target
-																						.value
-																				),
-																	  }
-																	: p
+															selectedPlants.filter((oldPlant: Plant) => oldPlant.id !== plant.id),
 														);
 													}}
 												/>
-												<Button
-													colorScheme="green"
-													onClick={() => {
-														setSelectedPlants([
-															...selectedPlants,
-															{
-																...plant,
-																lighting:
-																	plant.lighting,
-																soil: plant.soil,
-																illnesses:
-																	plant.illnesses,
-																water_params:
-																	plant.water_params,
-															},
-														]);
-													}}
-												>
-													+
-												</Button>
-											</HStack>
+											</Box>
 										</Box>
-									)
-								)}
+										<Text textAlign="center">{plant.name}</Text>
+										<HStack w="full" justify="center">
+											<Button
+												colorScheme="red"
+												onClick={() => {
+													const quantity = selectedPlants.reduce((acc, { id }) => {
+														if (id === plant.id) {
+															return acc + 1;
+														}
+														return acc;
+													}, 0);
+													if (quantity === 1) {
+														setSelectedPlants(
+															selectedPlants.filter((oldPlant: Plant) => oldPlant.id !== plant.id),
+														);
+														return;
+													}
+													selectedPlants.pop();
+												}}
+											>
+												-
+											</Button>
+											<Input
+												w="60px"
+												value={selectedPlants.reduce((acc, { id }) => {
+													if (id === plant.id) {
+														return acc + 1;
+													}
+													return acc;
+												}, 0)}
+												textAlign="center"
+												onChange={e => {
+													setSelectedPlants((p: any) =>
+														p.plant.id === plant.id
+															? {
+																	...p,
+																	quantity: parseInt(e.target.value),
+															  }
+															: p,
+													);
+												}}
+											/>
+											<Button
+												colorScheme="green"
+												onClick={() => {
+													setSelectedPlants([
+														...selectedPlants,
+														{
+															...plant,
+															lighting: plant.lighting,
+															soil: plant.soil,
+															illnesses: plant.illnesses,
+															water_params: plant.water_params,
+														},
+													]);
+												}}
+											>
+												+
+											</Button>
+										</HStack>
+									</Box>
+								))}
 							</Stack>
 						</Stack>
 					</DrawerBody>
@@ -323,7 +254,7 @@ export default function PlantView({
 										});
 										return;
 									}
-									const plants = selectedPlants.map((p) => {
+									const plants = selectedPlants.map(p => {
 										return {
 											id: cuid(),
 											name: p.name,

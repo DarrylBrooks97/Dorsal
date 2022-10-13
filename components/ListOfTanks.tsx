@@ -10,7 +10,7 @@ export const ListOfTanks = () => {
 	const { data: sessionData } = useSession() as any;
 	const { data } = trpc.useQuery(['user.tanks', { id: sessionData?.userInfo?.id }]);
 	const tanks = useMemo(() => {
-		return data?.tanks.filter((_tank, index) => index < 3);
+		return data?.tanks.filter((_tank: any, index: number) => index < 3);
 	}, [data]);
 
 	return (
@@ -23,7 +23,7 @@ export const ListOfTanks = () => {
 				},
 			}}
 		>
-			{tanks?.map(tank => (
+			{tanks?.map((tank: any) => (
 				<NextLink href={`/aquarium/${tank.id}`} key={tank.id}>
 					<Stack spacing={2} textAlign="center" key={tank?.id}>
 						<Box
