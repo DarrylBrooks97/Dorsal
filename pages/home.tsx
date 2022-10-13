@@ -1,28 +1,13 @@
-import AquariumCard from '@components/AqauriumCard';
 import AddButton from '@components/AddButton';
-import handleViewport from 'react-in-viewport';
-import { Card } from '@components/Card';
-import { headerOptions } from '@constants';
-import { Box, Text, HStack, Stack } from '@chakra-ui/react';
-import { useEffect, useRef, useState } from 'react';
+import { Text, Stack } from '@chakra-ui/react';
 import { GetServerSidePropsContext } from 'next';
 import { getSession } from 'next-auth/react';
-import { Header } from '@components/atoms';
-
-const CardViewportBlock = handleViewport(Card, {
-	threshold: 1,
-});
-
-const componentCards: JSX.Element[] = [
-	CardViewportBlock,
-	AquariumCard,
-	CardViewportBlock,
-	CardViewportBlock,
-];
+import { UpcomingNotifications } from '@components/UpcomingNotifications';
+import { ListOfTanks } from '@components/ListOfTanks';
+import { SessionData } from '@utils/types';
 
 export const getServerSideProps = async ({ req, res }: GetServerSidePropsContext) => {
-	const session = await getSession({ req });
-
+	const session = (await getSession({ req })) as SessionData;
 	if (!session) {
 		res.writeHead(302, {
 			Location: '/',
@@ -30,93 +15,31 @@ export const getServerSideProps = async ({ req, res }: GetServerSidePropsContext
 		res.end();
 	}
 
-	return { props: { user_image: session?.user?.image } };
+	return { props: { id: session.userInfo.id } };
 };
 
-export default function Home({ user_image }: any) {
-	const cardRef = useRef<HTMLDivElement>(null);
-	const [pos, setPos] = useState(0);
-	const [navClicked, setNavClicked] = useState(false);
+export interface HomeProps {
+	id: string;
+}
 
-	useEffect(() => {
-		cardRef?.current?.scrollTo({
-			// @ts-ignore
-			left: cardRef.current.children[pos].offsetLeft,
-			behavior: 'smooth',
-		});
-	}, [pos]);
-
+export default function Home({ id }: HomeProps) {
 	return (
-		<Header image={user_image}>
-			<Stack w="full" h="full" p="3" spacing={5} shouldWrapChildren>
-				<AddButton />
-				<Stack w="full" mb="3">
-					<HStack
-						spacing="4"
-						w="full"
-						overflow="scroll"
-						shouldWrapChildren
-						css={{
-							'::-webkit-scrollbar': {
-								display: 'none',
-							},
-						}}
-					>
-						{headerOptions.map((option, idx) => (
-							<Text
-								fontSize="xl"
-								color={pos === idx ? 'white' : 'gray.500'}
-								transition=".3s ease-in-out"
-								key={idx}
-								onClick={() => {
-									setNavClicked(true);
-									setPos(idx);
-								}}
-							>
-								{option.name}
-							</Text>
-						))}
-					</HStack>
-					<HStack w="full" spacing={2} justify="center" shouldWrapChildren>
-						{headerOptions.map((options, idx) => (
-							<Box
-								rounded="full"
-								boxSize={2}
-								transition=".2s ease-in-out"
-								bg={pos === idx ? 'white' : 'gray.500'}
-								key={options.name}
-							/>
-						))}
-					</HStack>
+		<Stack w="full" h="full" p="3" spacing={5} shouldWrapChildren>
+			<AddButton />
+			<Stack spacing={3}>
+				<Stack>
+					<Text color="white" fontSize="3xl" fontWeight="bold">
+						Upcoming
+					</Text>
+					<UpcomingNotifications id={id} />
 				</Stack>
-				<HStack
-					ref={cardRef}
-					overflow="scroll"
-					spacing={50}
-					alignItems="start"
-					scrollSnapType="x mandatory"
-					shouldWrapChildren
-					css={{
-						'::-webkit-scrollbar': {
-							display: 'none',
-						},
-					}}
-				>
-					{componentCards.map((Card, idx) => (
-						// @ts-ignore
-						<Card
-							onEnterViewport={() => {
-								if (pos === idx) setNavClicked(false);
-								setPos(navClicked ? pos : idx);
-							}}
-							key={idx}
-							heading={headerOptions[idx].name}
-							subHeading={headerOptions[idx].subHeading}
-							image={headerOptions[idx].image}
-						/>
-					))}
-				</HStack>
+				<Stack spacing={3}>
+					<Text color="white" fontSize="3xl" fontWeight="bold">
+						Tanks
+					</Text>
+					<ListOfTanks id={id} />
+				</Stack>
 			</Stack>
-		</Header>
+		</Stack>
 	);
 }

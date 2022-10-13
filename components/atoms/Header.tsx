@@ -1,12 +1,19 @@
 import NextLink from './NextLink';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Menu } from '@components/atoms/Menu';
 import { ReactNode } from 'react';
 import { Avatar, Box, Button, HStack, Stack, Text } from '@chakra-ui/react';
-import { signIn } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 
-export const Header = ({ image, children }: { image?: string; children: ReactNode }) => {
+export const Header = ({ children }: { children: ReactNode }) => {
+	const { data } = useSession();
 	const [isOpen, setIsOpen] = useState(false);
+	const [image, setImage] = useState(data?.user?.image || '');
+
+	useEffect(() => {
+		setImage(data?.user?.image as string);
+	}, [data]);
+
 	return (
 		<Stack h="full" minH="100vh" w="100vw">
 			<HStack
