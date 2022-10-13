@@ -2,7 +2,6 @@ import { z } from 'zod';
 import { prisma } from '@clients/prisma';
 import { createRouter } from '../../createRouter';
 import { UserFish, UserPlant } from '@prisma/client';
-import { Input } from '@chakra-ui/react';
 
 export const userRouter = createRouter()
 	.query('fish', {
@@ -29,11 +28,11 @@ export const userRouter = createRouter()
 					user_id: z.string().cuid(),
 					tank_id: z.string().cuid(),
 					image_url: z.string(),
-				})
+				}),
 			),
 		}),
 		async resolve({ input }) {
-			const readyFish = input.fish.map((fish) => {
+			const readyFish = input.fish.map(fish => {
 				return {
 					...fish,
 					next_update: new Date().toISOString(),
@@ -84,8 +83,15 @@ export const userRouter = createRouter()
 		},
 	})
 	.query('tanks', {
-		async resolve() {
-			const tanks = await prisma.tank.findMany();
+		input: z.object({
+			id: z.string().cuid(),
+		}),
+		async resolve({ input }) {
+			const tanks = await prisma.tank.findMany({
+				where: { user_id: input.id },
+			});
+			console.log({ tanks });
+
 			return {
 				tanks,
 			};
@@ -120,7 +126,7 @@ export const userRouter = createRouter()
 						...f,
 						species: parentFish?.species,
 					};
-				})
+				}),
 			);
 
 			const userPlant = await prisma.userPlant.findMany({
@@ -141,7 +147,7 @@ export const userRouter = createRouter()
 						...p,
 						species: parentPlant?.species,
 					};
-				})
+				}),
 			);
 
 			return {
@@ -189,7 +195,7 @@ export const userRouter = createRouter()
 							pH: z.number().min(6).max(14),
 							type: z.string().min(1).max(255),
 						}),
-					})
+					}),
 				)
 				.optional(),
 			Plant: z
@@ -213,7 +219,7 @@ export const userRouter = createRouter()
 							pH: z.number().min(6).max(14),
 						}),
 						illnesses: z.string().min(1).max(255),
-					})
+					}),
 				)
 				.optional(),
 		}),
@@ -247,14 +253,14 @@ export const userRouter = createRouter()
 				.array(
 					z.object({
 						id: z.string().cuid(),
-					})
+					}),
 				)
 				.optional(),
 			Plant: z
 				.array(
 					z.object({
 						id: z.string().cuid(),
-					})
+					}),
 				)
 				.optional(),
 		}),
@@ -345,11 +351,11 @@ export const userRouter = createRouter()
 					user_id: z.string().cuid(),
 					tank_id: z.string().cuid(),
 					image_url: z.string(),
-				})
+				}),
 			),
 		}),
 		async resolve({ input }) {
-			const readyPlants = input.plants.map((plant) => {
+			const readyPlants = input.plants.map(plant => {
 				return {
 					...plant,
 					next_update: new Date().toISOString(),

@@ -31,13 +31,13 @@ export default function Home({ id }: HomeProps) {
 					<Text color="white" fontSize="3xl" fontWeight="bold">
 						Upcoming
 					</Text>
-					<UpcomingNotifications id={id} />
+					<UpcomingNotifications />
 				</Stack>
 				<Stack spacing={3}>
 					<Text color="white" fontSize="3xl" fontWeight="bold">
 						Tanks
 					</Text>
-					<ListOfTanks id={id} />
+					<ListOfTanks />
 				</Stack>
 			</Stack>
 		</Stack>

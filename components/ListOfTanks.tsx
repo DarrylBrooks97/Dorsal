@@ -1,35 +1,55 @@
-import { Box, Text, HStack, Stack, Center } from '@chakra-ui/react';
 import { ArrowRightIcon } from '@radix-ui/react-icons';
+import { trpc } from '@utils/trpc';
+import { useMemo } from 'react';
 import { NextImage } from './atoms';
+import { Box, Text, HStack, Center, Stack } from '@chakra-ui/react';
+import { useSession } from 'next-auth/react';
+import NextLink from './atoms/NextLink';
 
-export const ListOfTanks = ({ id }: { id: string }) => (
-	<HStack
-		spacing={8}
-		overflow="scroll"
-		css={{
-			'::-webkit-scrollbar': {
-				display: 'none',
-			},
-		}}
-	>
-		<Stack spacing={2} textAlign="center">
-			<Box px="90px" py="80px" overflow="hidden" position="relative" bg="blue.200" rounded="2xl">
-				<NextImage
-					src="https://images.unsplash.com/photo-1535591273668-578e31182c4f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80"
-					layout="fill"
-				/>
-			</Box>
-			<Text color="white" fontSize="md">
-				Living Room Tank
-			</Text>
-		</Stack>
-		<Stack px="4">
-			<Center rounded="full" bg="white" boxSize="10">
-				<ArrowRightIcon color="black" />
-			</Center>
-			<Text fontSize="sm" color="white">
-				See more
-			</Text>
-		</Stack>
-	</HStack>
-);
+export const ListOfTanks = () => {
+	const { data: sessionData } = useSession() as any;
+	const { data } = trpc.useQuery(['user.tanks', { id: sessionData?.userInfo?.id }]);
+	const tanks = useMemo(() => {
+		return data?.tanks.filter((_tank, index) => index < 3);
+	}, [data]);
+
+	return (
+		<HStack
+			spacing={8}
+			overflow="scroll"
+			css={{
+				'::-webkit-scrollbar': {
+					display: 'none',
+				},
+			}}
+		>
+			{tanks?.map(tank => (
+				<NextLink href={`/aquarium/${tank.id}`} key={tank.id}>
+					<Stack spacing={2} textAlign="center" key={tank?.id}>
+						<Box
+							px="100px"
+							py="80px"
+							overflow="hidden"
+							position="relative"
+							bg="blue.200"
+							rounded="2xl"
+						>
+							<NextImage src={tank?.image ?? ''} layout="fill" />
+						</Box>
+						<Text color="white" fontSize="md">
+							{tank?.name}
+						</Text>
+					</Stack>
+				</NextLink>
+			))}
+			<Stack px="4">
+				<Center rounded="full" bg="white" boxSize="10">
+					<ArrowRightIcon color="black" />
+				</Center>
+				<Text fontSize="sm" color="white">
+					See more
+				</Text>
+			</Stack>
+		</HStack>
+	);
+};
