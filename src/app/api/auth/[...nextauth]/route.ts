@@ -7,8 +7,12 @@ import Google from "next-auth/providers/google"
 const useSecureCookies =
   process.env.VERCEL_ENV === "production" || process.env.VERCEL_ENV === "preview"
 
+const WEEK = 60 * 60 * 24 * 7
 const handler = NextAuth({
   useSecureCookies,
+  jwt: {
+    maxAge: WEEK,
+  },
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
   pages: {
@@ -18,10 +22,12 @@ const handler = NextAuth({
     Google({
       clientId: CONSTANTS.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
       clientSecret: CONSTANTS.NEXT_PUBLIC_GOOGLE_CLIENT_SECRET,
+      allowDangerousEmailAccountLinking: true,
     }),
   ],
   callbacks: {
     jwt: async ({ user, token }) => {
+      console.log({ user })
       if (!user.email) {
         return {}
       }

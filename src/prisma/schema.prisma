@@ -1,12 +1,12 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["referentialIntegrity"]
+  previewFeatures = ["jsonProtocol", "fullTextSearch"]
 }
 
 datasource db {
-  provider             = "mysql"
-  url                  = env("DATABASE_URL")
-  referentialIntegrity = "prisma"
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
 model Account {
@@ -25,6 +25,7 @@ model Account {
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model Session {
@@ -33,6 +34,8 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model User {
@@ -74,6 +77,8 @@ model Fish {
 
   fish_id  Fish?      @relation("Friends", fields: [friend_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   UserFish UserFish[]
+
+  @@index([friend_id])
 }
 
 model Plant {
@@ -102,6 +107,8 @@ model UserFish {
   fish        Fish      @relation(fields: [fish_id], references: [id], onDelete: Cascade)
 
   @@index([user_id])
+  @@index([tank_id])
+  @@index([fish_id])
 }
 
 model UserPlant {
@@ -117,6 +124,8 @@ model UserPlant {
   plant       Plant     @relation(fields: [plant_id], references: [id], onDelete: Cascade)
 
   @@index([user_id])
+  @@index([tank_id])
+  @@index([plant_id])
 }
 
 model Tank {
@@ -138,4 +147,6 @@ model Tank {
   updated_at    DateTime    @db.Timestamp(0)
   Fish          UserFish[]
   Plant         UserPlant[]
+
+  @@index([user_id])
 }
