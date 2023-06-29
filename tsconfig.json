@@ -4,10 +4,7 @@
     "lib": ["dom", "dom.iterable", "esnext"],
     "baseUrl": ".",
     "paths": {
-      "@clients/*": ["src/clients/*"],
-      "@components/*": ["src/components/*"],
-      "@constants": ["./constants"],
-      "@utils/*": ["src/utils/*"]
+      "~/*": ["src/*"]
     },
     "allowJs": true,
     "skipLibCheck": true,

@@ -1,12 +1,15 @@
 "use client"
 
+import Link from "next/link"
 import { HamburgerMenuIcon } from "@radix-ui/react-icons"
 
 export default function Header() {
   return (
-    <div className="flex h-[90px] w-full justify-between bg-blue-400">
-      <p className="text-lg">Dorsal</p>
-      <HamburgerMenuIcon className="" />
-    </div>
+    <header className="flex h-16 items-center justify-between p-3">
+      <Link href="/" passHref>
+        <p className="text-2xl font-semibold">Dorsal</p>
+      </Link>
+      <HamburgerMenuIcon className="h-5 w-5" />
+    </header>
   )
 }

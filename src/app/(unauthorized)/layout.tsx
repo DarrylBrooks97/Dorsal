@@ -21,9 +21,9 @@ export const metadata: Metadata = {
 export default function UnAuthorizedRootLayout({ children }: PropsWithChildren<any>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="h-screen w-screen">
+      <body className="mx-auto flex h-screen w-screen max-w-7xl flex-col">
         <Header />
-        <main>{children}</main>
+        <main className="h-full grow">{children}</main>
       </body>
     </html>
   )
