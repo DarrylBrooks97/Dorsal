@@ -21,7 +21,7 @@ export default function Dashboard() {
     <div className="flex h-full flex-col space-y-9 p-3">
       <div className="flex h-fit w-full flex-col space-y-2 ">
         <h1 className="text-2xl font-medium text-white">Overview</h1>
-        <div className=" flex w-full">
+        <div className="flex w-full">
           <OverViewItem title="Tanks" value={2} />
           <OverViewItem title="Species" value={10} />
           <OverViewItem title="Reminders" value={2} className="text-red-500" />
