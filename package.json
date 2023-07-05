@@ -8,7 +8,7 @@
   "version": "0.1.0",
   "private": false,
   "scripts": {
-    "dev": "vercel env pull .env.local && next dev",
+    "dev": "vercel env pull .env && next dev",
     "build": "pnpm generate && next build",
     "start": "next start",
     "lint": "next lint",
@@ -28,7 +28,7 @@
     "clsx": "^1.2.1",
     "compressorjs": "^1.1.1",
     "cuid": "^2.1.8",
-    "date-fns": "^2.28.0",
+    "date-fns": "^2.30.0",
     "framer-motion": "^10.12.18",
     "inngest": "^2.0.0",
     "lucide-react": "^0.258.0",
