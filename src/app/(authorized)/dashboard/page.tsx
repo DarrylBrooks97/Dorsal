@@ -10,7 +10,7 @@ interface OverViewItemProps extends HtmlHTMLAttributes<HTMLDivElement> {
 function OverViewItem(props: OverViewItemProps) {
   return (
     <div className={cn("flex w-[50px] grow flex-col items-center space-y-3 text-white")}>
-      <h2 className={cn("font-base text-2xl ", props.className)}>{props.value}</h2>
+      <h2 className={cn("font-base text-xl ", props.className)}>{props.value}</h2>
       <p className="font-base text-lg">{props.title}</p>
     </div>
   )
@@ -18,18 +18,18 @@ function OverViewItem(props: OverViewItemProps) {
 
 export default function Dashboard() {
   return (
-    <div className="flex h-full flex-col space-y-9 p-3">
+    <section className="flex h-full flex-col space-y-9">
       <div className="flex h-fit w-full flex-col space-y-2 ">
-        <h1 className="text-2xl font-medium text-white">Overview</h1>
+        <h1 className="text-xl font-medium text-white">Overview</h1>
         <div className="flex w-full">
           <OverViewItem title="Tanks" value={2} />
           <OverViewItem title="Species" value={10} />
           <OverViewItem title="Reminders" value={2} className="text-red-500" />
         </div>
       </div>
-      <div className="flex w-full flex-col space-y-3">
+      <div className="flex w-full flex-col space-y-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-medium text-white">
+          <h1 className="text-xl font-medium text-white">
             Next Reminder
             <span className="ml-3 text-lg font-normal text-gray-400"> in 2 days</span>
           </h1>
@@ -51,7 +51,7 @@ export default function Dashboard() {
           </div>
         </div>
         <div className="flex">
-          <div className="relative h-[120px] w-[200px] overflow-clip rounded-md">
+          <div className="relative h-[120px] w-[180px] overflow-clip rounded-md">
             <Image
               src="https://images.unsplash.com/photo-1517777170473-009c8c3734c1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1335&q=80"
               alt="reminder-image"
@@ -59,16 +59,16 @@ export default function Dashboard() {
               className="object-cover"
             />
           </div>
-          <div className="ml-2 flex grow flex-col p-1 text-white ">
-            <p className="text-xl">Living room tank</p>
-            <p className="">Feed fish</p>
+          <div className="ml-2 flex grow flex-col p-1 text-lg text-white ">
+            <p>Living room tank</p>
+            <p>Feed fish</p>
           </div>
         </div>
       </div>
-      <div className="flex flex-col">
-        <h1 className="text-2xl font-medium text-white">Recommendations</h1>
+      <div className="flex flex-col space-y-4">
+        <h1 className="text-xl font-medium text-white">Recommendations</h1>
         <div className="flex">
-          <div className="relative h-[120px] w-[200px] overflow-clip rounded-md">
+          <div className="relative h-[120px] w-[180px] overflow-clip rounded-md">
             <Image
               src="https://images.unsplash.com/photo-1615988506550-20d485e6aaa0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1335&q=80"
               alt="reminder-image"
@@ -76,8 +76,8 @@ export default function Dashboard() {
               className="object-cover"
             />
           </div>
-          <div className="ml-2 flex grow flex-col justify-between p-1 text-white ">
-            <p className="text-xl">Fresh water tanks</p>
+          <div className="ml-2 flex grow flex-col justify-between p-1 text-lg text-white ">
+            <p>Fresh water tanks</p>
             <div className="flex items-center space-x-2 font-light">
               <p className="text-lg">by</p>
               <div className="relative h-[20px] w-[20px] overflow-clip rounded-full">
@@ -93,6 +93,6 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
-    </div>
+    </section>
   )
 }

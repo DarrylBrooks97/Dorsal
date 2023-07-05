@@ -23,7 +23,7 @@ export default function AuthorizedRootLayout({ children }: PropsWithChildren<any
     >
       <body className="flex h-full flex-col bg-inherit p-1">
         <Header />
-        <main className="grow-0">{children}</main>
+        <main className="grow-0 p-3">{children}</main>
         <NavBar />
       </body>
     </html>

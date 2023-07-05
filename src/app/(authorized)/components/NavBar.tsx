@@ -28,7 +28,7 @@ export default function NavBar() {
   }, [segment])
 
   return (
-    <div className="absolute bottom-10 left-1/2 flex h-[60px] w-5/6 -translate-x-1/2 transform items-center justify-evenly rounded-[10px] bg-[#343434]">
+    <div className="absolute bottom-10 left-1/2 flex h-[60px] w-5/6 -translate-x-1/2 transform items-center justify-evenly rounded-[10px] bg-[#343434] bg-opacity-80 backdrop-blur-sm">
       {tabs.map((tab, idx) => (
         <Link href={`${tab.path}`} passHref key={tab.name} className=" text-white">
           {tab.name}
