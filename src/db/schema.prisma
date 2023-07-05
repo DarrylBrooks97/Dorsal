@@ -38,19 +38,6 @@ model Session {
   @@index([userId])
 }
 
-model User {
-  id            String      @id @default(cuid())
-  name          String?
-  email         String?     @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  tanks         Tank[]
-  userPlants    UserPlant[]
-  userFish      UserFish[]
-}
-
 model VerificationToken {
   identifier String
   token      String   @unique
@@ -59,94 +46,69 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-model Fish {
+model User {
   id            String    @id @default(cuid())
-  friend_id     String?   @default(cuid())
-  name          String    @db.VarChar(255)
-  image_url     String    @db.VarChar(255)
-  habitat       String    @db.VarChar(255)
-  species       String    @db.VarChar(255)
-  max_size      Int       @db.Int
-  temperament   String    @db.VarChar(255)
-  min_tank_size Int       @db.Int
-  diet          String    @db.VarChar(255)
-  water_params  Json
-  illnesses     String    @db.VarChar(255)
-  maintained_at DateTime? @db.Timestamp(0)
-  friends       Fish[]    @relation("Friends")
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
 
-  fish_id  Fish?      @relation("Friends", fields: [friend_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  UserFish UserFish[]
-
-  @@index([friend_id])
+  accounts Account[]
+  sessions Session[]
+  tanks    Tank[]
+  fish     UserFish[]
 }
 
-model Plant {
-  id            String      @id @default(cuid())
-  name          String      @db.VarChar(255)
-  image_url     String      @db.VarChar(255)
-  species       String      @db.VarChar(255)
-  lighting      String      @db.VarChar(255)
-  soil          String      @db.VarChar(255)
-  water_params  Json
-  illnesses     String      @db.VarChar(255)
-  maintained_at DateTime?   @db.Timestamp(0)
-  UserPlant     UserPlant[]
+model Fish {
+  id          String @id @default(cuid())
+  name        String @db.VarChar(255)
+  photo       String @default("https://images.unsplash.com/photo-1522069169874-c58ec4b76be5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=712&q=80")
+  habitat     String @db.VarChar(255)
+  species     String @db.VarChar(255)
+  maxSize     String @db.VarChar(100)
+  minTankSize Int
+
+  UserFish UserFish[]
 }
 
 model UserFish {
-  id          String    @id @default(cuid())
-  user_id     String    @default(cuid())
-  tank_id     String    @default(cuid())
-  fish_id     String    @default(cuid())
-  image_url   String    @db.VarChar(255)
-  name        String    @db.VarChar(255)
-  next_update DateTime? @db.Timestamp(0)
-  user        User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  tank        Tank      @relation(fields: [tank_id], references: [id], onDelete: Cascade)
-  fish        Fish      @relation(fields: [fish_id], references: [id], onDelete: Cascade)
+  id           String    @id @default(cuid())
+  userId       String    @default(cuid())
+  tankId       String    @default(cuid())
+  fishId       String    @default(cuid())
+  name         String    @db.VarChar(255)
+  photo        String    @default("https://images.unsplash.com/photo-1522069169874-c58ec4b76be5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=712&q=80")
+  createdAt    DateTime  @default(now())
+  maintainedAt DateTime?
 
-  @@index([user_id])
-  @@index([tank_id])
-  @@index([fish_id])
-}
+  user     User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tank     Tank @relation(fields: [tankId], references: [id], onDelete: Cascade)
+  baseFish Fish @relation(fields: [fishId], references: [id], onDelete: Cascade)
 
-model UserPlant {
-  id          String    @id @default(cuid())
-  user_id     String    @default(cuid())
-  tank_id     String    @default(cuid())
-  plant_id    String    @default(cuid())
-  image_url   String    @db.VarChar(255)
-  name        String    @db.VarChar(255)
-  next_update DateTime? @db.Timestamp(0)
-  user        User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  tank        Tank      @relation(fields: [tank_id], references: [id], onDelete: Cascade)
-  plant       Plant     @relation(fields: [plant_id], references: [id], onDelete: Cascade)
-
-  @@index([user_id])
-  @@index([tank_id])
-  @@index([plant_id])
+  @@index([userId])
+  @@index([tankId])
+  @@index([fishId])
 }
 
 model Tank {
-  id            String      @id @default(cuid())
-  user_id       String?     @default(cuid())
-  user          User?       @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  type          String      @db.VarChar(255)
-  name          String      @db.VarChar(255)
-  image         String      @db.MediumText
-  pH            Decimal?    @db.Decimal(10, 0)
-  ammonia       Decimal?    @db.Decimal(10, 0)
-  alkalinity    Decimal?    @db.Decimal(10, 0)
-  chlorine      Decimal?    @db.Decimal(10, 0)
-  nirate        Decimal?    @db.Decimal(10, 0)
-  nirite        Decimal?    @db.Decimal(10, 0)
-  hardness      Decimal?    @db.Decimal(10, 0)
-  maintained_at DateTime?   @db.Timestamp(0)
-  created_at    DateTime    @db.Timestamp(0)
-  updated_at    DateTime    @db.Timestamp(0)
-  Fish          UserFish[]
-  Plant         UserPlant[]
+  id           String     @id @default(cuid())
+  userId       String?    @default(cuid())
+  type         String     @db.VarChar(255)
+  name         String     @db.VarChar(255)
+  photo        String     @default("https://images.unsplash.com/photo-1533713692156-f70938dc0d54?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80")
+  pH           Decimal?   @db.Decimal(10, 0)
+  ammonia      Decimal?   @db.Decimal(10, 0)
+  alkalinity   Decimal?   @db.Decimal(10, 0)
+  chlorine     Decimal?   @db.Decimal(10, 0)
+  nirate       Decimal?   @db.Decimal(10, 0)
+  nirite       Decimal?   @db.Decimal(10, 0)
+  hardness     Decimal?   @db.Decimal(10, 0)
+  createdAt    DateTime   @default(now())
+  maintainedAt DateTime?  @db.Timestamp(0)
+  updatedAt    DateTime?  @db.Timestamp(0)
+  Fish         UserFish[]
 
-  @@index([user_id])
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
